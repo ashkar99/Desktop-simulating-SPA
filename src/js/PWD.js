@@ -1,3 +1,5 @@
+import { Window } from './Window.js'
+
 /**
  * The main Personal Web Desktop (PWD) application class.
  * This class manages the desktop environment, window stacking, and taskbar interactions.
@@ -24,7 +26,16 @@ export class PWD {
    * Sets up event listeners and prepares the desktop.
    */
   init () {
-    // testing initialization
-    console.log('Al-Andalus PWD initialized.')
+    // Test: Open a window immediately
+    this.openWindow(new Window('Al-Andalus Test'))
+  }
+
+  /**
+   * Opens a window and adds it to the desktop.
+   * @param {Window} windowObj - The window instance to open
+   */
+  openWindow (windowObj) {
+    this.windows.push(windowObj)
+    this.desktopArea.appendChild(windowObj.element)
   }
 }
