@@ -87,7 +87,7 @@ export class Window {
     document.addEventListener('mouseup', this.boundStopDrag)
     
     // Visual cue
-    this.element.style.opacity = '0.9'
+    this.element.style.opacity = '0.8'
   }
 
   /**
