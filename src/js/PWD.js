@@ -11,14 +11,12 @@ export class PWD {
    * Sets up references to the main desktop area and taskbar.
    */
   constructor () {
-    /** @type {HTMLElement} The main desktop area where windows live */
     this.desktopArea = document.querySelector('#desktop-area')
-
-    /** @type {HTMLElement} The taskbar element */
     this.taskbar = document.querySelector('#taskbar')
-
-    /** @type {Array} List of active window instances */
     this.windows = []
+    
+    // Start z-index at 10. Every click will bump this number.
+    this.zIndexCounter = 10
   }
 
   /**
@@ -26,8 +24,16 @@ export class PWD {
    * Sets up event listeners and prepares the desktop.
    */
   init () {
-    // Test: Open a window immediately
-    this.openWindow(new Window('Al-Andalus Test'))
+    // Test: Open TWO windows to test stacking/focus
+    const win1 = new Window('Window 1')
+    const win2 = new Window('Window 2')
+    
+    // Offset the second window slightly so they don't perfectly overlap
+    win2.element.style.left = '60px'
+    win2.element.style.top = '60px'
+
+    this.openWindow(win1)
+    this.openWindow(win2)
   }
 
   /**
@@ -37,5 +43,30 @@ export class PWD {
   openWindow (windowObj) {
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
+
+    // Focus immediately upon opening
+    this.#focusWindow(windowObj)
+    // Add listener to focus when clicked
+    windowObj.element.addEventListener('mousedown', () => {
+      this.#focusWindow(windowObj)
+    })
+  }
+
+  /**
+   * Brings a specific window to the front.
+   * @param {Window} windowObj 
+   */
+  #focusWindow (windowObj) {
+    // Only update if it's not already on top
+    const currentZ = parseInt(windowObj.element.style.zIndex || 0)
+    
+    if (currentZ !== this.zIndexCounter) {
+      this.zIndexCounter++
+      windowObj.element.style.zIndex = this.zIndexCounter
+      
+      // Add a class to indicate active state
+      this.windows.forEach(w => w.element.classList.remove('active-window'))
+      windowObj.element.classList.add('active-window')
+    }
   }
 }
