@@ -57,3 +57,57 @@ body, html {
   box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
   z-index: 10000; /* Ensure it stays above windows */
 }
+
+
+/* --- Window Styles --- */
+.window {
+  position: absolute;
+  background-color: var(--window-bg);
+  border: 2px solid var(--window-border);
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  min-height: 150px;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+
+.window-header {
+  background-color: var(--color-azure);
+  color: #fff;
+  padding: 5px 10px;
+  cursor: grab; /* Indicates draggable */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-bottom: 2px solid var(--color-gold);
+  user-select: none;
+}
+
+.window-header:active {
+  cursor: grabbing;
+}
+
+.window-content {
+  flex-grow: 1;
+  padding: 10px;
+  overflow: auto;
+  position: relative;
+}
+
+.close-btn {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: var(--color-terracotta);
+}
