@@ -1,0 +1,59 @@
+:root {
+  /* --- Al-Andalus Color Palette --- */
+  /* Warm stone background (Sandstone) */
+  --color-sandstone: #F5E6C8; 
+  /* Deep architectural blue (Azure) */
+  --color-azure: #1A4B6E;     
+  /* Earthy red (Terracotta) */
+  --color-terracotta: #BC5D41; 
+  /* Garden green (Generalife Gardens) */
+  --color-emerald: #2E5C48;   
+  /* Metallic accent (Gold leaf) */
+  --color-gold: #C5A059;      
+  /* Dark wood for structure (Cedar) */
+  --color-wood: #3D2B1F;      
+
+  /* --- Functional Variables --- */
+  --desktop-bg: var(--color-sandstone);
+  --taskbar-bg: var(--color-wood);
+  --taskbar-text: #EFEFEF;
+  --window-bg: #FFFFFF;
+  --window-border: var(--color-gold);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Prevents browser scrollbars, PWD handles scrolling */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#pwd-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#desktop-area {
+  flex-grow: 1;
+  position: relative; /* Essential context for absolute window positioning */
+  background-color: var(--desktop-bg);
+}
+
+#taskbar {
+  height: 48px;
+  background-color: var(--taskbar-bg);
+  color: var(--taskbar-text);
+  border-top: 4px solid var(--color-gold); /* Architectural trim style */
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+  z-index: 10000; /* Ensure it stays above windows */
+}
