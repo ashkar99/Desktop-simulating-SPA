@@ -1,4 +1,5 @@
 import { Window } from './Window.js'
+import { MemoryGame } from './MemoryGame.js'
 
 /**
  * The main Personal Web Desktop (PWD) application class.
