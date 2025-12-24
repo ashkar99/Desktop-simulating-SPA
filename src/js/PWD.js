@@ -67,7 +67,7 @@ export class PWD {
         this.openWindow(win)
       })
 
-      this.desktopArea.appendChild(iconContainer)
+      this.taskbar.appendChild(iconContainer)
     })
   }
 
