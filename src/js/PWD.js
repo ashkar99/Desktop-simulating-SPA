@@ -17,36 +17,65 @@ export class PWD {
     
     // Start z-index at 10. Every click will bump this number.
     this.zIndexCounter = 10
+
+    this.apps = [
+      {
+        id: 'memory',
+        name: 'Memory',
+        icon: './img/memory-icon.png',
+        action: () => new MemoryGame()
+      },
+      {
+        id: 'chat',
+        name: 'Chat',
+        icon: './img/chat-icon.png',
+        action: () => new Window('Chat')
+      },
+      {
+        id: 'quiz',
+        name: 'Quiz',
+        icon: './img/quiz-icon.png',
+        action: () => new Window('Quiz')
+      }
+    ]
   }
 
-  /**
-   * Initializes the PWD application.
-   * Sets up event listeners and prepares the desktop.
-   */
   init () {
-    // Test: Open TWO windows to test stacking/focus
-    const win1 = new Window('Window 1')
-    const win2 = new Window('Window 2')
-    
-    // Offset the second window slightly so they don't perfectly overlap
-    win2.element.style.left = '60px'
-    win2.element.style.top = '60px'
-
-    this.openWindow(win1)
-    this.openWindow(win2)
+    console.log('Al-Andalus PWD initialized.')
+    this.#renderIcons()
   }
 
-  /**
-   * Opens a window and adds it to the desktop.
-   * @param {Window} windowObj - The window instance to open
-   */
+  #renderIcons () {
+    this.apps.forEach(app => {
+      const iconContainer = document.createElement('div')
+      iconContainer.classList.add('desktop-icon')
+      
+      const iconImg = document.createElement('img')
+      iconImg.src = app.icon
+      iconImg.alt = app.name
+      // Drag prevention for the image itself so it doesn't ghost-drag
+      iconImg.addEventListener('dragstart', (e) => e.preventDefault())
+      
+      const iconLabel = document.createElement('span')
+      iconLabel.textContent = app.name
+      
+      iconContainer.appendChild(iconImg)
+      iconContainer.appendChild(iconLabel)
+
+      iconContainer.addEventListener('click', () => {
+        const win = app.action()
+        this.openWindow(win)
+      })
+
+      this.desktopArea.appendChild(iconContainer)
+    })
+  }
+
   openWindow (windowObj) {
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
-
-    // Focus immediately upon opening
     this.#focusWindow(windowObj)
-    // Add listener to focus when clicked
+
     windowObj.element.addEventListener('mousedown', () => {
       this.#focusWindow(windowObj)
     })
@@ -57,14 +86,10 @@ export class PWD {
    * @param {Window} windowObj 
    */
   #focusWindow (windowObj) {
-    // Only update if it's not already on top
     const currentZ = parseInt(windowObj.element.style.zIndex || 0)
-    
     if (currentZ !== this.zIndexCounter) {
       this.zIndexCounter++
       windowObj.element.style.zIndex = this.zIndexCounter
-      
-      // Add a class to indicate active state
       this.windows.forEach(w => w.element.classList.remove('active-window'))
       windowObj.element.classList.add('active-window')
     }
