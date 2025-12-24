@@ -46,16 +46,17 @@ body, html {
   background-color: var(--desktop-bg);
 }
 
+/* --- Taskbar (Bottom Dock) --- */
 #taskbar {
-  height: 48px;
+  height: 64px; /* Increased height to fit icons */
   background-color: var(--taskbar-bg);
-  color: var(--taskbar-text);
-  border-top: 4px solid var(--color-gold); /* Architectural trim style */
+  border-top: 4px solid var(--color-gold);
   display: flex;
   align-items: center;
-  padding: 0 10px;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
-  z-index: 10000; /* Ensure it stays above windows */
+  justify-content: center; /* Center the dock */
+  gap: 15px; /* Space between icons */
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.4);
+  z-index: 10000;
 }
 
 
@@ -112,42 +113,46 @@ body, html {
   color: var(--color-terracotta);
 }
 
-/* --- Desktop Icons --- */
+/* --- Dock Icons --- */
 .desktop-icon {
-  width: 100px;
-  height: 110px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 10px;
+  width: 50px;
+  height: 50px;
   cursor: pointer;
-  text-align: center;
-  color: var(--color-wood);
-  border: 1px solid transparent;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  user-select: none;
-}
-
-.desktop-icon img {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 5px;
-  object-fit: contain; /* Ensures aspect ratio stays correct */
-  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); /* Adds depth */
+  transition: transform 0.2s, filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* For tooltip positioning */
 }
 
 .desktop-icon:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  transform: scale(1.1); /* Slight zoom effect */
+  filter: brightness(1.2);
 }
 
+.desktop-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Hide text labels by default in the dock */
 .desktop-icon span {
-  font-size: 0.9rem;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-  font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.4); /* readability */
-  padding: 0 4px;
+  display: none;
+  position: absolute;
+  bottom: 60px; /* Float above the icon */
+  background-color: var(--color-azure);
+  color: #fff;
+  padding: 4px 8px;
   border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  border: 1px solid var(--color-gold);
+}
+
+/* Show label on hover (Tooltip style) */
+.desktop-icon:hover span {
+  display: block;
 }
