@@ -15,9 +15,9 @@ export class PWD {
     this.desktopArea = document.querySelector('#desktop-area')
     this.taskbar = document.querySelector('#taskbar')
     this.windows = []
-    
-    // Start z-index at 10. Every click will bump this number.
     this.zIndexCounter = 10
+    this.nextWindowX = 50
+    this.nextWindowY = 50
 
     this.apps = [
       {
@@ -47,6 +47,8 @@ export class PWD {
   }
 
   #renderIcons () {
+    this.taskbar.innerHTML = '' // Clear to prevent duplicates
+
     this.apps.forEach(app => {
       const iconContainer = document.createElement('div')
       iconContainer.classList.add('desktop-icon')
@@ -64,8 +66,12 @@ export class PWD {
       iconContainer.appendChild(iconLabel)
 
       iconContainer.addEventListener('click', () => {
-        const win = app.action()
-        this.openWindow(win)
+        try {
+          const win = app.action()
+          this.openWindow(win)
+        } catch (error) {
+          console.error('Error opening app:', error)
+        }
       })
 
       this.taskbar.appendChild(iconContainer)
@@ -75,6 +81,18 @@ export class PWD {
   openWindow (windowObj) {
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
+    // Override the default position from the Window class
+    windowObj.element.style.top = `${this.nextWindowY}px`
+    windowObj.element.style.left = `${this.nextWindowX}px`
+    this.nextWindowX += 20 // Increment for the next window
+    this.nextWindowY += 20
+
+    // Reset if getting too close to the bottom
+    if (this.nextWindowY > window.innerHeight - 200 || this.nextWindowX > window.innerWidth - 200) {
+      this.nextWindowX = 50
+      this.nextWindowY = 50
+    }
+
     this.#focusWindow(windowObj)
 
     windowObj.element.addEventListener('mousedown', () => {
