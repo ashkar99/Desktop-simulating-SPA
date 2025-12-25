@@ -11,13 +11,15 @@
   /* Metallic accent (Gold leaf) */
   --color-gold: #C5A059;      
   /* Dark wood for structure (Cedar) */
-  --color-wood: #3D2B1F;      
+  --color-wood: #593c28;
+  /* Dark sandstone for window backgrounds */
+  --color-dark-sandstone: #e4cda2;      
 
   /* --- Functional Variables --- */
   --desktop-bg: var(--color-sandstone);
   --taskbar-bg: var(--color-wood);
   --taskbar-text: #EFEFEF;
-  --window-bg: #FFFFFF;
+  --window-bg: var(--color-dark-sandstone);
   --window-border: var(--color-gold);
 }
 
@@ -95,12 +97,12 @@ body, html {
   flex-direction: column;
   min-width: 200px;
   min-height: 150px;
-  border-radius: 4px 4px 0 0;
+  border-radius: 10px;
   overflow: hidden;
 }
 
 .window-header {
-  background-color: var(--color-azure);
+  background-color: var(--color-emerald);
   color: #fff;
   padding: 5px 10px;
   cursor: grab; /* Indicates draggable */
@@ -118,6 +120,7 @@ body, html {
 }
 
 .window-content {
+  background-color: var() ;
   flex-grow: 1;
   padding: 10px;
   overflow: auto;
@@ -167,7 +170,7 @@ body, html {
   display: none;
   position: absolute;
   bottom: 60px; /* Float above the icon */
-  background-color: var(--color-azure);
+  background-color: var(--color-emerald);
   color: #fff;
   padding: 4px 8px;
   border-radius: 4px;
