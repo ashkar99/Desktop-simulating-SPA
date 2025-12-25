@@ -9,12 +9,15 @@ export class Window {
     
     // Drag state variables
     this.isDragging = false
+    this.isResizing = false
     this.dragOffsetX = 0
     this.dragOffsetY = 0
 
     // Bind methods to 'this' so adding/removing them easily
     this.boundDrag = this.#drag.bind(this)
     this.boundStopDrag = this.#stopDrag.bind(this)
+    this.boundResize = this.#resize.bind(this)
+    this.boundStopResize = this.#stopResize.bind(this)
   }
 
   /**
@@ -25,18 +28,11 @@ export class Window {
     const wrapper = document.createElement('div')
     wrapper.classList.add('window')
 
-    //
-    // TODO: Improve window positioning
-    // Default position
-    //
-    wrapper.style.left = '50px'
-    wrapper.style.top = '50px'
 
     const header = document.createElement('div')
     header.classList.add('window-header')
-    
-    // Only the header triggers the drag start
     header.addEventListener('mousedown', (e) => this.#startDrag(e))
+
     const titleSpan = document.createElement('span')
     titleSpan.textContent = this.title
     
@@ -54,8 +50,13 @@ export class Window {
     const content = document.createElement('div')
     content.classList.add('window-content')
 
+    const resizeHandle = document.createElement('div')
+    resizeHandle.classList.add('resize-handle')
+    resizeHandle.addEventListener('mousedown', (e) => this.#startResize(e))
+
     wrapper.appendChild(header)
     wrapper.appendChild(content)
+    wrapper.appendChild(resizeHandle)
 
     return wrapper
   }
@@ -77,17 +78,13 @@ export class Window {
   #startDrag (e) {
     e.preventDefault() // Prevent text selection
     this.isDragging = true
-    
-    // Calculate where the mouse is relative to the window corner
     this.dragOffsetX = e.clientX - this.element.offsetLeft
     this.dragOffsetY = e.clientY - this.element.offsetTop
+    this.element.style.opacity = '0.8'
 
-    // Listen to mouse movements
     document.addEventListener('mousemove', this.boundDrag)
     document.addEventListener('mouseup', this.boundStopDrag)
     
-    // Visual cue
-    this.element.style.opacity = '0.8'
   }
 
   /**
@@ -96,12 +93,9 @@ export class Window {
    */
   #drag (e) {
     if (!this.isDragging) return
-
-    // Calculate new position
     const x = e.clientX - this.dragOffsetX
     const y = e.clientY - this.dragOffsetY
 
-    // Apply new position
     this.element.style.left = `${x}px`
     this.element.style.top = `${y}px`
   }
@@ -114,7 +108,38 @@ export class Window {
     document.removeEventListener('mousemove', this.boundDrag)
     document.removeEventListener('mouseup', this.boundStopDrag)
     
-    // Reset visual cue
     this.element.style.opacity = '1'
+  }
+  #startResize (e) {
+    e.preventDefault()
+    e.stopPropagation() // Don't trigger drag
+    this.isResizing = true
+    
+    // Capture starting dimensions
+    this.startWidth = this.element.offsetWidth
+    this.startHeight = this.element.offsetHeight
+    this.startX = e.clientX
+    this.startY = e.clientY
+
+    document.addEventListener('mousemove', this.boundResize)
+    document.addEventListener('mouseup', this.boundStopResize)
+  }
+
+  #resize (e) {
+    if (!this.isResizing) return
+    
+    // Calculate new size = start size + movement delta
+    const newWidth = this.startWidth + (e.clientX - this.startX)
+    const newHeight = this.startHeight + (e.clientY - this.startY)
+
+    // Apply (CSS min-width/min-height will prevent it from getting too small)
+    this.element.style.width = `${newWidth}px`
+    this.element.style.height = `${newHeight}px`
+  }
+
+  #stopResize () {
+    this.isResizing = false
+    document.removeEventListener('mousemove', this.boundResize)
+    document.removeEventListener('mouseup', this.boundStopResize)
   }
 }
