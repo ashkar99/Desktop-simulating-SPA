@@ -81,14 +81,21 @@ export class PWD {
   openWindow (windowObj) {
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
-    // Override the default position from the Window class
+    
+    // Position the CURRENT window
     windowObj.element.style.top = `${this.nextWindowY}px`
     windowObj.element.style.left = `${this.nextWindowX}px`
-    this.nextWindowX += 20 // Increment for the next window
+    // Prepare position for the NEXT window
+    this.nextWindowX += 20
     this.nextWindowY += 20
 
-    // Reset if getting too close to the bottom
-    if (this.nextWindowY > window.innerHeight - 200 || this.nextWindowX > window.innerWidth - 200) {
+    // Check Vertical Bound
+    if (this.nextWindowY > window.innerHeight - 350) {
+      this.nextWindowY = 50
+      this.nextWindowX += 10 
+    }
+    // Check Horizontal Bound
+    if (this.nextWindowX > window.innerWidth - 200) {
       this.nextWindowX = 50
       this.nextWindowY = 50
     }
