@@ -141,6 +141,19 @@ body, html {
   color: var(--color-terracotta);
 }
 
+/* --- Resize Handle --- */
+.resize-handle {
+  width: 15px;
+  height: 15px;
+  /* Diagonal stripes or a solid corner to indicate grip */
+  background: linear-gradient(135deg, transparent 50%, var(--color-gold) 50%);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize; /* Diagonal cursor arrow */
+  z-index: 20; /* Above content */
+}
+
 /* --- Dock Icons --- */
 .desktop-icon {
   width: 50px;
