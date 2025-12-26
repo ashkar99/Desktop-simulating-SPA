@@ -3,8 +3,18 @@ import { Window } from './Window.js'
 export class MemoryGame extends Window {
   constructor () {
     super('Memory Game')
-    // 8 pairs of emojis (Al-Andalus themed logic/nature)
-    this.images = ['🌙', '🕌', '📜', '🦁', '🌿', '🏺', '⚔️', '💎'] 
+    
+    // The 8 images for our pairs (from your img/ folder)
+    this.images = [
+      'astronomy.png',
+      'fountain.png',
+      'garden.png',
+      'grand-mosque.png',
+      'mosque2.png',
+      'person.png',
+      'sword.png',
+      'waterwheel.png'
+    ]
     
     this.tiles = []     // All card elements
     this.flippedCards = [] // Cards currently flipped (max 2)
@@ -14,7 +24,7 @@ export class MemoryGame extends Window {
   }
 
   renderGame () {
-    this.element.style.width = '320px'
+    this.element.style.width = '360px'
     this.element.style.height = '360px'
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -22,28 +32,29 @@ export class MemoryGame extends Window {
     const grid = document.createElement('div')
     grid.classList.add('memory-grid')
 
-    // 1. Create pairs and shuffle
+    // 2. Create Deck (Duplicate & Shuffle)
     const deck = [...this.images, ...this.images]
-    deck.sort(() => 0.5 - Math.random()) // Simple shuffle
+    deck.sort(() => 0.5 - Math.random())
 
-    // 2. Create DOM elements
-    deck.forEach((symbol, index) => {
+    // 3. Create DOM Elements
+    deck.forEach((imgName) => {
       const card = document.createElement('div')
       card.classList.add('memory-card')
-      card.dataset.symbol = symbol
+      card.dataset.symbol = imgName // Used for matching logic
       
-      // Accessibility: Keyboard navigation
       card.setAttribute('tabindex', '0')
       card.setAttribute('role', 'button')
-      card.setAttribute('aria-label', 'Memory Card')
 
-      // HTML Structure for 3D Flip
+      // HTML Structure: Now using <img> tags
+      // Front = The hidden image (Al-Andalus art)
+      // Back = The geometric pattern
       card.innerHTML = `
-        <div class="memory-card-face memory-card-front">${symbol}</div>
+        <div class="memory-card-face memory-card-front">
+          <img src="./img/${imgName}" alt="Memory Card">
+        </div>
         <div class="memory-card-face memory-card-back"></div>
       `
 
-      // Event Listeners (Click + Enter key)
       card.addEventListener('click', () => this.flipCard(card))
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') this.flipCard(card)
@@ -57,18 +68,15 @@ export class MemoryGame extends Window {
   }
 
   flipCard (card) {
-    // Ignore if already matched, already flipped, or if 2 cards are already open
     if (card.classList.contains('flipped') || 
         card.classList.contains('matched') || 
         this.flippedCards.length >= 2) {
       return
     }
 
-    // 1. Flip visual
     card.classList.add('flipped')
     this.flippedCards.push(card)
 
-    // 2. Check for match if 2 cards are open
     if (this.flippedCards.length === 2) {
       this.checkMatch()
     }
@@ -76,22 +84,21 @@ export class MemoryGame extends Window {
 
   checkMatch () {
     const [card1, card2] = this.flippedCards
-    const symbol1 = card1.dataset.symbol
-    const symbol2 = card2.dataset.symbol
+    const img1 = card1.dataset.symbol
+    const img2 = card2.dataset.symbol
 
-    if (symbol1 === symbol2) {
+    if (img1 === img2) {
       // Match Found
       card1.classList.add('matched')
       card2.classList.add('matched')
       this.flippedCards = []
       this.matches++
 
-      // Check Win Condition
       if (this.matches === this.images.length) {
         setTimeout(() => alert('Victory! You have recovered the lost memories of Al-Andalus.'), 500)
       }
     } else {
-      // No Match - Flip back after delay
+      // No Match
       setTimeout(() => {
         card1.classList.remove('flipped')
         card2.classList.remove('flipped')
