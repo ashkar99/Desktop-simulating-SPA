@@ -24,8 +24,8 @@ export class MemoryGame extends Window {
   }
 
   renderGame () {
-    this.element.style.width = '360px'
-    this.element.style.height = '360px'
+    this.element.style.width = '550px' 
+    this.element.style.height = '600px'
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
 
