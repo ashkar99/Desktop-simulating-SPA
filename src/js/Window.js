@@ -62,6 +62,13 @@ export class Window {
   }
 
   /**
+   * Default focus window behavior
+   */
+  focus () {
+    this.element.focus()
+  }
+
+  /**
    * Removes the window from the DOM.
    */
   close () {
