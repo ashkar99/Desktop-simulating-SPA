@@ -4,7 +4,6 @@ export class MemoryGame extends Window {
   constructor () {
     super('Memory Game')
     
-    // The 8 images for our pairs (from your img/ folder)
     this.images = [
       'astronomy.png',
       'fountain.png',
@@ -16,59 +15,92 @@ export class MemoryGame extends Window {
       'waterwheel.png'
     ]
     
-    this.tiles = []     // All card elements
-    this.flippedCards = [] // Cards currently flipped (max 2)
-    this.matches = 0       // Track progress
+    this.tiles = [] // Hold the DOM elements in order
+    this.flippedCards = []
+    this.matches = 0
     
     this.renderGame()
   }
 
   renderGame () {
-    this.element.style.width = '550px' 
+    this.element.style.width = '550px'
     this.element.style.height = '600px'
+    
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
-
     const grid = document.createElement('div')
     grid.classList.add('memory-grid')
 
-    // 2. Create Deck (Duplicate & Shuffle)
+    // Create Deck and Shuffle
     const deck = [...this.images, ...this.images]
     deck.sort(() => 0.5 - Math.random())
 
-    // 3. Create DOM Elements
-    deck.forEach((imgName) => {
+    // Create DOM Elements
+    deck.forEach((imgName, index) => {
       const card = document.createElement('div')
       card.classList.add('memory-card')
-      card.dataset.symbol = imgName // Used for matching logic
+      card.dataset.symbol = imgName
       
-      card.setAttribute('tabindex', '0')
+      // Accessibility attributes
+      card.setAttribute('tabindex', '0') // Focusable
       card.setAttribute('role', 'button')
+      card.setAttribute('aria-label', 'Memory Card')
 
-      // HTML Structure: Now using <img> tags
-      // Front = The hidden image (Al-Andalus art)
-      // Back = The geometric pattern
       card.innerHTML = `
         <div class="memory-card-face memory-card-front">
-          <img src="./img/${imgName}" alt="Memory Card">
+          <img src="./img/${imgName}" alt="Memory Card Content">
         </div>
         <div class="memory-card-face memory-card-back"></div>
       `
 
       card.addEventListener('click', () => this.flipCard(card))
-      
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault() // Stop spacebar from scrolling the page
-          this.flipCard(card)
-        }
-      })
+      card.addEventListener('keydown', (e) => this.handleKeyDown(e, index))
 
       grid.appendChild(card)
-      this.tiles.push(card)
+      this.tiles.push(card) // Store reference for index calculation
     })
 
     content.appendChild(grid)
+  }
+
+  /**
+   * Handles grid navigation (Arrows) and interaction (Space/Enter)
+   * @param {KeyboardEvent} e 
+   * @param {number} index - Current card index (0-15)
+   */
+  handleKeyDown (e, index) {
+    const cols = 4 // Number of columns in the grid
+    const total = this.tiles.length
+    let nextIndex = null
+
+    switch (e.key) {
+      case 'ArrowRight':
+        if ((index + 1) % cols !== 0) nextIndex = index + 1
+        break
+        
+      case 'ArrowLeft':
+        if (index % cols !== 0) nextIndex = index - 1
+        break
+        
+      case 'ArrowDown':
+        if (index + cols < total) nextIndex = index + cols
+        break
+        
+      case 'ArrowUp':
+        if (index - cols >= 0) nextIndex = index - cols
+        break
+        
+      case 'Enter':
+      case ' ':
+        e.preventDefault() 
+        this.flipCard(this.tiles[index])
+        return 
+    }
+
+    if (nextIndex !== null) {
+      e.preventDefault() // Stop page scroll
+      this.tiles[nextIndex].focus()
+    }
   }
 
   flipCard (card) {
