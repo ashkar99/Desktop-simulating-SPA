@@ -56,8 +56,12 @@ export class MemoryGame extends Window {
       `
 
       card.addEventListener('click', () => this.flipCard(card))
+      
       card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') this.flipCard(card)
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault() // Stop spacebar from scrolling the page
+          this.flipCard(card)
+        }
       })
 
       grid.appendChild(card)
