@@ -203,8 +203,8 @@ body, html {
 .memory-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 4 columns */
-  gap: 2%;
-  padding: 2%;
+  gap: 3%;
+  padding: 4%;
   perspective: 1000px;
   height: 100%;
   /* Center the grid content vertically if window is tall */
@@ -235,6 +235,19 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.memory-card:focus {
+  outline: none; /* Remove default browser outline */
+}
+
+.memory-card:focus-visible {
+  /* A bright, clear gold ring around the selected card */
+  outline: 4px solid var(--color-gold);
+  outline-offset: 4px;
+  border-radius: 14px;
+  z-index: 10; /* Ensure the ring appears on top of neighbors */
+  transform: scale(1.05); /* Slight pop to make it obvious */
 }
 
 /* FRONT (The Hidden Image) */
