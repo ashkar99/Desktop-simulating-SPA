@@ -102,8 +102,17 @@ export class PWD {
 
     this.#focusWindow(windowObj)
 
+    // Auto-Focus Content on Open
+    if (typeof windowObj.focus === 'function') {
+      windowObj.focus()
+    }
+
+    // Auto-Focus Content on Click (Switching between windows)
     windowObj.element.addEventListener('mousedown', () => {
       this.#focusWindow(windowObj)
+      if (typeof windowObj.focus === 'function') {
+        windowObj.focus()
+      }
     })
   }
 

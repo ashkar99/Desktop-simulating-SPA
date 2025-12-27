@@ -25,7 +25,7 @@ export class MemoryGame extends Window {
   renderGame () {
     this.element.style.width = '550px'
     this.element.style.height = '600px'
-    
+
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
     const grid = document.createElement('div')
@@ -101,6 +101,18 @@ export class MemoryGame extends Window {
       e.preventDefault() // Stop page scroll
       this.tiles[nextIndex].focus()
     }
+  }
+
+  /**
+   * Focuses the first card in the grid to enable immediate keyboard play.
+   */
+  focus () {
+    // Wait a tiny bit for the DOM to be ready if it was just appended
+    setTimeout(() => {
+      if (this.tiles.length > 0) {
+        this.tiles[0].focus()
+      }
+    }, 10)
   }
 
   flipCard (card) {
