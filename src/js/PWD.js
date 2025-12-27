@@ -79,6 +79,11 @@ export class PWD {
   }
 
   openWindow (windowObj) {
+
+    // Hook up the Close Event to clean up PWD state
+    windowObj.onClose = () => {
+      this.removeWindow(windowObj)
+    }
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
     
@@ -114,6 +119,23 @@ export class PWD {
         windowObj.focus()
       }
     })
+  }
+
+  /**
+   * Removes a window from tracking and passes focus to the next available one.
+   */
+  removeWindow (windowObj) {
+    // Remove from array
+    this.windows = this.windows.filter(w => w !== windowObj)
+
+    // 2. If there are other windows left, focus the top-most one
+    if (this.windows.length > 0) {
+      const lastWin = this.windows[this.windows.length - 1]
+      this.#focusWindow(lastWin)
+      if (typeof lastWin.focus === 'function') {
+        lastWin.focus()
+      }
+    }
   }
 
   /**

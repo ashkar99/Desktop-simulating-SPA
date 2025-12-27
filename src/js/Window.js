@@ -68,6 +68,10 @@ export class Window {
     if (this.element) {
       this.element.remove()
     }
+
+    if (typeof this.onClose === 'function') {
+      this.onClose()
+    }
   }
 
 
