@@ -5,17 +5,11 @@ export class MemoryGame extends Window {
     super('Memory Game')
     
     this.images = [
-      'astronomy.png',
-      'fountain.png',
-      'garden.png',
-      'grand-mosque.png',
-      'mosque2.png',
-      'person.png',
-      'sword.png',
-      'waterwheel.png'
+      'astronomy.png', 'fountain.png', 'garden.png', 'grand-mosque.png',
+      'mosque2.png', 'person.png', 'sword.png', 'waterwheel.png'
     ]
     
-    this.tiles = [] // Hold the DOM elements in order
+    this.tiles = [] 
     this.flippedCards = []
     this.matches = 0
     this.attempts = 0
@@ -24,7 +18,7 @@ export class MemoryGame extends Window {
   }
 
   renderStartScreen () {
-    this.tiles = [] 
+    this.tiles = []
     this.element.style.width = '400px' 
     this.element.style.height = '500px'
     
@@ -38,6 +32,7 @@ export class MemoryGame extends Window {
     menu.style.justifyContent = 'center'
     menu.style.height = '100%'
     menu.style.gap = '15px'
+    menu.className = 'memory-menu'
 
     const title = document.createElement('h2')
     title.textContent = 'Choose Difficulty'
@@ -49,7 +44,7 @@ export class MemoryGame extends Window {
       { label: 'Hard (4x4)', rows: 4, cols: 4 }
     ]
 
-    sizes.forEach(size => {
+    sizes.forEach((size, index) => {
       const btn = document.createElement('button')
       btn.textContent = size.label
       btn.style.padding = '10px 20px'
@@ -57,16 +52,34 @@ export class MemoryGame extends Window {
       btn.style.cursor = 'pointer'
       btn.setAttribute('tabindex', '0')
       btn.addEventListener('click', () => this.startGame(size.rows, size.cols)) 
+      btn.addEventListener('keydown', (e) => this.handleMenuKeydown(e, index, sizes.length))
       menu.appendChild(btn)
     })
 
     content.appendChild(menu)
-    
-    // Focus the first button
+  
     setTimeout(() => {
-        const firstBtn = this.element.querySelector('button')
+        const firstBtn = menu.querySelector('button')
         if (firstBtn) firstBtn.focus()
-    }, 10)
+    }, 50)
+  }
+
+  // Handle Arrows in Menu Navigation
+  handleMenuKeydown(e, index, totalButtons) {
+    const buttons = this.element.querySelectorAll('.memory-menu button')
+    let nextIndex = null
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        nextIndex = (index + 1) % totalButtons
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        nextIndex = (index - 1 + totalButtons) % totalButtons
+    }
+
+    if (nextIndex !== null) {
+        buttons[nextIndex].focus()
+    }
   }
 
   startGame (rows, cols) {
@@ -109,34 +122,41 @@ export class MemoryGame extends Window {
       const card = document.createElement('div')
       card.classList.add('memory-card')
       card.dataset.symbol = imgName
-      
-      // Accessibility attributes
-      card.setAttribute('tabindex', '0') // Focusable
+      card.setAttribute('tabindex', '0')
       card.setAttribute('role', 'button')
-      card.setAttribute('aria-label', 'Memory Card')
-
       card.innerHTML = `
         <div class="memory-card-face memory-card-front">
-          <img src="./img/${imgName}" alt="Memory Card Content">
+          <img src="./img/${imgName}" alt="Memory Card">
         </div>
         <div class="memory-card-face memory-card-back"></div>
       `
-      card.addEventListener('keydown', (e) => this.handleKeyDown(e, index))
-
+      card.addEventListener('keydown', (e) => this.handleGameKeydown(e, index))
       grid.appendChild(card)
-      this.tiles.push(card) // Store reference for index calculation
+      this.tiles.push(card)
     })
     
     content.appendChild(grid)
-    this.focus()
+    setTimeout(() => {
+       if (this.tiles[0]) this.tiles[0].focus()
+    }, 50)
   }
 
   /**
-   * Handles grid navigation (Arrows) and interaction (Space/Enter)
-   * @param {KeyboardEvent} e 
-   * @param {number} index - Current card index (0-15)
+   * Main Focus Method used by PWD
    */
-  handleKeyDown (e, index) {
+  focus () {
+    if (this.tiles && this.tiles.length > 0) {
+      if (document.body.contains(this.tiles[0])) {
+        this.tiles[0].focus()
+      }
+    } 
+    else {
+      const firstBtn = this.element.querySelector('button')
+      if (firstBtn) firstBtn.focus()
+    }
+  }
+
+  handleGameKeydown (e, index) {
     const cols = this.gridCols
     const total = this.tiles.length
     let nextIndex = null
@@ -145,19 +165,15 @@ export class MemoryGame extends Window {
       case 'ArrowRight':
         if ((index + 1) % cols !== 0) nextIndex = index + 1
         break
-        
       case 'ArrowLeft':
         if (index % cols !== 0) nextIndex = index - 1
         break
-        
       case 'ArrowDown':
         if (index + cols < total) nextIndex = index + cols
         break
-        
       case 'ArrowUp':
         if (index - cols >= 0) nextIndex = index - cols
         break
-        
       case 'Enter':
       case ' ':
         e.preventDefault() 
@@ -166,20 +182,8 @@ export class MemoryGame extends Window {
     }
 
     if (nextIndex !== null) {
-      e.preventDefault() // Stop page scroll
+      e.preventDefault() 
       this.tiles[nextIndex].focus()
-    }
-  }
-
-  /**
-   * Focuses the first card in the grid to enable immediate keyboard play.
-   */
-  focus () {
-    if (this.tiles && this.tiles.length > 0) {
-      this.tiles[0].focus()
-    } else {
-      const firstBtn = this.element.querySelector('button')
-      if (firstBtn) firstBtn.focus()
     }
   }
 
