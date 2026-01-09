@@ -18,6 +18,7 @@ export class MemoryGame extends Window {
     this.tiles = [] // Hold the DOM elements in order
     this.flippedCards = []
     this.matches = 0
+    this.attempts = 0
     
     this.renderGame()
   }
@@ -131,6 +132,7 @@ export class MemoryGame extends Window {
   }
 
   checkMatch () {
+    this.attempts++
     const [card1, card2] = this.flippedCards
     const img1 = card1.dataset.symbol
     const img2 = card2.dataset.symbol
@@ -143,7 +145,7 @@ export class MemoryGame extends Window {
       this.matches++
 
       if (this.matches === this.images.length) {
-        setTimeout(() => alert('Victory! You have recovered the lost memories of Al-Andalus.'), 500)
+        setTimeout(() => alert(`Victory! You have recovered the lost memories of Al-Andalus.\n\nTotal Attempts: ${this.attempts}`), 500)
       }
     } else {
       // No Match
