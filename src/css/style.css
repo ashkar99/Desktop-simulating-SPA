@@ -200,6 +200,20 @@ body, html {
 
 /* --- Memory Game Styles --- */
 
+.window-content button:focus {
+  outline: none; /* Reset default */
+}
+.window:focus {
+  outline: none;
+}
+
+.window-content button:focus-visible {
+  outline: 4px solid var(--color-gold); /* Same gold as cards */
+  outline-offset: 2px;
+  background-color: #f0f0f0; /* Slight highlight */
+  transform: scale(1.05);
+}
+
 .memory-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 4 columns */
@@ -241,13 +255,12 @@ body, html {
   outline: none; /* Remove default browser outline */
 }
 
+button:focus-visible, 
 .memory-card:focus-visible {
-  /* A bright, clear gold ring around the selected card */
-  outline: 4px solid var(--color-gold);
-  outline-offset: 4px;
-  border-radius: 14px;
-  z-index: 10; /* Ensure the ring appears on top of neighbors */
-  transform: scale(1.05); /* Slight pop to make it obvious */
+  outline: 4px solid #FFD700 !important; /* Bright Gold */
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  z-index: 100;
+  transform: scale(1.05);
 }
 
 /* FRONT (The Hidden Image) */
