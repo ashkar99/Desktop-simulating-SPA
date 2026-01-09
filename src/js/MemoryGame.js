@@ -56,7 +56,7 @@ export class MemoryGame extends Window {
       btn.style.width = '80%'
       btn.style.cursor = 'pointer'
       btn.setAttribute('tabindex', '0')
-      btn.addEventListener('click', () => this.renderGame(size)) 
+      btn.addEventListener('click', () => this.startGame(size.rows, size.cols)) 
       menu.appendChild(btn)
     })
 
@@ -69,20 +69,37 @@ export class MemoryGame extends Window {
     }, 10)
   }
 
-  renderGame () {
-    this.element.style.width = '550px'
-    this.element.style.height = '600px'
+  startGame (rows, cols) {
+    this.gridRows = rows
+    this.gridCols = cols
+    this.attempts = 0
+    this.matches = 0
+    this.flippedCards = []
+    this.tiles = []
+
+    // Dynamic Window Sizing
+    if (cols === 2) {
+      this.element.style.width = '300px'
+      this.element.style.height = '350px'
+    } else if (cols === 4 && rows === 2) {
+      this.element.style.width = '550px'
+      this.element.style.height = '350px'
+    } else {
+      this.element.style.width = '550px'
+      this.element.style.height = '600px'
+    }
 
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
     const grid = document.createElement('div')
     grid.classList.add('memory-grid')
+    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`
 
-    // Create Deck and Shuffle
-    const deck = [...this.images, ...this.images]
+    const numPairs = (rows * cols) / 2
+    const selectedImages = this.images.slice(0, numPairs)
+    const deck = [...selectedImages, ...selectedImages]
     deck.sort(() => 0.5 - Math.random())
 
-    // Create DOM Elements
     deck.forEach((imgName, index) => {
       const card = document.createElement('div')
       card.classList.add('memory-card')
@@ -106,8 +123,9 @@ export class MemoryGame extends Window {
       grid.appendChild(card)
       this.tiles.push(card) // Store reference for index calculation
     })
-
+    
     content.appendChild(grid)
+    this.focus()
   }
 
   /**
