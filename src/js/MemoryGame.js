@@ -94,6 +94,11 @@ export class MemoryGame extends Window {
     const grid = document.createElement('div')
     grid.classList.add('memory-grid')
     grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`
+    grid.addEventListener('click', (e) => {
+      const card = e.target.closest('.memory-card')
+      if (!card || !grid.contains(card)) return
+      this.flipCard(card)
+    })
 
     const numPairs = (rows * cols) / 2
     const selectedImages = this.images.slice(0, numPairs)
@@ -116,8 +121,6 @@ export class MemoryGame extends Window {
         </div>
         <div class="memory-card-face memory-card-back"></div>
       `
-
-      card.addEventListener('click', () => this.flipCard(card))
       card.addEventListener('keydown', (e) => this.handleKeyDown(e, index))
 
       grid.appendChild(card)
