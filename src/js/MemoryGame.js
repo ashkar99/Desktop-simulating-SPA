@@ -134,7 +134,7 @@ export class MemoryGame extends Window {
    * @param {number} index - Current card index (0-15)
    */
   handleKeyDown (e, index) {
-    const cols = 4 // Number of columns in the grid
+    const cols = this.gridCols
     const total = this.tiles.length
     let nextIndex = null
 
@@ -172,12 +172,12 @@ export class MemoryGame extends Window {
    * Focuses the first card in the grid to enable immediate keyboard play.
    */
   focus () {
-    // Wait a tiny bit for the DOM to be ready if it was just appended
-    setTimeout(() => {
-      if (this.tiles.length > 0) {
-        this.tiles[0].focus()
-      }
-    }, 10)
+    if (this.tiles && this.tiles.length > 0) {
+      this.tiles[0].focus()
+    } else {
+      const firstBtn = this.element.querySelector('button')
+      if (firstBtn) firstBtn.focus()
+    }
   }
 
   flipCard (card) {
@@ -208,8 +208,11 @@ export class MemoryGame extends Window {
       this.flippedCards = []
       this.matches++
 
-      if (this.matches === this.images.length) {
-        setTimeout(() => alert(`Victory! You have recovered the lost memories of Al-Andalus.\n\nTotal Attempts: ${this.attempts}`), 500)
+      if (this.matches === (this.gridRows * this.gridCols) / 2) {
+        setTimeout(() => {
+          alert(`Victory!\n\nSize: ${this.gridRows}x${this.gridCols}\nAttempts: ${this.attempts}`)
+          this.renderStartScreen()
+        }, 500)
       }
     } else {
       // No Match
