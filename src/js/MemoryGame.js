@@ -20,7 +20,53 @@ export class MemoryGame extends Window {
     this.matches = 0
     this.attempts = 0
     
-    this.renderGame()
+    this.renderStartScreen()
+  }
+
+  renderStartScreen () {
+    this.tiles = [] 
+    this.element.style.width = '400px' 
+    this.element.style.height = '500px'
+    
+    const content = this.element.querySelector('.window-content')
+    content.innerHTML = ''
+
+    const menu = document.createElement('div')
+    menu.style.display = 'flex'
+    menu.style.flexDirection = 'column'
+    menu.style.alignItems = 'center'
+    menu.style.justifyContent = 'center'
+    menu.style.height = '100%'
+    menu.style.gap = '15px'
+
+    const title = document.createElement('h2')
+    title.textContent = 'Choose Difficulty'
+    menu.appendChild(title)
+
+    const sizes = [
+      { label: 'Easy (2x2)', rows: 2, cols: 2 },
+      { label: 'Medium (2x4)', rows: 2, cols: 4 },
+      { label: 'Hard (4x4)', rows: 4, cols: 4 }
+    ]
+
+    sizes.forEach(size => {
+      const btn = document.createElement('button')
+      btn.textContent = size.label
+      btn.style.padding = '10px 20px'
+      btn.style.width = '80%'
+      btn.style.cursor = 'pointer'
+      btn.setAttribute('tabindex', '0')
+      btn.addEventListener('click', () => this.renderGame(size)) 
+      menu.appendChild(btn)
+    })
+
+    content.appendChild(menu)
+    
+    // Focus the first button
+    setTimeout(() => {
+        const firstBtn = this.element.querySelector('button')
+        if (firstBtn) firstBtn.focus()
+    }, 10)
   }
 
   renderGame () {
