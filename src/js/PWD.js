@@ -112,7 +112,6 @@ export class PWD {
 
       // Check if the target is NOT a button, input, or card.
       const clickedInteractive = e.target.closest('button, .memory-card, input, textarea, a')
-      
       if (!clickedInteractive) {
          // Prevent default browser behavior (which steals focus)
          e.preventDefault() 
@@ -129,16 +128,16 @@ export class PWD {
    * Removes a window from tracking and passes focus to the next available one.
    */
   removeWindow (windowObj) {
-    // Remove from array
     this.windows = this.windows.filter(w => w !== windowObj)
 
-    // 2. If there are other windows left, focus the top-most one
     if (this.windows.length > 0) {
       const lastWin = this.windows[this.windows.length - 1]
-      this.#focusWindow(lastWin)
-      if (typeof lastWin.focus === 'function') {
-        lastWin.focus()
-      }
+      setTimeout(() => {
+        this.#focusWindow(lastWin)
+        if (typeof lastWin.focus === 'function') {
+          lastWin.focus()
+        }
+      }, 50)
     }
   }
 
