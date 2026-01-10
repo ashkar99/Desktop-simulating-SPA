@@ -281,7 +281,7 @@ button:focus-visible {
   box-shadow: 0 0 10px rgba(197, 160, 89, 0.8);
   z-index: 100;
   transform: scale(1.05);
-  border-radius: 4px;
+  border-radius: 20px;
 }
 
 /* B. Memory Cards: FORCE focus visibility (even for mouse users) */

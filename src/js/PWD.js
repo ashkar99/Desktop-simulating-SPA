@@ -84,39 +84,43 @@ export class PWD {
     windowObj.onClose = () => {
       this.removeWindow(windowObj)
     }
+
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
     
-    // Position the CURRENT window
+    // Position the CURRENT window & prepare for the NEXT one
     windowObj.element.style.top = `${this.nextWindowY}px`
     windowObj.element.style.left = `${this.nextWindowX}px`
-    // Prepare position for the NEXT window
     this.nextWindowX += 20
     this.nextWindowY += 20
-
-    // Check Vertical Bound
+    
     if (this.nextWindowY > window.innerHeight - 350) {
-      this.nextWindowY = 50
-      this.nextWindowX += 10 
+      this.nextWindowY = 50; this.nextWindowX += 10 
     }
-    // Check Horizontal Bound
     if (this.nextWindowX > window.innerWidth - 200) {
-      this.nextWindowX = 50
-      this.nextWindowY = 50
+      this.nextWindowX = 50; this.nextWindowY = 50
     }
 
     this.#focusWindow(windowObj)
-
-    // Auto-Focus Content on Open
     if (typeof windowObj.focus === 'function') {
       windowObj.focus()
     }
 
-    // Auto-Focus Content on Click (Switching between windows)
-    windowObj.element.addEventListener('mousedown', () => {
+    // Aggressive Focus Restoration
+    windowObj.element.addEventListener('mousedown', (e) => {
       this.#focusWindow(windowObj)
-      if (typeof windowObj.focus === 'function') {
-        windowObj.focus()
+
+      // Check if the target is NOT a button, input, or card.
+      const clickedInteractive = e.target.closest('button, .memory-card, input, textarea, a')
+      
+      if (!clickedInteractive) {
+         // Prevent default browser behavior (which steals focus)
+         e.preventDefault() 
+         
+         // Force focus back to the game immediately
+         if (typeof windowObj.focus === 'function') {
+           windowObj.focus()
+         }
       }
     })
   }
