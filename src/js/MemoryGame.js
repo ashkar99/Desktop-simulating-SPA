@@ -144,10 +144,27 @@ export class MemoryGame extends Window {
     
     const statusBar = document.createElement('div')
     statusBar.className = 'status-bar'
-    this.attemptsDisplay = document.createElement('span')
-    this.attemptsDisplay.textContent = 'Attempts: 0'
-    this.timerDisplay = document.createElement('span')
-    this.timerDisplay.textContent = 'Time: 00:00:00'
+
+    if (this.isTwoPlayer) {
+      this.p1Display = document.createElement('span')
+      this.p1Display.className = 'player-score active-turn'
+      this.p1Display.textContent = 'Player 1: 0'
+      this.p2Display = document.createElement('span')
+      this.p2Display.className = 'player-score'
+      this.p2Display.textContent = 'Player 2: 0'
+      
+      statusBar.appendChild(this.p1Display)
+      statusBar.appendChild(this.p2Display)
+      
+    } else {
+      this.attemptsDisplay = document.createElement('span')
+      this.attemptsDisplay.textContent = 'Attempts: 0'
+      this.timerDisplay = document.createElement('span')
+      this.timerDisplay.textContent = 'Time: 00:00:00'
+      
+      statusBar.appendChild(this.attemptsDisplay)
+      statusBar.appendChild(this.timerDisplay)
+    }
     
     statusBar.appendChild(this.attemptsDisplay)
     statusBar.appendChild(this.timerDisplay)
@@ -262,7 +279,7 @@ export class MemoryGame extends Window {
 
   flipCard (card) {
     if (card.classList.contains('flipped') || card.classList.contains('matched') || this.flippedCards.length >= 2) return
-    if (!this.timerRunning) {
+    if (!this.isTwoPlayer && !this.timerRunning) {
         this.startTimer()
     }
 
@@ -272,34 +289,88 @@ export class MemoryGame extends Window {
   }
 
   checkMatch () {
-    this.attempts++
-    if (this.attemptsDisplay) {
-        this.attemptsDisplay.textContent = `Attempts: ${this.attempts}`
-    }
-
     const [card1, card2] = this.flippedCards
-    if (card1.dataset.symbol === card2.dataset.symbol) {
+    const isMatch = card1.dataset.symbol === card2.dataset.symbol
+
+    if (isMatch) {
       card1.classList.add('matched'); card2.classList.add('matched')
-      this.flippedCards = []; this.matches++
-      
-      if (this.matches === (this.gridRows * this.gridCols) / 2) {
-        this.stopTimer()
-        
-        setTimeout(() => {
-            const totalSeconds = Math.floor(this.timeElapsed / 1000)
-            const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
-            const seconds = (totalSeconds % 60).toString().padStart(2, '0')
-            const ms = Math.floor((this.timeElapsed % 1000) / 10).toString().padStart(2, '0')
-            
-            alert(`Victory!\n\nSize: ${this.gridRows}x${this.gridCols}\nAttempts: ${this.attempts}\nTime: ${minutes}:${seconds}:${ms}`)
-            this.renderStartScreen()
-        }, 500)
+      this.flippedCards = []
+      this.matches++
+
+      if (this.isTwoPlayer) {
+        // 2-Player: Update Score
+        this.scores[this.currentPlayer]++
+        this.updateScoreUI()
+      } else {
+        // 1-Player: Update Attempts
+        this.attempts++
+        if (this.attemptsDisplay) this.attemptsDisplay.textContent = `Attempts: ${this.attempts}`
       }
+
+      if (this.matches === (this.gridRows * this.gridCols) / 2) {
+        this.handleVictory()
+      }
+
     } else {
+      if (!this.isTwoPlayer) {
+        // 1-Player: Update Attempts
+        this.attempts++
+        if (this.attemptsDisplay) this.attemptsDisplay.textContent = `Attempts: ${this.attempts}`
+      }
+
       setTimeout(() => {
         card1.classList.remove('flipped'); card2.classList.remove('flipped')
         this.flippedCards = []
+        
+        // 2-Player: Switch Turn ONLY on a miss
+        if (this.isTwoPlayer) {
+          this.switchTurn()
+        }
       }, 1000)
     }
+  }
+  
+  switchTurn () {
+    this.currentPlayer = this.currentPlayer === 1 ? 2 : 1
+    
+    // Toggle CSS classes for visual feedback
+    if (this.currentPlayer === 1) {
+      this.p1Display.classList.add('active-turn')
+      this.p2Display.classList.remove('active-turn')
+    } else {
+      this.p1Display.classList.remove('active-turn')
+      this.p2Display.classList.add('active-turn')
+    }
+  }
+
+  updateScoreUI () {
+    this.p1Display.textContent = `Player 1: ${this.scores[1]}`
+    this.p2Display.textContent = `Player 2: ${this.scores[2]}`
+  }
+
+  handleVictory () {
+    this.stopTimer()
+    
+    setTimeout(() => {
+      let msg = ''
+      
+      if (this.isTwoPlayer) {
+        const s1 = this.scores[1]
+        const s2 = this.scores[2]
+        if (s1 > s2) msg = `Player 1 Wins!\nScore: ${s1} - ${s2}`
+        else if (s2 > s1) msg = `Player 2 Wins!\nScore: ${s2} - ${s1}`
+        else msg = `It's a Tie!\nScore: ${s1} - ${s1}`
+      } else {
+        // Single Player Msg
+        const totalSeconds = Math.floor(this.timeElapsed / 1000)
+        const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
+        const seconds = (totalSeconds % 60).toString().padStart(2, '0')
+        const ms = Math.floor((this.timeElapsed % 1000) / 10).toString().padStart(2, '0')
+        msg = `Victory!\nAttempts: ${this.attempts}\nTime: ${minutes}:${seconds}:${ms}`
+      }
+
+      alert(msg)
+      this.renderStartScreen()
+    }, 500)
   }
 }
