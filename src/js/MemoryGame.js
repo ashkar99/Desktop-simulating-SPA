@@ -26,6 +26,8 @@ export class MemoryGame extends Window {
     this.activeMenuIndex = 0 
     this.element.style.width = '400px' 
     this.element.style.height = '500px'
+    this.element.style.minWidth = '300px'
+    this.element.style.minHeight = '480px'
     
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -105,10 +107,13 @@ export class MemoryGame extends Window {
     // Window Sizing
     if (cols === 2) {
       this.element.style.width = '300px'; this.element.style.height = '350px'
+      this.element.style.minWidth = '250px'; this.element.style.minHeight = '300px'
     } else if (cols === 4 && rows === 2) {
       this.element.style.width = '550px'; this.element.style.height = '350px'
+      this.element.style.minWidth = '450px'; this.element.style.minHeight = '300px'
     } else {
       this.element.style.width = '550px'; this.element.style.height = '600px'
+      this.element.style.minWidth = '450px'; this.element.style.minHeight = '500px'
     }
 
     const content = this.element.querySelector('.window-content')
