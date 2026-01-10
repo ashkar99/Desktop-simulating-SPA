@@ -32,27 +32,17 @@ export class MemoryGame extends Window {
 
     const menu = document.createElement('div')
     menu.className = 'memory-menu'
-    menu.style.display = 'flex'
-    menu.style.flexDirection = 'column'
-    menu.style.alignItems = 'center'
-    menu.style.justifyContent = 'center'
-    menu.style.height = '100%'
-    menu.style.gap = '15px'
 
     const logo = document.createElement('img')
     logo.src = './img/memory-icon.png'
     logo.alt = 'Memory Game Logo'
-    logo.style.width = '200px'
-    logo.style.height = '200px'
-    logo.style.marginBottom = '10px'
-    logo.style.filter = 'drop-shadow(2px 4px 2px rgba(0,0,0,0.3))'
+    logo.className = 'memory-logo'
     logo.addEventListener('dragstart', (e) => e.preventDefault())
-    
     menu.appendChild(logo)
 
     const title = document.createElement('h2')
     title.textContent = 'Choose Difficulty'
-    title.style.color = 'var(--color-wood)' 
+    title.className = 'memory-title'
     menu.appendChild(title)
 
     const sizes = [
@@ -64,9 +54,7 @@ export class MemoryGame extends Window {
     sizes.forEach((size, index) => {
       const btn = document.createElement('button')
       btn.textContent = size.label
-      btn.style.padding = '10px 20px'
-      btn.style.width = '80%'
-      btn.style.cursor = 'pointer'
+      btn.className = 'memory-btn'
       btn.setAttribute('tabindex', '0')
       
       btn.addEventListener('click', () => {
