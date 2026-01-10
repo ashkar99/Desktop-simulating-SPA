@@ -13,7 +13,7 @@ export class MemoryGame extends Window {
     this.flippedCards = []
     this.matches = 0
     this.attempts = 0
-    
+
     // Trackers for "Sticky Focus"
     this.acctiveCardIndex = 0
     this.activeMenuIndex = 0 
@@ -23,7 +23,7 @@ export class MemoryGame extends Window {
 
   renderStartScreen () {
     this.tiles = [] 
-    this.activeMenuIndex = 0
+    this.activeMenuIndex = 0 
     this.element.style.width = '400px' 
     this.element.style.height = '500px'
     
@@ -39,8 +39,20 @@ export class MemoryGame extends Window {
     menu.style.height = '100%'
     menu.style.gap = '15px'
 
+    const logo = document.createElement('img')
+    logo.src = './img/memory-icon.png'
+    logo.alt = 'Memory Game Logo'
+    logo.style.width = '200px'
+    logo.style.height = '200px'
+    logo.style.marginBottom = '10px'
+    logo.style.filter = 'drop-shadow(2px 4px 2px rgba(0,0,0,0.3))'
+    logo.addEventListener('dragstart', (e) => e.preventDefault())
+    
+    menu.appendChild(logo)
+
     const title = document.createElement('h2')
     title.textContent = 'Choose Difficulty'
+    title.style.color = 'var(--color-wood)' 
     menu.appendChild(title)
 
     const sizes = [
@@ -56,19 +68,20 @@ export class MemoryGame extends Window {
       btn.style.width = '80%'
       btn.style.cursor = 'pointer'
       btn.setAttribute('tabindex', '0')
-      btn.addEventListener('click', () => {
-        this.activeMenuIndex = index
-        this.startGame(size.rows, size.cols)
-      })
       
-      // Keyboard Navigation tracking
+      btn.addEventListener('click', () => {
+        this.activeMenuIndex = index 
+        this.startGame(size.rows, size.cols)
+      }) 
+      
       btn.addEventListener('keydown', (e) => this.handleMenuKeydown(e, index, sizes.length))
       btn.addEventListener('focus', () => { this.activeMenuIndex = index })
+
       menu.appendChild(btn)
     })
 
     content.appendChild(menu)
-
+    
     setTimeout(() => {
         this.focus()
     }, 50)
