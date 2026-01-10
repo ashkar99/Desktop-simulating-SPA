@@ -123,13 +123,14 @@ export class MemoryGame extends Window {
     this.stopTimer()
     this.timeElapsed = 0
     this.timerRunning = false
-
+  
     this.currentPlayer = 1 
     this.scores = { 1: 0, 2: 0 }
 
+    // 4. Window Sizing
     if (cols === 2) {
-      this.element.style.width = '350px'; this.element.style.height = '400px'
-      this.element.style.minWidth = '250px'; this.element.style.minHeight = '300px'
+      this.element.style.width = '300px'; this.element.style.height = '350px'
+      this.element.style.minWidth = '290px'; this.element.style.minHeight = '335px'
     } else if (cols === 4 && rows === 2) {
       this.element.style.width = '550px'; this.element.style.height = '350px'
       this.element.style.minWidth = '450px'; this.element.style.minHeight = '300px'
@@ -141,14 +142,15 @@ export class MemoryGame extends Window {
     const content = this.element.querySelector('.window-content')
     content.classList.add('game-mode')
     content.innerHTML = ''
-    
     const statusBar = document.createElement('div')
     statusBar.className = 'status-bar'
-
+    
+    // --- MODE CHECK: 1 or 2 players ---
     if (this.isTwoPlayer) {
       this.p1Display = document.createElement('span')
       this.p1Display.className = 'player-score active-turn'
       this.p1Display.textContent = 'Player 1: 0'
+      
       this.p2Display = document.createElement('span')
       this.p2Display.className = 'player-score'
       this.p2Display.textContent = 'Player 2: 0'
@@ -159,6 +161,7 @@ export class MemoryGame extends Window {
     } else {
       this.attemptsDisplay = document.createElement('span')
       this.attemptsDisplay.textContent = 'Attempts: 0'
+      
       this.timerDisplay = document.createElement('span')
       this.timerDisplay.textContent = 'Time: 00:00:00'
       
@@ -166,8 +169,6 @@ export class MemoryGame extends Window {
       statusBar.appendChild(this.timerDisplay)
     }
     
-    statusBar.appendChild(this.attemptsDisplay)
-    statusBar.appendChild(this.timerDisplay)
     content.appendChild(statusBar)
     
     const grid = document.createElement('div')
