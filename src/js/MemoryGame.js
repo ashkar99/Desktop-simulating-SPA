@@ -16,6 +16,7 @@ export class MemoryGame extends Window {
     
     this.activeIndex = 0      
     this.activeMenuIndex = 0  
+    this.isTwoPlayer = false
     
     this.timerInterval = null
     this.timeElapsed = 0
@@ -30,9 +31,9 @@ export class MemoryGame extends Window {
     this.activeMenuIndex = 0 
     
     this.element.style.width = '400px' 
-    this.element.style.height = '500px'
+    this.element.style.height = '530px'
     this.element.style.minWidth = '300px'
-    this.element.style.minHeight = '480px'
+    this.element.style.minHeight = '530px'
     
     const content = this.element.querySelector('.window-content')
     content.classList.remove('game-mode')
@@ -52,25 +53,43 @@ export class MemoryGame extends Window {
     title.className = 'memory-title'
     menu.appendChild(title)
 
-    const sizes = [
-      { label: 'Easy (2x2)', rows: 2, cols: 2 },
-      { label: 'Medium (2x4)', rows: 2, cols: 4 },
-      { label: 'Hard (4x4)', rows: 4, cols: 4 }
+    const menuItems = [
+      { 
+        type: 'toggle', 
+        label: this.isTwoPlayer ? 'Mode: 2 Players' : 'Mode: 1 Player' 
+      },
+      { type: 'start', label: 'Easy (2x2)', rows: 2, cols: 2 },
+      { type: 'start', label: 'Medium (2x4)', rows: 2, cols: 4 },
+      { type: 'start', label: 'Hard (4x4)', rows: 4, cols: 4 }
     ]
 
-    sizes.forEach((size, index) => {
+    menuItems.forEach((item, index) => {
       const btn = document.createElement('button')
-      btn.textContent = size.label
+      btn.textContent = item.label
       btn.className = 'memory-btn'
       btn.setAttribute('tabindex', '0')
       
+      if (item.type === 'toggle') {
+        btn.style.border = '2px solid var(--color-white)'
+        btn.style.fontWeight = 'bold'
+        btn.style.color = 'var(--color-white)'
+      }
+
       btn.addEventListener('click', () => {
         this.activeMenuIndex = index 
-        this.startGame(size.rows, size.cols)
+
+        if (item.type === 'toggle') {
+          this.isTwoPlayer = !this.isTwoPlayer
+          btn.textContent = this.isTwoPlayer ? 'Mode: 2 Players' : 'Mode: 1 Player'
+        } else {
+          this.startGame(item.rows, item.cols)
+        }
       }) 
-      btn.addEventListener('keydown', (e) => this.handleMenuKeydown(e, index, sizes.length))
+
+      btn.addEventListener('keydown', (e) => this.handleMenuKeydown(e, index, menuItems.length))
       btn.addEventListener('focus', () => { this.activeMenuIndex = index })
-      btn.addEventListener('mouseenter', () => {btn.focus()})
+      btn.addEventListener('mouseenter', () => { btn.focus() })
+
       menu.appendChild(btn)
     })
 
@@ -104,6 +123,9 @@ export class MemoryGame extends Window {
     this.stopTimer()
     this.timeElapsed = 0
     this.timerRunning = false
+
+    this.currentPlayer = 1 
+    this.scores = { 1: 0, 2: 0 }
 
     if (cols === 2) {
       this.element.style.width = '350px'; this.element.style.height = '400px'
