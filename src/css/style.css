@@ -286,6 +286,23 @@ body, html {
   background-color: var(--color-dark-sandstone); 
 }
 
+/* --- Two Player Mode Styles --- */
+.player-score {
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s;
+  opacity: 0.5; /* Dimmed by default */
+}
+
+.player-score.active-turn {
+  opacity: 1;
+  background-color: var(--color-gold);
+  color: var(--color-azure);
+  font-weight: bold;
+  box-shadow: 0 0 5px var(--shadow-medium);
+  transform: scale(1.1);
+}
+
 /* --- Status Bar (Timer & Attempts) --- */
 .status-bar {
   display: flex;
