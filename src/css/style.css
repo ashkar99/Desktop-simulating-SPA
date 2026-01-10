@@ -278,6 +278,18 @@ button:focus-visible,
   filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
 }
 
+button:focus-visible, 
+.memory-card:focus-visible {
+  outline: 4px solid #FFD700 !important;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  z-index: 100;
+  transform: scale(1.05); 
+}
+
+.memory-card.flipped:focus-visible {
+  transform: rotateY(180deg) scale(1.05);
+}
+
 /* BACK (The Pattern) */
 .memory-card-back {
   border-radius: 20px;
