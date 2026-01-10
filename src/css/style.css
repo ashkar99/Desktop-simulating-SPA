@@ -186,6 +186,12 @@ body, html {
   position: relative;
 }
 
+.window-content.game-mode {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
 .close-btn {
   cursor: pointer;
   background: none;
@@ -212,19 +218,22 @@ body, html {
 }
 
 /* =========================================
-   5. MEMORY GAME - LAYOUT & CARDS
+   5. MEMORY GAME
    ========================================= */
+   /* --- Layout & Cards --- */
 .memory-grid {
   display: grid;
   gap: 15px;
   padding: 20px;
   perspective: 1000px;
-  height: 100%;
   width: 100%;
   justify-items: center; 
   align-items: center;
   align-content: center;
   justify-content: center;
+  flex: 1;
+  height: auto;
+  overflow: hidden;
 }
 
 .memory-card {
@@ -277,39 +286,26 @@ body, html {
   background-color: var(--color-dark-sandstone); 
 }
 
-/* =========================================
-   6. FOCUS MANAGEMENT
-   ========================================= */
-/* A. Menu Buttons: FORCE focus visibility always */
-.window-content button:focus {
-  outline: 4px solid var(--color-focus-gold) !important;
-  box-shadow: 0 0 10px var(--shadow-focus);
-  z-index: 100;
-  transform: scale(1.05);
-  border-radius: 20px;
+/* --- Status Bar (Timer & Attempts) --- */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid var(--color-gold);
+  font-weight: bold;
+  color: var(--color-wood);
+  font-size: 1.1rem;
+  flex-shrink: 0; 
 }
 
-/* B. Memory Cards: FORCE focus visibility always */
-.memory-card:focus {
-  outline: 4px solid var(--color-focus-gold) !important;
-  z-index: 100;
-  transform: scale(1.05);
-  border-radius: 25px;
+.status-bar span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* C. Rotation Fix: Maintain flip state when focused */
-.memory-card.flipped:focus {
-  transform: rotateY(180deg) scale(1.05);
-}
-
-/* D. Window Wrapper: Never show outline on the window frame itself */
-.window:focus {
-  outline: none;
-}
-
-/* =========================================
-   7. MEMORY GAME - MENU & START SCREEN
-   ========================================= */
+/* --- Menu & Start Screen --- */
 .memory-menu {
   display: flex;
   flex-direction: column;
@@ -347,6 +343,36 @@ body, html {
 }
 
 .memory-btn:hover {
-  background-color: #fff;
   transform: scale(1.02);
+  
+}
+
+/* =========================================
+   6. FOCUS MANAGEMENT
+   ========================================= */
+/* Menu Buttons: FORCE focus visibility always */
+.window-content button:focus {
+  outline: 4px solid var(--color-focus-gold) !important;
+  box-shadow: 0 0 10px var(--shadow-focus);
+  z-index: 100;
+  transform: scale(1.05);
+  border-radius: 20px;
+}
+
+/* Memory Cards: FORCE focus visibility always */
+.memory-card:focus {
+  outline: 4px solid var(--color-focus-gold) !important;
+  z-index: 100;
+  transform: scale(1.05);
+  border-radius: 25px;
+}
+
+/* Rotation Fix: Maintain flip state when focused */
+.memory-card.flipped:focus {
+  transform: rotateY(180deg) scale(1.05);
+}
+
+/* Window Wrapper: Never show outline on the window frame itself */
+.window:focus {
+  outline: none;
 }
