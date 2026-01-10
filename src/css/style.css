@@ -1,21 +1,17 @@
+/* =========================================
+   1. VARIABLES & COLOR PALETTE
+   ========================================= */
 :root {
   /* --- Al-Andalus Color Palette --- */
-  /* Warm stone background (Sandstone) */
-  --color-sandstone: #F5E6C8; 
-  /* Deep architectural blue (Azure) */
-  --color-azure: #1A4B6E;     
-  /* Earthy red (Terracotta) */
-  --color-terracotta: #BC5D41; 
-  /* Garden green (Generalife Gardens) */
-  --color-emerald: #2E5C48;   
-  /* Metallic accent (Gold leaf) */
-  --color-gold: #C5A059;      
-  /* Dark wood for structure (Cedar) */
-  --color-wood: #593c28;
-  /* Dark sandstone for window backgrounds */
-  --color-dark-sandstone: #e4cda2;      
+  --color-sandstone: #F5E6C8;      /* Warm stone background */
+  --color-azure: #1A4B6E;          /* Deep architectural blue */
+  --color-terracotta: #BC5D41;     /* Earthy red */
+  --color-emerald: #2E5C48;        /* Garden green */
+  --color-gold: #C5A059;           /* Metallic accent */
+  --color-wood: #593c28;           /* Dark wood structure */
+  --color-dark-sandstone: #e4cda2; /* Window backgrounds */
 
-  /* --- Functional Variables --- */
+  /* --- Functional Mappings --- */
   --desktop-bg: var(--color-sandstone);
   --taskbar-bg: var(--color-wood);
   --taskbar-text: #EFEFEF;
@@ -23,6 +19,9 @@
   --window-border: var(--color-gold);
 }
 
+/* =========================================
+   2. GLOBAL RESET & BASE STYLES
+   ========================================= */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -32,7 +31,7 @@
 body, html {
   height: 100%;
   width: 100%;
-  overflow: hidden; /* Prevents browser scrollbars, PWD handles scrolling */
+  overflow: hidden; /* PWD handles scrolling internally */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -50,7 +49,10 @@ body, html {
   background-color: var(--desktop-bg);
 }
 
-/* --- MacOS Dock Container (The Trigger Zone) --- */
+/* =========================================
+   3. TASKBAR (MACOS STYLE DOCK)
+   ========================================= */
+/* Trigger Zone */
 #taskbar-container {
   position: fixed;
   bottom: 0;
@@ -60,13 +62,13 @@ body, html {
   z-index: 10000;
   display: flex;
   justify-content: center;
-  align-items: flex-end; /* Align to bottom so it slides up correctly */
-  /* Hide 100% down, minus 10px so a tiny edge is visible/triggerable */
+  align-items: flex-end;
+  /* Hidden by default, leaves 10px visible as trigger */
   transform: translateY(calc(100% - 10px));
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* When mouse enters the full-width container, slide up */
+/* Slide up on hover */
 #taskbar-container:hover {
   transform: translateY(0%);
 }
@@ -78,7 +80,7 @@ body, html {
   background-color: var(--taskbar-bg);
   border: 2px solid var(--color-gold);
   border-bottom: none;
-  border-radius: 20px;
+  border-radius: 20px 20px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,8 +88,52 @@ body, html {
   box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
 }
 
+/* Dock Icons */
+.desktop-icon {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-/* --- Window Styles --- */
+.desktop-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.desktop-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Tooltips */
+.desktop-icon span {
+  display: none;
+  position: absolute;
+  bottom: 60px;
+  background-color: var(--color-emerald);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  border: 1px solid var(--color-gold);
+}
+
+.desktop-icon:hover span {
+  display: block;
+}
+
+/* =========================================
+   4. WINDOW SYSTEM
+   ========================================= */
 .window {
   position: absolute;
   background-color: var(--window-bg);
@@ -101,11 +147,16 @@ body, html {
   overflow: hidden;
 }
 
+/* Remove default focus outline from the window wrapper */
+.window:focus {
+  outline: none;
+}
+
 .window-header {
   background-color: var(--color-emerald);
   color: #fff;
   padding: 5px 10px;
-  cursor: grab; /* Indicates draggable */
+  cursor: grab;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -120,7 +171,6 @@ body, html {
 }
 
 .window-content {
-  background-color: var() ;
   flex-grow: 1;
   padding: 10px;
   overflow: auto;
@@ -141,95 +191,35 @@ body, html {
   color: var(--color-terracotta);
 }
 
-/* --- Resize Handle --- */
 .resize-handle {
   width: 15px;
   height: 15px;
-  /* Diagonal stripes or a solid corner to indicate grip */
   background: linear-gradient(135deg, transparent 50%, var(--color-gold) 50%);
   position: absolute;
   bottom: 0;
   right: 0;
-  cursor: se-resize; /* Diagonal cursor arrow */
-  z-index: 20; /* Above content */
+  cursor: se-resize;
+  z-index: 20;
 }
 
-/* --- Dock Icons --- */
-.desktop-icon {
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  transition: transform 0.2s, filter 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative; /* For tooltip positioning */
-}
-
-.desktop-icon:hover {
-  transform: scale(1.1); /* Slight zoom effect */
-  filter: brightness(1.2);
-}
-
-.desktop-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
-}
-
-/* Hide text labels by default in the dock */
-.desktop-icon span {
-  display: none;
-  position: absolute;
-  bottom: 60px; /* Float above the icon */
-  background-color: var(--color-emerald);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  pointer-events: none;
-  border: 1px solid var(--color-gold);
-}
-
-/* Show label on hover (Tooltip style) */
-.desktop-icon:hover span {
-  display: block;
-}
-
-/* --- Memory Game Styles --- */
-
-.window-content button:focus {
-  outline: none; /* Reset default */
-}
-.window:focus {
-  outline: none;
-}
-
-.window-content button:focus-visible {
-  outline: 4px solid var(--color-gold); /* Same gold as cards */
-  outline-offset: 2px;
-  background-color: #f0f0f0; /* Slight highlight */
-  transform: scale(1.05);
-}
-
+/* =========================================
+   5. MEMORY GAME - LAYOUT & CARDS
+   ========================================= */
 .memory-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  /* Columns are set dynamically by JS, but this is a fallback */
+  grid-template-columns: repeat(4, 1fr); 
   gap: 3%;
   padding: 4%;
   perspective: 1000px;
   height: 100%;
-  /* Center the grid content vertically if window is tall */
   align-content: center; 
 }
 
 .memory-card {
   width: 100%;
   height: 100%;
-  /* FORCE SQUARE: This fixes the stretching logic */
-  aspect-ratio: 1 / 1; 
+  aspect-ratio: 1 / 1; /* Force square */
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.5s;
@@ -240,7 +230,7 @@ body, html {
   transform: rotateY(180deg);
 }
 
-/* Common Face Styles */
+/* Card Faces */
 .memory-card-face {
   position: absolute;
   width: 100%;
@@ -251,19 +241,7 @@ body, html {
   justify-content: center;
 }
 
-.memory-card:focus {
-  outline: none; /* Remove default browser outline */
-}
-
-button:focus-visible, 
-.memory-card:focus-visible {
-  outline: 4px solid #FFD700 !important; /* Bright Gold */
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-  z-index: 100;
-  transform: scale(1.05);
-}
-
-/* FRONT (The Hidden Image) */
+/* FRONT (Hidden Image) */
 .memory-card-front {
   transform: rotateY(180deg);
   border-radius: 16px;
@@ -274,34 +252,48 @@ button:focus-visible,
 .memory-card-front img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Ensures the gold frame isn't cut off */
+  object-fit: contain;
   filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.4));
 }
 
-button:focus-visible, 
-.memory-card:focus-visible {
-  outline: 4px solid #FFD700 !important;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-  z-index: 100;
-  transform: scale(1.05);
-  border-radius: 20px; 
-}
-
-.memory-card.flipped:focus-visible {
-  transform: rotateY(180deg) scale(1.05);
-}
-
-/* BACK (The Pattern) */
+/* BACK (Pattern) */
 .memory-card-back {
   border-radius: 20px;
   background-image: url('../img/mini-card-pattern.png');
-  
-  /* FIX STRETCHING: 'cover' fills the square, cropping edges if needed. */
- 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  
-  /* If the pattern has transparent corners, we need a base color */
   background-color: var(--color-dark-sandstone); 
+}
+
+/* =========================================
+   6. FOCUS MANAGEMENT (CRITICAL FIXES)
+   ========================================= */
+
+/* A. Menu Buttons: Use standard focus-visible for clean UI */
+button:focus {
+  outline: none; /* Reset default */
+}
+
+button:focus-visible {
+  outline: 4px solid var(--color-gold) !important;
+  box-shadow: 0 0 10px rgba(197, 160, 89, 0.8);
+  z-index: 100;
+  transform: scale(1.05);
+  border-radius: 4px;
+}
+
+/* B. Memory Cards: FORCE focus visibility (even for mouse users) */
+.memory-card:focus {
+  outline: 4px solid var(--color-gold) !important;
+  box-shadow: 0 0 10px rgba(200, 189, 167, 0.8);
+  z-index: 100;
+  transform: scale(1.05);
+  border-radius: 20px;
+}
+
+/* C. Rotation Fix: Maintain flip state when focused */
+/* Without this, focusing a flipped card resets rotation to 0deg */
+.memory-card.flipped:focus {
+  transform: rotateY(180deg) scale(1.05);
 }
