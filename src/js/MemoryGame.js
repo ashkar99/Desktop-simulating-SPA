@@ -70,7 +70,7 @@ export class MemoryGame extends Window {
       }) 
       btn.addEventListener('keydown', (e) => this.handleMenuKeydown(e, index, sizes.length))
       btn.addEventListener('focus', () => { this.activeMenuIndex = index })
-
+      btn.addEventListener('mouseenter', () => {btn.focus()})
       menu.appendChild(btn)
     })
 
