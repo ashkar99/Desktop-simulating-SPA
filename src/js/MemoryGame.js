@@ -14,11 +14,16 @@ export class MemoryGame extends Window {
     this.matches = 0
     this.attempts = 0
     
+    // Trackers for "Sticky Focus"
+    this.acctiveCardIndex = 0
+    this.activeMenuIndex = 0 
+    
     this.renderStartScreen()
   }
 
   renderStartScreen () {
-    this.tiles = []
+    this.tiles = [] 
+    this.activeMenuIndex = 0
     this.element.style.width = '400px' 
     this.element.style.height = '500px'
     
@@ -26,13 +31,13 @@ export class MemoryGame extends Window {
     content.innerHTML = ''
 
     const menu = document.createElement('div')
+    menu.className = 'memory-menu'
     menu.style.display = 'flex'
     menu.style.flexDirection = 'column'
     menu.style.alignItems = 'center'
     menu.style.justifyContent = 'center'
     menu.style.height = '100%'
     menu.style.gap = '15px'
-    menu.className = 'memory-menu'
 
     const title = document.createElement('h2')
     title.textContent = 'Choose Difficulty'
@@ -51,20 +56,24 @@ export class MemoryGame extends Window {
       btn.style.width = '80%'
       btn.style.cursor = 'pointer'
       btn.setAttribute('tabindex', '0')
-      btn.addEventListener('click', () => this.startGame(size.rows, size.cols)) 
+      btn.addEventListener('click', () => {
+        this.activeMenuIndex = index
+        this.startGame(size.rows, size.cols)
+      })
+      
+      // Keyboard Navigation tracking
       btn.addEventListener('keydown', (e) => this.handleMenuKeydown(e, index, sizes.length))
+      btn.addEventListener('focus', () => { this.activeMenuIndex = index })
       menu.appendChild(btn)
     })
 
     content.appendChild(menu)
-  
+
     setTimeout(() => {
-        const firstBtn = menu.querySelector('button')
-        if (firstBtn) firstBtn.focus()
+        this.focus()
     }, 50)
   }
 
-  // Handle Arrows in Menu Navigation
   handleMenuKeydown(e, index, totalButtons) {
     const buttons = this.element.querySelectorAll('.memory-menu button')
     let nextIndex = null
@@ -78,6 +87,7 @@ export class MemoryGame extends Window {
     }
 
     if (nextIndex !== null) {
+        this.activeMenuIndex = nextIndex // Update tracker
         buttons[nextIndex].focus()
     }
   }
@@ -89,17 +99,15 @@ export class MemoryGame extends Window {
     this.matches = 0
     this.flippedCards = []
     this.tiles = []
+    this.acctiveCardIndex = 0 
 
-    // Dynamic Window Sizing
+    // Window Sizing
     if (cols === 2) {
-      this.element.style.width = '300px'
-      this.element.style.height = '350px'
+      this.element.style.width = '300px'; this.element.style.height = '350px'
     } else if (cols === 4 && rows === 2) {
-      this.element.style.width = '550px'
-      this.element.style.height = '350px'
+      this.element.style.width = '550px'; this.element.style.height = '350px'
     } else {
-      this.element.style.width = '550px'
-      this.element.style.height = '600px'
+      this.element.style.width = '550px'; this.element.style.height = '600px'
     }
 
     const content = this.element.querySelector('.window-content')
@@ -110,6 +118,13 @@ export class MemoryGame extends Window {
     grid.addEventListener('click', (e) => {
       const card = e.target.closest('.memory-card')
       if (!card || !grid.contains(card)) return
+      
+      // Update tracker on mouse click
+      const index = this.tiles.indexOf(card)
+      if (index !== -1) {
+          this.acctiveCardIndex = index
+          card.focus() 
+      }
       this.flipCard(card)
     })
 
@@ -124,12 +139,14 @@ export class MemoryGame extends Window {
       card.dataset.symbol = imgName
       card.setAttribute('tabindex', '0')
       card.setAttribute('role', 'button')
+
       card.innerHTML = `
         <div class="memory-card-face memory-card-front">
           <img src="./img/${imgName}" alt="Memory Card">
         </div>
         <div class="memory-card-face memory-card-back"></div>
       `
+      
       card.addEventListener('keydown', (e) => this.handleGameKeydown(e, index))
       grid.appendChild(card)
       this.tiles.push(card)
@@ -137,22 +154,29 @@ export class MemoryGame extends Window {
     
     content.appendChild(grid)
     setTimeout(() => {
-       if (this.tiles[0]) this.tiles[0].focus()
+       this.focus()
     }, 50)
   }
 
   /**
-   * Main Focus Method used by PWD
+   * Smart Focus: Recovers focus to the last used card or menu button.
    */
   focus () {
+    // Game Mode
     if (this.tiles && this.tiles.length > 0) {
-      if (document.body.contains(this.tiles[0])) {
+      if (this.tiles[this.acctiveCardIndex] && document.body.contains(this.tiles[this.acctiveCardIndex])) {
+        this.tiles[this.acctiveCardIndex].focus()
+      } else if (this.tiles[0]) {
         this.tiles[0].focus()
       }
     } 
+    // Menu Mode
     else {
-      const firstBtn = this.element.querySelector('button')
-      if (firstBtn) firstBtn.focus()
+      const buttons = this.element.querySelectorAll('.window-content button')
+      if (buttons.length > 0) {
+        const btnToFocus = buttons[this.activeMenuIndex] || buttons[0]
+        btnToFocus.focus()
+      }
     }
   }
 
@@ -177,44 +201,31 @@ export class MemoryGame extends Window {
       case 'Enter':
       case ' ':
         e.preventDefault() 
+        this.acctiveCardIndex = index
         this.flipCard(this.tiles[index])
         return 
     }
 
     if (nextIndex !== null) {
       e.preventDefault() 
+      this.acctiveCardIndex = nextIndex
       this.tiles[nextIndex].focus()
     }
   }
 
   flipCard (card) {
-    if (card.classList.contains('flipped') || 
-        card.classList.contains('matched') || 
-        this.flippedCards.length >= 2) {
-      return
-    }
-
+    if (card.classList.contains('flipped') || card.classList.contains('matched') || this.flippedCards.length >= 2) return
     card.classList.add('flipped')
     this.flippedCards.push(card)
-
-    if (this.flippedCards.length === 2) {
-      this.checkMatch()
-    }
+    if (this.flippedCards.length === 2) this.checkMatch()
   }
 
   checkMatch () {
     this.attempts++
     const [card1, card2] = this.flippedCards
-    const img1 = card1.dataset.symbol
-    const img2 = card2.dataset.symbol
-
-    if (img1 === img2) {
-      // Match Found
-      card1.classList.add('matched')
-      card2.classList.add('matched')
-      this.flippedCards = []
-      this.matches++
-
+    if (card1.dataset.symbol === card2.dataset.symbol) {
+      card1.classList.add('matched'); card2.classList.add('matched')
+      this.flippedCards = []; this.matches++
       if (this.matches === (this.gridRows * this.gridCols) / 2) {
         setTimeout(() => {
           alert(`Victory!\n\nSize: ${this.gridRows}x${this.gridCols}\nAttempts: ${this.attempts}`)
@@ -222,10 +233,8 @@ export class MemoryGame extends Window {
         }, 500)
       }
     } else {
-      // No Match
       setTimeout(() => {
-        card1.classList.remove('flipped')
-        card2.classList.remove('flipped')
+        card1.classList.remove('flipped'); card2.classList.remove('flipped')
         this.flippedCards = []
       }, 1000)
     }
