@@ -9,7 +9,10 @@ export class Chat extends Window {
     this.defaultChannel = 'PWD-General'
     
     this.username = localStorage.getItem('pwd-chat-username') || null
-    this.messages = JSON.parse(localStorage.getItem('pwd-chat-history')) || []
+    
+    // Load history for the default channel
+    this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
+    
     this.socket = null
     
     this.element.style.width = '380px'
@@ -20,6 +23,11 @@ export class Chat extends Window {
     } else {
       this.renderUsernameScreen()
     }
+  }
+
+  // Helper to get unique storage key per channel
+  get historyKey () {
+    return `pwd-chat-history-${this.defaultChannel}`
   }
 
   renderUsernameScreen () {
@@ -60,7 +68,10 @@ export class Chat extends Window {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) return
 
     this.renderChatInterface()
-    this.renderCachedMessages()
+    // Ensure we see cached messages before connection
+    if (this.messageArea.children.length === 0) {
+        this.renderCachedMessages()
+    }
     this.addSystemMessage(`Connecting to ${this.defaultChannel}...`)
     
     this.socket = new WebSocket(this.serverUrl)
@@ -73,12 +84,20 @@ export class Chat extends Window {
     this.socket.addEventListener('message', (event) => {
       try {
         const data = JSON.parse(event.data)
+        
+        // Ignore Heartbeats
         if (data.type === 'heartbeat') return
+
+        // If the message's channel doesn't match my current channel, ignore it.
+        if (data.channel !== this.defaultChannel) return
+
         if (data.type === 'message') {
             const isMe = data.username === this.username
             this.addMessage(data.username, data.data, isMe)
         }
-      } catch (e) { console.warn('Invalid JSON', e) }
+      } catch (e) { 
+        console.warn('Invalid JSON', e) 
+      }
     })
 
     this.socket.addEventListener('close', () => {
@@ -95,7 +114,6 @@ export class Chat extends Window {
   showChannelSelector () {
     const content = this.element.querySelector('.chat-wrapper')
     
-    // Create Overlay
     const overlay = document.createElement('div')
     overlay.className = 'chat-overlay'
     
@@ -103,7 +121,6 @@ export class Chat extends Window {
     title.textContent = 'Select Channel'
     title.style.color = 'var(--color-wood)'
     
-    // Preset Buttons
     const grid = document.createElement('div')
     grid.className = 'channel-grid'
     
@@ -116,7 +133,6 @@ export class Chat extends Window {
         grid.appendChild(btn)
     })
 
-    // Custom Input
     const inputGroup = document.createElement('div')
     inputGroup.className = 'channel-input-group'
     
@@ -135,7 +151,6 @@ export class Chat extends Window {
     joinBtn.addEventListener('click', handleCustom)
     input.addEventListener('keydown', (e) => { if(e.key === 'Enter') handleCustom() })
 
-    // Cancel Button
     const cancelBtn = document.createElement('button')
     cancelBtn.textContent = 'Cancel'
     cancelBtn.style.background = 'none'; cancelBtn.style.border = 'none'; cancelBtn.style.cursor = 'pointer'
@@ -160,16 +175,24 @@ export class Chat extends Window {
     }
 
     this.defaultChannel = newChannel
-
+    
+    // 1. Close current connection
     if (this.socket) {
         this.socket.close()
     }
     
+    // 2. Clear UI & Overlay
     this.messageArea.innerHTML = ''
     this.element.querySelector('.chat-overlay')?.remove()
     
+    // 3. Switch History Context
+    this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
+    this.renderCachedMessages()
+
+    // 4. Reconnect
     this.connect()
     
+    // Update Header Tooltip
     const btn = this.element.querySelector('button[title^="Current:"]')
     if (btn) btn.title = `Current: ${this.defaultChannel}`
   }
@@ -191,7 +214,6 @@ export class Chat extends Window {
     this.statusText = document.createElement('span')
     this.statusText.innerHTML = 'Connecting...'
     
-    // Channel Button triggers Overlay
     const channelBtn = document.createElement('button')
     channelBtn.textContent = 'Channel'
     channelBtn.className = 'chat-logout-btn'
@@ -242,8 +264,6 @@ export class Chat extends Window {
 
   sendMessage (text) {
     if (!text.trim()) return
-
-    // Safety Check: Only send if OPEN
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
         this.addSystemMessage('Error: Not connected. Please wait...')
         return
@@ -259,7 +279,9 @@ export class Chat extends Window {
     this.renderBubbleOnly(sender, text, isMe)
     this.messages.push({ sender, text })
     if (this.messages.length > 50) this.messages.shift()
-    localStorage.setItem('pwd-chat-history', JSON.stringify(this.messages))
+    
+    // Save to the channel-specific key
+    localStorage.setItem(this.historyKey, JSON.stringify(this.messages))
   }
 
   renderBubbleOnly (sender, text, isMe) {
@@ -311,7 +333,6 @@ export class Chat extends Window {
     localStorage.removeItem('pwd-chat-username')
     this.username = null
     
-    // Reset to base window class
     const content = this.element.querySelector('.chat-wrapper')
     if(content) content.className = 'window-content'
     
