@@ -221,8 +221,8 @@ export class Chat extends Window {
     
     const logoutBtn = document.createElement('button')
     const logoutIcon = document.createElement('img')
-    logoutIcon.src = './img/leave-icon.png'
-    logoutIcon.alt = 'Logout'
+    logoutIcon.src = './img/switch-user-icon.png' 
+    logoutIcon.alt = 'Change User'
     logoutBtn.appendChild(logoutIcon)
 
     logoutBtn.className = 'chat-header-btn'
