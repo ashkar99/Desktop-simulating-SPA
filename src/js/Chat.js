@@ -115,6 +115,13 @@ export class Chat extends Window {
     // Status Indicator
     this.statusText = document.createElement('span')
     this.statusText.innerHTML = 'Connecting...'
+
+    // Channel Button
+    const channelBtn = document.createElement('button')
+    channelBtn.textContent = 'Channel'
+    channelBtn.className = 'chat-logout-btn'
+    channelBtn.title = `Current: ${this.defaultChannel}`
+    channelBtn.addEventListener('click', () => this.changeChannel())
     
     // Logout Button
     const logoutBtn = document.createElement('button')
@@ -124,6 +131,7 @@ export class Chat extends Window {
     logoutBtn.addEventListener('click', () => this.logout())
 
     controls.appendChild(this.statusText)
+    controls.appendChild(channelBtn)
     controls.appendChild(logoutBtn)
     
     this.statusHeader.appendChild(userInfo)
@@ -243,5 +251,26 @@ export class Chat extends Window {
     }
     
     this.renderUsernameScreen()
+  }
+
+  /**
+   * Prompts user for a new channel and reconnects.
+   */
+  changeChannel () {
+    const newChannel = prompt('Enter channel name:', this.defaultChannel)
+    
+    if (newChannel && newChannel.trim() !== '' && newChannel !== this.defaultChannel) {
+        this.defaultChannel = newChannel.trim()
+        
+        if (this.socket) {
+            this.socket.close()
+        }
+        
+        this.messageArea.innerHTML = ''
+        this.addSystemMessage(`Switched to channel: ${this.defaultChannel}`)
+        this.connect()
+        const btn = this.element.querySelector('button[title^="Current:"]')
+        if (btn) btn.title = `Current: ${this.defaultChannel}`
+    }
   }
 }
