@@ -450,9 +450,23 @@ body, html {
 }
 
 .chat-input-area button {
-  width: auto !important;
-  flex-grow: 0;
-  min-width: 80px;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%; 
+  flex-shrink: 0;
+}
+
+.chat-input-area button img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  
+  /* Turns a black icon into white!  */
+  filter: invert(1) brightness(2); 
 }
 
 .chat-bubble {

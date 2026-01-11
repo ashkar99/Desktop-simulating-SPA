@@ -128,7 +128,10 @@ export class Chat extends Window {
     })
     
     const sendBtn = document.createElement('button')
-    sendBtn.textContent = 'Send'
+    const icon = document.createElement('img')
+    icon.src = './img/send-icon.png'
+    icon.alt = 'Send'
+    sendBtn.appendChild(icon)
     sendBtn.className = 'memory-btn'
     sendBtn.style.padding = '0 15px'
     sendBtn.addEventListener('click', () => {
