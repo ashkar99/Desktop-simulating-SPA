@@ -68,7 +68,7 @@ export class Chat extends Window {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) return
 
     this.renderChatInterface()
-    // Ensure we see cached messages before connection
+    // Ensure seeing cached messages before connection
     if (this.messageArea.children.length === 0) {
         this.renderCachedMessages()
     }
@@ -85,19 +85,20 @@ export class Chat extends Window {
       try {
         const data = JSON.parse(event.data)
         
-        // Ignore Heartbeats
         if (data.type === 'heartbeat') return
-
-        // If the message's channel doesn't match my current channel, ignore it.
         if (data.channel !== this.defaultChannel) return
 
         if (data.type === 'message') {
             const isMe = data.username === this.username
             this.addMessage(data.username, data.data, isMe)
+            
+            // If it's NOT me, and the window is NOT the top one...
+            if (!isMe && !this.element.classList.contains('active-window')) {
+                this.notify()
+            }
+            
         }
-      } catch (e) { 
-        console.warn('Invalid JSON', e) 
-      }
+      } catch (e) { console.warn('Invalid JSON', e) }
     })
 
     this.socket.addEventListener('close', () => {
@@ -321,6 +322,30 @@ export class Chat extends Window {
         ? '<span style="color:var(--color-emerald)">● Online</span>' 
         : '<span style="color:var(--color-terracotta)">● Offline</span>'
       this.statusText.innerHTML = text
+    }
+  }
+
+  /**
+   * Overrides parent focus to clear notifications.
+   */
+  focus () {
+    super.focus()
+    
+    const header = this.element.querySelector('.window-header')
+    if (header) {
+      header.classList.remove('unread')
+    }
+  }
+
+  /**
+   * Triggers a visual notification.
+   */
+  notify () {
+    const audio = new Audio('./audio/ding.mp3')
+    audio.play().catch(e => { /* Ignore auto-play errors */ })
+    const header = this.element.querySelector('.window-header')
+    if (header) {
+      header.classList.add('unread')
     }
   }
 

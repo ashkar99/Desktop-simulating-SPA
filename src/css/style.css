@@ -613,3 +613,18 @@ body, html {
   border-color: var(--color-emerald);
   box-shadow: 0 0 5px var(--shadow-focus);
 }
+
+/* --- Notification --- */
+/* Overrides the default Emerald header when unread */
+.window-header.unread {
+  background-color: var(--color-terracotta) !important;
+  transition: background-color 0.3s;
+  animation: pulse-header 1.5s infinite ease-in-out;
+}
+
+/* Gentle pulse effect */
+@keyframes pulse-header {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+  100% { filter: brightness(1); }
+}
