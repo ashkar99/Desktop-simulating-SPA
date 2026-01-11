@@ -17,6 +17,8 @@ export class Chat extends Window {
     
     this.element.style.width = '380px'
     this.element.style.height = '500px'
+    this.element.style.minWidth = '300px'
+    this.element.style.minHeight = '400px'
     
     if (this.username) {
       this.connect()
@@ -41,8 +43,9 @@ export class Chat extends Window {
     
     const input = document.createElement('input')
     input.type = 'text'
-    input.placeholder = 'e.g. Neo'
+    input.placeholder = 'e.g. Abd al-Rahman III (Max 12 chars)'
     input.className = 'chat-login-input'
+    input.maxLength = 12
 
     const btn = document.createElement('button')
     btn.textContent = 'Enter Chat'
@@ -51,11 +54,16 @@ export class Chat extends Window {
 
     const saveName = () => {
       const name = input.value.trim()
-      if (name) {
-        this.username = name
-        localStorage.setItem('pwd-chat-username', name)
-        this.connect()
+      
+      if (!name) return
+      if (name.length > 12) {
+          alert('Username must be 12 characters or less.')
+          return
       }
+      
+      this.username = name
+      localStorage.setItem('pwd-chat-username', name)
+      this.connect()
     }
 
     btn.addEventListener('click', saveName)
@@ -139,7 +147,8 @@ export class Chat extends Window {
     inputGroup.className = 'channel-input-group'
     
     const input = document.createElement('input')
-    input.placeholder = 'Or enter custom name...'
+    input.placeholder = 'Custom channel name... (max 15 chars)'
+    input.maxLength = 15
     input.style.flex = '1'; input.style.padding = '8px'; input.style.borderRadius = '4px'
     
     const joinBtn = document.createElement('button')
@@ -147,7 +156,13 @@ export class Chat extends Window {
     joinBtn.className = 'memory-btn'; joinBtn.style.padding = '0 15px'; joinBtn.style.width = 'auto'
     
     const handleCustom = () => {
-        if(input.value.trim()) this.switchChannel(input.value.trim())
+        const val = input.value.trim()
+        if (!val) return
+        if (val.length > 15) {
+            alert('Channel name too long (Max 15).')
+            return
+        }
+        this.switchChannel(val)
     }
     
     joinBtn.addEventListener('click', handleCustom)
@@ -201,7 +216,7 @@ export class Chat extends Window {
     this.statusHeader.className = 'chat-status'
     
     const userInfo = document.createElement('div')
-    userInfo.innerHTML = `User: <b>${this.username}</b>`
+    userInfo.innerHTML = `<b>${this.username}</b>`
     
     const controls = document.createElement('div')
     controls.className = 'chat-header-controls'
