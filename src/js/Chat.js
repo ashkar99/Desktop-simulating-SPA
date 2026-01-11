@@ -97,9 +97,34 @@ export class Chat extends Window {
     sendBtn.style.width = 'auto'
     sendBtn.style.padding = '0 15px'
 
+    // Temporary: Just echo the message to prove UI works /////////////////////
+    sendBtn.addEventListener('click', () => {
+        if(textarea.value.trim()) {
+            this.addMessage('Me', textarea.value, true)
+            textarea.value = ''
+        }
+    })
+
     inputArea.appendChild(textarea)
     inputArea.appendChild(sendBtn)
     content.appendChild(inputArea)
+  }
+
+  addMessage (sender, text, isMe) {
+    const bubble = document.createElement('div')
+    bubble.className = `chat-bubble ${isMe ? 'me' : 'them'}`
+    
+    const meta = document.createElement('div')
+    meta.className = 'chat-meta'
+    meta.textContent = sender
+    
+    const content = document.createElement('div')
+    content.textContent = text
+    
+    bubble.appendChild(meta)
+    bubble.appendChild(content)
+    this.messageArea.appendChild(bubble)
+    this.messageArea.scrollTop = this.messageArea.scrollHeight
   }
 
 }
