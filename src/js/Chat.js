@@ -68,6 +68,38 @@ export class Chat extends Window {
 
   
   renderChatInterface () {
+    const content = this.element.querySelector('.window-content')
+    content.innerHTML = ''
+    content.classList.remove('window-content')
+    content.classList.add('chat-wrapper')
+
+    // Status Bar
+    this.statusHeader = document.createElement('div')
+    this.statusHeader.className = 'chat-status'
+    this.statusHeader.innerHTML = `User: <b>${this.username}</b> <span>Disconnected</span>`
+    content.appendChild(this.statusHeader)
+
+    // Messages Area
+    this.messageArea = document.createElement('div')
+    this.messageArea.className = 'chat-messages'
+    content.appendChild(this.messageArea)
+
+    // Input Area
+    const inputArea = document.createElement('div')
+    inputArea.className = 'chat-input-area'
+
+    const textarea = document.createElement('textarea')
+    textarea.placeholder = 'Type a message...'
     
+    const sendBtn = document.createElement('button')
+    sendBtn.textContent = 'Send'
+    sendBtn.className = 'memory-btn'
+    sendBtn.style.width = 'auto'
+    sendBtn.style.padding = '0 15px'
+
+    inputArea.appendChild(textarea)
+    inputArea.appendChild(sendBtn)
+    content.appendChild(inputArea)
   }
+
 }
