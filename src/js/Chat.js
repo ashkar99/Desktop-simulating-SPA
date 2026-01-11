@@ -73,6 +73,7 @@ export class Chat extends Window {
         this.renderCachedMessages()
     }
     this.addSystemMessage(`Connecting to ${this.defaultChannel}...`)
+    this.updateStatus(false)
     
     this.socket = new WebSocket(this.serverUrl)
 
@@ -324,10 +325,11 @@ export class Chat extends Window {
 
   updateStatus (isConnected) {
     if (this.statusText) {
-      const text = isConnected 
+      const statusIcon = isConnected 
         ? '<span style="color:var(--color-emerald)">● Online</span>' 
         : '<span style="color:var(--color-terracotta)">● Offline</span>'
-      this.statusText.innerHTML = text
+      const channelDisplay = `<span style="margin-right: 10px; opacity: 0.8; font-weight: normal;">${this.defaultChannel}</span>`
+      this.statusText.innerHTML = `${channelDisplay} ${statusIcon}`
     }
   }
 
