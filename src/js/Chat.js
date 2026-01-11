@@ -2,23 +2,36 @@ import { Window } from './Window.js'
 
 /**
  * The Chat Application.
- * Handles the UI for messaging and persistent username storage.
+ * Handles WebSocket communication, persistent username, and message history.
  */
 export class Chat extends Window {
   constructor () {
     super('Chat Channel')
+    
+    // --- Server Configuration (From README_chat.md) ---
+    this.serverUrl = 'wss://courselab.lnu.se/message-app/socket'
+    this.apiKey = 'eDBE76deU7L0H9mEBgxUKVR0VCnq0XBd'
+    this.defaultChannel = 'PWD-General' // Default channel for all students
+    
+    // --- State ---
     this.username = localStorage.getItem('pwd-chat-username') || null
+    this.socket = null
+    this.messages = []
+    
     this.element.style.width = '380px'
     this.element.style.height = '500px'
     
+    // Initialize
     if (this.username) {
-      this.renderChatInterface()
+      this.connect()
     } else {
       this.renderUsernameScreen()
     }
   }
 
-  
+  /**
+   * Screen 1: Login
+   */
   renderUsernameScreen () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -39,10 +52,13 @@ export class Chat extends Window {
     input.style.borderRadius = '5px'
     input.style.border = '2px solid var(--color-gold)'
     input.style.width = '70%'
+    
+    // Focus input automatically
+    setTimeout(() => input.focus(), 50)
 
     const btn = document.createElement('button')
     btn.textContent = 'Enter Chat'
-    btn.className = 'memory-btn' // Reuse existing button styles
+    btn.className = 'memory-btn' 
     btn.style.width = 'auto'
 
     const saveName = () => {
@@ -50,7 +66,7 @@ export class Chat extends Window {
       if (name) {
         this.username = name
         localStorage.setItem('pwd-chat-username', name)
-        this.renderChatInterface()
+        this.connect() // Changed from renderChatInterface to connect
       }
     }
 
@@ -62,34 +78,90 @@ export class Chat extends Window {
     content.appendChild(label)
     content.appendChild(input)
     content.appendChild(btn)
-    
-    setTimeout(() => input.focus(), 50)
   }
 
-  
+  /**
+   * Connects to the WebSocket server.
+   */
+  connect () {
+    this.renderChatInterface()
+    this.addSystemMessage('Connecting to server...')
+    
+    // 1. Open Connection
+    this.socket = new WebSocket(this.serverUrl)
+
+    // 2. Handle Open
+    this.socket.addEventListener('open', () => {
+      this.addSystemMessage('Connected to channel: ' + this.defaultChannel)
+      this.updateStatus(true)
+    })
+
+    // 3. Handle Incoming Messages
+    this.socket.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        
+        // IGNORE Heartbeats (as per README)
+        if (data.type === 'heartbeat') return
+
+        // Handle Chat Messages
+        if (data.type === 'message') {
+            // Check if it's "Me" (so we don't duplicate, though server usually echoes)
+            const isMe = data.username === this.username
+            this.addMessage(data.username, data.data, isMe)
+        }
+      } catch (e) {
+        console.warn('Invalid JSON received', e)
+      }
+    })
+
+    // 4. Handle Errors/Close
+    this.socket.addEventListener('close', () => {
+      this.addSystemMessage('Disconnected from server.')
+      this.updateStatus(false)
+    })
+    
+    this.socket.addEventListener('error', () => {
+      this.addSystemMessage('Connection error.')
+      this.updateStatus(false)
+    })
+  }
+
+  /**
+   * Screen 2: The Main Interface
+   */
   renderChatInterface () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
-    content.classList.remove('window-content')
-    content.classList.add('chat-wrapper')
+    content.classList.remove('window-content') 
+    content.classList.add('chat-wrapper') 
 
-    // Status Bar
+    // Header
     this.statusHeader = document.createElement('div')
     this.statusHeader.className = 'chat-status'
-    this.statusHeader.innerHTML = `User: <b>${this.username}</b> <span>Disconnected</span>`
+    this.statusHeader.innerHTML = `User: <b>${this.username}</b> <span>Connecting...</span>`
     content.appendChild(this.statusHeader)
 
-    // Messages Area
+    // Messages
     this.messageArea = document.createElement('div')
     this.messageArea.className = 'chat-messages'
     content.appendChild(this.messageArea)
 
-    // Input Area
+    // Input
     const inputArea = document.createElement('div')
     inputArea.className = 'chat-input-area'
 
     const textarea = document.createElement('textarea')
     textarea.placeholder = 'Type a message...'
+    
+    // Send on Enter (Shift+Enter for new line)
+    textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault()
+            this.sendMessage(textarea.value)
+            textarea.value = ''
+        }
+    })
     
     const sendBtn = document.createElement('button')
     sendBtn.textContent = 'Send'
@@ -97,12 +169,9 @@ export class Chat extends Window {
     sendBtn.style.width = 'auto'
     sendBtn.style.padding = '0 15px'
 
-    // Temporary: Just echo the message to prove UI works /////////////////////
     sendBtn.addEventListener('click', () => {
-        if(textarea.value.trim()) {
-            this.addMessage('Me', textarea.value, true)
-            textarea.value = ''
-        }
+        this.sendMessage(textarea.value)
+        textarea.value = ''
     })
 
     inputArea.appendChild(textarea)
@@ -110,6 +179,32 @@ export class Chat extends Window {
     content.appendChild(inputArea)
   }
 
+  /**
+   * Sends a JSON payload to the server.
+   */
+  sendMessage (text) {
+    if (!text.trim()) return
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+        this.addSystemMessage('Error: Not connected to server.')
+        return
+    }
+
+    // Construct Payload
+    const payload = {
+      type: 'message',
+      data: text,
+      username: this.username,
+      channel: this.defaultChannel, 
+      key: this.apiKey
+    }
+
+    this.socket.send(JSON.stringify(payload))
+    // If it feels slow, enable "optimistic UI" later.
+  }
+
+  /**
+   * UI Helpers
+   */
   addMessage (sender, text, isMe) {
     const bubble = document.createElement('div')
     bubble.className = `chat-bubble ${isMe ? 'me' : 'them'}`
@@ -127,4 +222,24 @@ export class Chat extends Window {
     this.messageArea.scrollTop = this.messageArea.scrollHeight
   }
 
+  addSystemMessage (text) {
+    const msg = document.createElement('div')
+    msg.textContent = text
+    msg.style.alignSelf = 'center'
+    msg.style.fontSize = '0.75rem'
+    msg.style.color = '#666'
+    msg.style.fontStyle = 'italic'
+    msg.style.marginBottom = '5px'
+    this.messageArea.appendChild(msg)
+    this.messageArea.scrollTop = this.messageArea.scrollHeight
+  }
+
+  updateStatus (isConnected) {
+    if (this.statusHeader) {
+      const statusText = isConnected 
+        ? '<span style="color:var(--color-emerald)">● Online</span>' 
+        : '<span style="color:var(--color-terracotta)">● Offline</span>'
+      this.statusHeader.innerHTML = `User: <b>${this.username}</b> <span>${statusText}</span>`
+    }
+  }
 }
