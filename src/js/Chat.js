@@ -243,9 +243,15 @@ export class Chat extends Window {
 
     const textarea = document.createElement('textarea')
     textarea.placeholder = 'Type a message...'
+    textarea.addEventListener('focus', () => this.markAsRead())
+    textarea.addEventListener('click', () => this.markAsRead())
+    textarea.addEventListener('keydown', () => this.markAsRead())
     textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault(); this.sendMessage(textarea.value); textarea.value = ''
+            e.preventDefault();
+            this.sendMessage(textarea.value);
+            textarea.value = ''
+            this.markAsRead()
         }
     })
     
@@ -330,11 +336,7 @@ export class Chat extends Window {
    */
   focus () {
     super.focus()
-    
-    const header = this.element.querySelector('.window-header')
-    if (header) {
-      header.classList.remove('unread')
-    }
+    this.markAsRead()
   }
 
   /**
