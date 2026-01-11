@@ -179,7 +179,7 @@ export class Chat extends Window {
 
     const title = document.createElement('h3')
     title.textContent = 'Select Channel'
-    title.style.color = 'var(--color-wood)'
+    title.className = 'chat-overlay-title'
 
     const grid = document.createElement('div')
     grid.className = 'channel-grid'
@@ -199,15 +199,11 @@ export class Chat extends Window {
     const input = document.createElement('input')
     input.placeholder = 'Custom channel name... (max 15 chars)'
     input.maxLength = 15
-    input.style.flex = '1'
-    input.style.padding = '8px'
-    input.style.borderRadius = '4px'
+    input.className = 'channel-input-custom'
 
     const joinBtn = document.createElement('button')
     joinBtn.textContent = 'Join'
-    joinBtn.className = 'memory-btn'
-    joinBtn.style.padding = '0 15px'
-    joinBtn.style.width = 'auto'
+    joinBtn.className = 'memory-btn channel-join-btn'
 
     const handleCustom = () => {
       const val = input.value.trim()
@@ -224,11 +220,7 @@ export class Chat extends Window {
 
     const cancelBtn = document.createElement('button')
     cancelBtn.textContent = 'Cancel'
-    cancelBtn.style.background = 'none'
-    cancelBtn.style.border = 'none'
-    cancelBtn.style.cursor = 'pointer'
-    cancelBtn.style.fontSize = '0.8rem'
-    cancelBtn.style.textDecoration = 'underline'
+    cancelBtn.className = 'channel-cancel-btn'
     cancelBtn.addEventListener('click', () => overlay.remove())
 
     inputGroup.appendChild(input)

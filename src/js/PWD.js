@@ -29,7 +29,7 @@ export class PWD {
       },
       {
         id: 'chat',
-        name: 'Chat',
+        name: 'Chat Channel',
         icon: './img/chat-icon.png',
         action: () => new Chat()
       },
