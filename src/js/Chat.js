@@ -341,11 +341,21 @@ export class Chat extends Window {
    * Triggers a visual notification.
    */
   notify () {
-    const audio = new Audio('./audio/ding.mp3')
+    const audio = new Audio('./audio/notification.mp3')
     audio.play().catch(e => { /* Ignore auto-play errors */ })
     const header = this.element.querySelector('.window-header')
     if (header) {
       header.classList.add('unread')
+    }
+  }
+
+  /**
+   * Removes the unread status.
+   */
+  markAsRead () {
+    const header = this.element.querySelector('.window-header')
+    if (header) {
+      header.classList.remove('unread')
     }
   }
 
