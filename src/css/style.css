@@ -398,6 +398,7 @@ body, html {
 /* =========================================
    7. CHAT APPLICATION
    ========================================= */
+/* --- Layout --- */
 .chat-wrapper {
   display: flex;
   flex-direction: column;
@@ -405,6 +406,7 @@ body, html {
   overflow: hidden; 
 }
 
+/* --- Header & Controls --- */
 .chat-status {
   padding: 5px 10px;
   background: var(--taskbar-text);
@@ -412,13 +414,37 @@ body, html {
   border-bottom: 1px solid var(--color-gray);
   display: flex;
   justify-content: space-between;
+  align-items: center;
   flex-shrink: 0; 
 }
 
+.chat-header-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.chat-logout-btn {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  cursor: pointer;
+  background: none;
+  border: 1px solid #999;
+  border-radius: 4px;
+  transition: all 0.2s;
+  color: inherit;
+}
+
+.chat-logout-btn:hover {
+  background-color: var(--color-terracotta);
+  color: var(--color-white);
+  border-color: var(--color-terracotta);
+}
+
+/* --- Message Area --- */
 .chat-messages {
   flex: 1;
   min-height: 0;
-  
   overflow-y: auto;
   padding: 10px;
   background-color: var(--color-white);
@@ -427,6 +453,15 @@ body, html {
   gap: 10px;
 }
 
+.chat-system-message {
+  align-self: center;
+  font-size: 0.75rem;
+  color: #666;
+  font-style: italic;
+  margin: 5px 0;
+}
+
+/* --- Input Area --- */
 .chat-input-area {
   padding: 10px;
   background-color: var(--window-bg);
@@ -440,7 +475,6 @@ body, html {
 .chat-input-area textarea {
   flex: 1;
   width: auto;
-  
   height: 40px;
   resize: none;
   border-radius: 5px;
@@ -452,6 +486,7 @@ body, html {
 .chat-input-area button {
   width: 40px !important;
   height: 40px !important;
+  background-color: var(--color-emerald);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -464,11 +499,10 @@ body, html {
   width: 20px;
   height: 20px;
   object-fit: contain;
-  
-  /* Turns a black icon into white!  */
   filter: invert(1) brightness(2); 
 }
 
+/* --- Bubbles --- */
 .chat-bubble {
   max-width: 80%;
   padding: 8px 12px;
@@ -499,4 +533,33 @@ body, html {
   opacity: 0.8;
   margin-bottom: 2px;
   font-weight: bold;
+}
+
+/* --- Login Screen --- */
+.chat-login-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  height: 100%;
+}
+
+.chat-login-label {
+  color: var(--color-wood);
+  margin: 0;
+}
+
+.chat-login-input {
+  padding: 10px;
+  width: 70%;
+  border-radius: 5px;
+  border: 2px solid var(--color-gold);
+  font-size: 1rem;
+}
+
+.chat-login-input:focus {
+  outline: none;
+  border-color: var(--color-emerald);
+  box-shadow: 0 0 5px var(--shadow-focus);
 }

@@ -33,21 +33,16 @@ export class Chat extends Window {
   renderUsernameScreen () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
-    content.style.display = 'flex'
-    content.style.flexDirection = 'column'
-    content.style.alignItems = 'center'
-    content.style.justifyContent = 'center'
-    content.style.gap = '15px'
+    content.className = 'window-content chat-login-screen'
 
     const label = document.createElement('h3')
     label.textContent = 'Enter your Username'
-    label.style.color = 'var(--color-wood)'
+    label.className = 'chat-login-label'
     
     const input = document.createElement('input')
     input.type = 'text'
     input.placeholder = 'e.g. Neo'
-    input.style.padding = '10px'
-    input.style.width = '70%'
+    input.className = 'chat-login-input'
 
     const btn = document.createElement('button')
     btn.textContent = 'Enter Chat'
@@ -106,20 +101,16 @@ export class Chat extends Window {
   renderChatInterface () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
-    content.classList.remove('window-content') 
-    content.classList.add('chat-wrapper') 
+    content.className = 'chat-wrapper'
 
     this.statusHeader = document.createElement('div')
     this.statusHeader.className = 'chat-status'
     
-    // Left side: User info
     const userInfo = document.createElement('div')
     userInfo.innerHTML = `User: <b>${this.username}</b>`
-    
+
     const controls = document.createElement('div')
-    controls.style.display = 'flex'
-    controls.style.gap = '10px'
-    controls.style.alignItems = 'center'
+    controls.className = 'chat-header-controls'
 
     // Status Indicator
     this.statusText = document.createElement('span')
@@ -128,12 +119,7 @@ export class Chat extends Window {
     // Logout Button
     const logoutBtn = document.createElement('button')
     logoutBtn.textContent = 'Change User'
-    logoutBtn.style.fontSize = '0.7rem'
-    logoutBtn.style.padding = '2px 6px'
-    logoutBtn.style.cursor = 'pointer'
-    logoutBtn.style.background = 'none'
-    logoutBtn.style.border = '1px solid #999'
-    logoutBtn.style.borderRadius = '4px'
+    logoutBtn.className = 'chat-logout-btn'
     
     logoutBtn.addEventListener('click', () => this.logout())
 
@@ -223,8 +209,7 @@ export class Chat extends Window {
   addSystemMessage (text) {
     const msg = document.createElement('div')
     msg.textContent = text
-    msg.style.alignSelf = 'center'; msg.style.fontSize = '0.75rem'; msg.style.color = '#666'
-    msg.style.fontStyle = 'italic'; msg.style.marginBottom = '5px'
+    msg.className = 'chat-system-message'
     this.messageArea.appendChild(msg)
     this.messageArea.scrollTop = this.messageArea.scrollHeight
   }
@@ -249,8 +234,14 @@ export class Chat extends Window {
     
     localStorage.removeItem('pwd-chat-username')
     this.username = null
-    this.element.querySelector('.window-content').classList.remove('chat-wrapper')
-    this.element.querySelector('.window-content').classList.add('window-content')
+    
+    // Reset to base window class
+    const content = this.element.querySelector('.chat-wrapper')
+    if (content) {
+        content.classList.remove('chat-wrapper')
+        content.classList.add('window-content')
+    }
+    
     this.renderUsernameScreen()
   }
 }
