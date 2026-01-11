@@ -470,25 +470,43 @@ body, html {
 
 .chat-header-controls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
 
-.chat-logout-btn {
+/* Generic Header Button */
+.chat-header-btn {
   font-size: 0.7rem;
-  padding: 2px 6px;
+  padding: 4px 6px;
   cursor: pointer;
   background: none;
-  border: 1px solid var(--color-muted);
+  border: 1px solid #999;
   border-radius: 4px;
   transition: all 0.2s;
   color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
 }
 
-.chat-logout-btn:hover {
+.chat-header-btn:hover {
   background-color: var(--color-terracotta);
   color: var(--color-white);
   border-color: var(--color-terracotta);
+}
+
+/* Style for the icon inside the button */
+.chat-header-btn img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  opacity: 0.7; 
+}
+
+.chat-header-btn:hover img {
+  filter: invert(1) brightness(2);
+  opacity: 1;
 }
 
 /* --- Message Area --- */

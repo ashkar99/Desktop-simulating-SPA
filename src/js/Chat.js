@@ -178,23 +178,16 @@ export class Chat extends Window {
 
     this.defaultChannel = newChannel
     
-    // 1. Close current connection
     if (this.socket) {
         this.socket.close()
     }
     
-    // 2. Clear UI & Overlay
     this.messageArea.innerHTML = ''
     this.element.querySelector('.chat-overlay')?.remove()
-    
-    // 3. Switch History Context
     this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
     this.renderCachedMessages()
-
-    // 4. Reconnect
     this.connect()
     
-    // Update Header Tooltip
     const btn = this.element.querySelector('button[title^="Current:"]')
     if (btn) btn.title = `Current: ${this.defaultChannel}`
   }
@@ -217,14 +210,23 @@ export class Chat extends Window {
     this.statusText.innerHTML = 'Connecting...'
     
     const channelBtn = document.createElement('button')
-    channelBtn.textContent = 'Channel'
-    channelBtn.className = 'chat-logout-btn'
-    channelBtn.title = `Current: ${this.defaultChannel}`
+    const channelIcon = document.createElement('img')
+    channelIcon.src = './img/channel-icon.png'
+    channelIcon.alt = 'Channels'
+    channelBtn.appendChild(channelIcon)
+    
+    channelBtn.className = 'chat-header-btn'
+    channelBtn.title = `Switch Channel (Current: ${this.defaultChannel})`
     channelBtn.addEventListener('click', () => this.showChannelSelector())
     
     const logoutBtn = document.createElement('button')
-    logoutBtn.textContent = 'Change User'
-    logoutBtn.className = 'chat-logout-btn'
+    const logoutIcon = document.createElement('img')
+    logoutIcon.src = './img/leave-icon.png'
+    logoutIcon.alt = 'Logout'
+    logoutBtn.appendChild(logoutIcon)
+
+    logoutBtn.className = 'chat-header-btn'
+    logoutBtn.title = 'Change User / Logout'
     logoutBtn.addEventListener('click', () => this.logout())
 
     controls.appendChild(this.statusText)
@@ -244,26 +246,25 @@ export class Chat extends Window {
 
     const textarea = document.createElement('textarea')
     textarea.placeholder = 'Type a message...'
-    textarea.addEventListener('focus', () => this.markAsRead())
-    textarea.addEventListener('click', () => this.markAsRead())
-    textarea.addEventListener('keydown', () => this.markAsRead())
     textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            this.sendMessage(textarea.value);
-            textarea.value = ''
+            e.preventDefault(); this.sendMessage(textarea.value); textarea.value = ''
             this.markAsRead()
         }
     })
     
+    textarea.addEventListener('focus', () => this.markAsRead())
+    textarea.addEventListener('click', () => this.markAsRead())
+    
     const sendBtn = document.createElement('button')
-    const icon = document.createElement('img')
-    icon.src = './img/send-icon.png'
-    icon.alt = 'Send'
-    sendBtn.appendChild(icon)
+    const sendIcon = document.createElement('img')
+    sendIcon.src = './img/send-icon.png'
+    sendIcon.alt = 'Send'
+    sendBtn.appendChild(sendIcon)
     
     sendBtn.addEventListener('click', () => {
         this.sendMessage(textarea.value); textarea.value = ''
+        this.markAsRead()
     })
 
     inputArea.appendChild(textarea); inputArea.appendChild(sendBtn)
