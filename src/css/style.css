@@ -10,6 +10,8 @@
   --color-gold: #C5A059;           /* Metallic accent */
   --color-wood: #593c28;           /* Dark wood structure */
   --color-dark-sandstone: #e4cda2; /* Window backgrounds */
+  --color-light-sandstone: rgba(245, 230, 200, 0.95); /* Highlighted elements */
+  --color-muted: #aaa;              /* Muted text and borders */
   
   /* --- Utility Colors --- */
   --color-white: #ffffff;
@@ -404,6 +406,54 @@ body, html {
   flex-direction: column;
   flex-grow: 1;    
   overflow: hidden; 
+  position: relative;
+}
+
+/* --- Channel Selector Overlay (Popup Style) --- */
+.chat-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-light-sandstone);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  gap: 15px;
+  backdrop-filter: blur(5px);
+}
+
+.channel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 80%;
+}
+
+.channel-btn {
+  padding: 12px;
+  background-color: var(--color-azure);
+  color: var(--color-white);
+  border: 1px solid var(--color-gold);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform 0.1s;
+}
+
+.channel-btn:hover {
+  transform: scale(1.05);
+  background-color: var(--color-emerald);
+}
+
+.channel-input-group {
+  display: flex;
+  gap: 5px;
+  width: 80%;
+  margin-top: 10px;
 }
 
 /* --- Header & Controls --- */
@@ -429,7 +479,7 @@ body, html {
   padding: 2px 6px;
   cursor: pointer;
   background: none;
-  border: 1px solid #999;
+  border: 1px solid var(--color-muted);
   border-radius: 4px;
   transition: all 0.2s;
   color: inherit;
@@ -439,7 +489,6 @@ body, html {
   background-color: var(--color-terracotta);
   color: var(--color-white);
   border-color: var(--color-terracotta);
-  cursor: pointer;
 }
 
 /* --- Message Area --- */
@@ -457,7 +506,7 @@ body, html {
 .chat-system-message {
   align-self: center;
   font-size: 0.75rem;
-  color: #666;
+  color: var(--color-muted);
   font-style: italic;
   margin: 5px 0;
 }
