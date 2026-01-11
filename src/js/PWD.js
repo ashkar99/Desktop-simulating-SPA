@@ -1,5 +1,6 @@
 import { Window } from './Window.js'
 import { MemoryGame } from './MemoryGame.js'
+import { Chat } from './Chat.js'
 
 /**
  * The main Personal Web Desktop (PWD) application class.
@@ -30,7 +31,7 @@ export class PWD {
         id: 'chat',
         name: 'Chat',
         icon: './img/chat-icon.png',
-        action: () => new Window('Chat')
+        action: () => new Chat()
       },
       {
         id: 'quiz',

@@ -93,9 +93,9 @@ export class MemoryGame extends Window {
 
       // Special styling for Mode Toggle
       if (item.type === 'toggle') {
-        btn.style.border = '2px solid var(--color-azure)'
+        btn.style.border = '2px solid var(--color-white)'
         btn.style.fontWeight = 'bold'
-        btn.style.color = 'var(--color-azure)'
+        btn.style.color = 'var(--color-white)'
       }
 
       // Interaction Logic
