@@ -1,27 +1,19 @@
 import { Window } from './Window.js'
 
-/**
- * The Chat Application.
- * Handles WebSocket communication, persistent username, and message history caching.
- */
 export class Chat extends Window {
   constructor () {
     super('Chat Channel')
     
-    // Server Config
     this.serverUrl = 'wss://courselab.lnu.se/message-app/socket'
     this.apiKey = 'eDBE76deU7L0H9mEBgxUKVR0VCnq0XBd'
     this.defaultChannel = 'PWD-General'
     
-    // State
     this.username = localStorage.getItem('pwd-chat-username') || null
     this.messages = JSON.parse(localStorage.getItem('pwd-chat-history')) || []
     this.socket = null
     
     this.element.style.width = '380px'
     this.element.style.height = '500px'
-    this.element.style.minWidth = '300px'
-    this.element.style.minHeight = '400px'
     
     if (this.username) {
       this.connect()
@@ -33,7 +25,7 @@ export class Chat extends Window {
   renderUsernameScreen () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
-    content.className = 'window-content chat-login-screen'
+    content.className = 'window-content chat-login-screen' 
 
     const label = document.createElement('h3')
     label.textContent = 'Enter your Username'
@@ -65,14 +57,16 @@ export class Chat extends Window {
   }
 
   connect () {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) return
+
     this.renderChatInterface()
-    this.renderCachedMessages() // Show history immediately
-    this.addSystemMessage('Connecting to server...')
+    this.renderCachedMessages()
+    this.addSystemMessage(`Connecting to ${this.defaultChannel}...`)
     
     this.socket = new WebSocket(this.serverUrl)
 
     this.socket.addEventListener('open', () => {
-      this.addSystemMessage('Connected to channel: ' + this.defaultChannel)
+      this.addSystemMessage(`Connected to channel: ${this.defaultChannel}`)
       this.updateStatus(true)
     })
 
@@ -98,8 +92,90 @@ export class Chat extends Window {
     })
   }
 
+  showChannelSelector () {
+    const content = this.element.querySelector('.chat-wrapper')
+    
+    // Create Overlay
+    const overlay = document.createElement('div')
+    overlay.className = 'chat-overlay'
+    
+    const title = document.createElement('h3')
+    title.textContent = 'Select Channel'
+    title.style.color = 'var(--color-wood)'
+    
+    // Preset Buttons
+    const grid = document.createElement('div')
+    grid.className = 'channel-grid'
+    
+    const channels = ['PWD-General', 'PWD-Social', 'PWD-Help', 'PWD-Random']
+    channels.forEach(chan => {
+        const btn = document.createElement('button')
+        btn.textContent = chan.replace('PWD-', '')
+        btn.className = 'channel-btn'
+        btn.addEventListener('click', () => this.switchChannel(chan))
+        grid.appendChild(btn)
+    })
+
+    // Custom Input
+    const inputGroup = document.createElement('div')
+    inputGroup.className = 'channel-input-group'
+    
+    const input = document.createElement('input')
+    input.placeholder = 'Or enter custom name...'
+    input.style.flex = '1'; input.style.padding = '8px'; input.style.borderRadius = '4px'
+    
+    const joinBtn = document.createElement('button')
+    joinBtn.textContent = 'Join'
+    joinBtn.className = 'memory-btn'; joinBtn.style.padding = '0 15px'; joinBtn.style.width = 'auto'
+    
+    const handleCustom = () => {
+        if(input.value.trim()) this.switchChannel(input.value.trim())
+    }
+    
+    joinBtn.addEventListener('click', handleCustom)
+    input.addEventListener('keydown', (e) => { if(e.key === 'Enter') handleCustom() })
+
+    // Cancel Button
+    const cancelBtn = document.createElement('button')
+    cancelBtn.textContent = 'Cancel'
+    cancelBtn.style.background = 'none'; cancelBtn.style.border = 'none'; cancelBtn.style.cursor = 'pointer'
+    cancelBtn.style.fontSize = '0.8rem'; cancelBtn.style.textDecoration = 'underline'
+    cancelBtn.addEventListener('click', () => overlay.remove())
+
+    inputGroup.appendChild(input); inputGroup.appendChild(joinBtn)
+    
+    overlay.appendChild(title)
+    overlay.appendChild(grid)
+    overlay.appendChild(inputGroup)
+    overlay.appendChild(cancelBtn)
+    
+    content.appendChild(overlay)
+    setTimeout(() => input.focus(), 50)
+  }
+
+  switchChannel (newChannel) {
+    if (newChannel === this.defaultChannel) {
+        this.element.querySelector('.chat-overlay')?.remove()
+        return
+    }
+
+    this.defaultChannel = newChannel
+
+    if (this.socket) {
+        this.socket.close()
+    }
+    
+    this.messageArea.innerHTML = ''
+    this.element.querySelector('.chat-overlay')?.remove()
+    
+    this.connect()
+    
+    const btn = this.element.querySelector('button[title^="Current:"]')
+    if (btn) btn.title = `Current: ${this.defaultChannel}`
+  }
+
   renderChatInterface () {
-    const content = this.element.querySelector('.window-content')
+    const content = this.element.querySelector('.window-content') || this.element.querySelector('.chat-wrapper')
     content.innerHTML = ''
     content.className = 'chat-wrapper'
 
@@ -108,26 +184,23 @@ export class Chat extends Window {
     
     const userInfo = document.createElement('div')
     userInfo.innerHTML = `User: <b>${this.username}</b>`
-
+    
     const controls = document.createElement('div')
     controls.className = 'chat-header-controls'
 
-    // Status Indicator
     this.statusText = document.createElement('span')
     this.statusText.innerHTML = 'Connecting...'
-
-    // Channel Button
+    
+    // Channel Button triggers Overlay
     const channelBtn = document.createElement('button')
     channelBtn.textContent = 'Channel'
     channelBtn.className = 'chat-logout-btn'
     channelBtn.title = `Current: ${this.defaultChannel}`
-    channelBtn.addEventListener('click', () => this.changeChannel())
+    channelBtn.addEventListener('click', () => this.showChannelSelector())
     
-    // Logout Button
     const logoutBtn = document.createElement('button')
     logoutBtn.textContent = 'Change User'
     logoutBtn.className = 'chat-logout-btn'
-    
     logoutBtn.addEventListener('click', () => this.logout())
 
     controls.appendChild(this.statusText)
@@ -169,8 +242,10 @@ export class Chat extends Window {
 
   sendMessage (text) {
     if (!text.trim()) return
+
+    // Safety Check: Only send if OPEN
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-        this.addSystemMessage('Error: Not connected.')
+        this.addSystemMessage('Error: Not connected. Please wait...')
         return
     }
     const payload = {
@@ -180,17 +255,13 @@ export class Chat extends Window {
     this.socket.send(JSON.stringify(payload))
   }
 
-  // Renders AND Saves (For new incoming messages)
   addMessage (sender, text, isMe) {
     this.renderBubbleOnly(sender, text, isMe)
-    
-    // Save to Storage
     this.messages.push({ sender, text })
-    if (this.messages.length > 50) this.messages.shift() // Limit to 50
+    if (this.messages.length > 50) this.messages.shift()
     localStorage.setItem('pwd-chat-history', JSON.stringify(this.messages))
   }
 
-  // Renders ONLY (For loading history)
   renderBubbleOnly (sender, text, isMe) {
     const bubble = document.createElement('div')
     bubble.className = `chat-bubble ${isMe ? 'me' : 'them'}`
@@ -231,9 +302,6 @@ export class Chat extends Window {
     }
   }
 
-  /**
-   * Clears session and returns to login screen.
-   */
   logout () {
     if (this.socket) {
         this.socket.close()
@@ -245,32 +313,8 @@ export class Chat extends Window {
     
     // Reset to base window class
     const content = this.element.querySelector('.chat-wrapper')
-    if (content) {
-        content.classList.remove('chat-wrapper')
-        content.classList.add('window-content')
-    }
+    if(content) content.className = 'window-content'
     
     this.renderUsernameScreen()
-  }
-
-  /**
-   * Prompts user for a new channel and reconnects.
-   */
-  changeChannel () {
-    const newChannel = prompt('Enter channel name:', this.defaultChannel)
-    
-    if (newChannel && newChannel.trim() !== '' && newChannel !== this.defaultChannel) {
-        this.defaultChannel = newChannel.trim()
-        
-        if (this.socket) {
-            this.socket.close()
-        }
-        
-        this.messageArea.innerHTML = ''
-        this.addSystemMessage(`Switched to channel: ${this.defaultChannel}`)
-        this.connect()
-        const btn = this.element.querySelector('button[title^="Current:"]')
-        if (btn) btn.title = `Current: ${this.defaultChannel}`
-    }
   }
 }
