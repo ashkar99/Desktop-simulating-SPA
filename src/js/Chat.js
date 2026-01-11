@@ -111,7 +111,37 @@ export class Chat extends Window {
 
     this.statusHeader = document.createElement('div')
     this.statusHeader.className = 'chat-status'
-    this.statusHeader.innerHTML = `User: <b>${this.username}</b> <span>Connecting...</span>`
+    
+    // Left side: User info
+    const userInfo = document.createElement('div')
+    userInfo.innerHTML = `User: <b>${this.username}</b>`
+    
+    const controls = document.createElement('div')
+    controls.style.display = 'flex'
+    controls.style.gap = '10px'
+    controls.style.alignItems = 'center'
+
+    // Status Indicator
+    this.statusText = document.createElement('span')
+    this.statusText.innerHTML = 'Connecting...'
+    
+    // Logout Button
+    const logoutBtn = document.createElement('button')
+    logoutBtn.textContent = 'Change User'
+    logoutBtn.style.fontSize = '0.7rem'
+    logoutBtn.style.padding = '2px 6px'
+    logoutBtn.style.cursor = 'pointer'
+    logoutBtn.style.background = 'none'
+    logoutBtn.style.border = '1px solid #999'
+    logoutBtn.style.borderRadius = '4px'
+    
+    logoutBtn.addEventListener('click', () => this.logout())
+
+    controls.appendChild(this.statusText)
+    controls.appendChild(logoutBtn)
+    
+    this.statusHeader.appendChild(userInfo)
+    this.statusHeader.appendChild(controls)
     content.appendChild(this.statusHeader)
 
     this.messageArea = document.createElement('div')
@@ -134,8 +164,7 @@ export class Chat extends Window {
     icon.src = './img/send-icon.png'
     icon.alt = 'Send'
     sendBtn.appendChild(icon)
-    sendBtn.className = 'memory-btn'
-    sendBtn.style.padding = '0 15px'
+    
     sendBtn.addEventListener('click', () => {
         this.sendMessage(textarea.value); textarea.value = ''
     })
@@ -201,11 +230,27 @@ export class Chat extends Window {
   }
 
   updateStatus (isConnected) {
-    if (this.statusHeader) {
-      const statusText = isConnected 
+    if (this.statusText) {
+      const text = isConnected 
         ? '<span style="color:var(--color-emerald)">● Online</span>' 
         : '<span style="color:var(--color-terracotta)">● Offline</span>'
-      this.statusHeader.innerHTML = `User: <b>${this.username}</b> <span>${statusText}</span>`
+      this.statusText.innerHTML = text
     }
+  }
+
+  /**
+   * Clears session and returns to login screen.
+   */
+  logout () {
+    if (this.socket) {
+        this.socket.close()
+        this.socket = null
+    }
+    
+    localStorage.removeItem('pwd-chat-username')
+    this.username = null
+    this.element.querySelector('.window-content').classList.remove('chat-wrapper')
+    this.element.querySelector('.window-content').classList.add('window-content')
+    this.renderUsernameScreen()
   }
 }
