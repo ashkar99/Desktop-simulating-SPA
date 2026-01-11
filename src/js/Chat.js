@@ -20,6 +20,8 @@ export class Chat extends Window {
     
     this.element.style.width = '380px'
     this.element.style.height = '500px'
+    this.element.style.minWidth = '300px'
+    this.element.style.minHeight = '400px'
     
     if (this.username) {
       this.connect()
