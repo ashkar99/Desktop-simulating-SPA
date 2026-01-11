@@ -52,16 +52,16 @@ export class PWD {
     this.apps.forEach(app => {
       const iconContainer = document.createElement('div')
       iconContainer.classList.add('desktop-icon')
-      
+
       const iconImg = document.createElement('img')
       iconImg.src = app.icon
       iconImg.alt = app.name
       // Drag prevention for the image itself so it doesn't ghost-drag
       iconImg.addEventListener('dragstart', (e) => e.preventDefault())
-      
+
       const iconLabel = document.createElement('span')
       iconLabel.textContent = app.name
-      
+
       iconContainer.appendChild(iconImg)
       iconContainer.appendChild(iconLabel)
 
@@ -79,7 +79,6 @@ export class PWD {
   }
 
   openWindow (windowObj) {
-
     // Hook up the Close Event to clean up PWD state
     windowObj.onClose = () => {
       this.removeWindow(windowObj)
@@ -87,15 +86,15 @@ export class PWD {
 
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
-    
+
     // Position the CURRENT window & prepare for the NEXT one
     windowObj.element.style.top = `${this.nextWindowY}px`
     windowObj.element.style.left = `${this.nextWindowX}px`
     this.nextWindowX += 20
     this.nextWindowY += 20
-    
+
     if (this.nextWindowY > window.innerHeight - 350) {
-      this.nextWindowY = 50; this.nextWindowX += 10 
+      this.nextWindowY = 50; this.nextWindowX += 10
     }
     if (this.nextWindowX > window.innerWidth - 200) {
       this.nextWindowX = 50; this.nextWindowY = 50
@@ -113,19 +112,20 @@ export class PWD {
       // Check if the target is NOT a button, input, or card.
       const clickedInteractive = e.target.closest('button, .memory-card, input, textarea, a')
       if (!clickedInteractive) {
-         // Prevent default browser behavior (which steals focus)
-         e.preventDefault() 
-         
-         // Force focus back to the game immediately
-         if (typeof windowObj.focus === 'function') {
-           windowObj.focus()
-         }
+        // Prevent default browser behavior (which steals focus)
+        e.preventDefault()
+
+        // Force focus back to the game immediately
+        if (typeof windowObj.focus === 'function') {
+          windowObj.focus()
+        }
       }
     })
   }
 
   /**
    * Removes a window from tracking and passes focus to the next available one.
+   * @param windowObj
    */
   removeWindow (windowObj) {
     this.windows = this.windows.filter(w => w !== windowObj)
@@ -143,7 +143,7 @@ export class PWD {
 
   /**
    * Brings a specific window to the front.
-   * @param {Window} windowObj 
+   * @param {Window} windowObj
    */
   #focusWindow (windowObj) {
     const currentZ = parseInt(windowObj.element.style.zIndex || 0)

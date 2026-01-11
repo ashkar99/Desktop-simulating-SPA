@@ -6,7 +6,7 @@ export class Window {
   constructor (title) {
     this.title = title
     this.element = this.#createWindowElement()
-    
+
     // Drag state variables
     this.isDragging = false
     this.isResizing = false
@@ -28,14 +28,13 @@ export class Window {
     const wrapper = document.createElement('div')
     wrapper.classList.add('window')
 
-
     const header = document.createElement('div')
     header.classList.add('window-header')
     header.addEventListener('mousedown', (e) => this.#startDrag(e))
 
     const titleSpan = document.createElement('span')
     titleSpan.textContent = this.title
-    
+
     const closeBtn = document.createElement('button')
     closeBtn.classList.add('close-btn')
     closeBtn.textContent = 'x'
@@ -81,7 +80,6 @@ export class Window {
     }
   }
 
-
   /**
    * Initiates dragging when clicking the header.
    * @param {MouseEvent} e
@@ -95,7 +93,6 @@ export class Window {
 
     document.addEventListener('mousemove', this.boundDrag)
     document.addEventListener('mouseup', this.boundStopDrag)
-    
   }
 
   /**
@@ -118,14 +115,15 @@ export class Window {
     this.isDragging = false
     document.removeEventListener('mousemove', this.boundDrag)
     document.removeEventListener('mouseup', this.boundStopDrag)
-    
+
     this.element.style.opacity = '1'
   }
+
   #startResize (e) {
     e.preventDefault()
     e.stopPropagation() // Don't trigger drag
     this.isResizing = true
-    
+
     // Capture starting dimensions
     this.startWidth = this.element.offsetWidth
     this.startHeight = this.element.offsetHeight
@@ -138,7 +136,7 @@ export class Window {
 
   #resize (e) {
     if (!this.isResizing) return
-    
+
     // Calculate new size = start size + movement delta
     const newWidth = this.startWidth + (e.clientX - this.startX)
     const newHeight = this.startHeight + (e.clientY - this.startY)
