@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1,
+    "question": "Which year did the construction of the Alhambra begin?",
+    "alternatives": {
+      "1": "1238",
+      "2": "1492",
+      "3": "711",
+      "4": "1066"
+    },
+    "correctAnswer": "1"
+  },
+  {
+    "id": 2,
+    "question": "What is the name of the famous mosque in Cordoba?",
+    "alternatives": {
+      "1": "Hagia Sophia",
+      "2": "Mezquita",
+      "3": "Al-Aqsa",
+      "4": "Blue Mosque"
+    },
+    "correctAnswer": "2"
+  },
+  {
+    "id": 3,
+    "question": "Who was the last ruler of Granada?",
+    "correctAnswer": "Boabdil"
+  },
+  {
+    "id": 4,
+    "question": "Which city was the capital of the Caliphate?",
+    "alternatives": {
+      "1": "Seville",
+      "2": "Toledo",
+      "3": "Cordoba",
+      "4": "Valencia"
+    },
+    "correctAnswer": "3"
+  },
+  {
+    "id": 5,
+    "question": "True or False: The Giralda was originally a minaret.",
+    "alternatives": {
+      "1": "True",
+      "2": "False"
+    },
+    "correctAnswer": "1"
+  }
+]
