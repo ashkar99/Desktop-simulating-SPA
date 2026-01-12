@@ -215,7 +215,6 @@ export class Quiz extends Window {
 
   /**
    * Renders radio buttons for multiple-choice questions.
-   *
    * @param {HTMLElement} element - The DOM element to append inputs to.
    * @param {object} data - The question data.
    */
@@ -251,9 +250,19 @@ export class Quiz extends Window {
       }
     }
 
+    form.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        submit()
+      }
+    })
+
     btn.addEventListener('click', submit)
     element.appendChild(form)
     element.appendChild(btn)
+    
+    const firstInput = form.querySelector('input')
+    if (firstInput) setTimeout(() => firstInput.focus(), 50)
   }
 
   /**
