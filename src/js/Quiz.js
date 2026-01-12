@@ -146,20 +146,35 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the question UI (Timer + Question Text + Inputs).
+   * Renders the Question UI, including the timer and input area.
+   *
+   * @param {object} data - The question data object from the API.
    */
   renderQuestion (data) {
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = `
-      <div id="timer-container" class="quiz-timer-container">
-        <div id="timer-bar" class="quiz-timer-bar"></div>
-      </div>
-      
-      <p class="quiz-question-text">${data.question}</p>
-      <div id="inputs-area" class="quiz-inputs-area"></div>
-    `
+    content.innerHTML = '' 
     
-    const inputsArea = content.querySelector('#inputs-area')
+    const timerContainer = document.createElement('div')
+    timerContainer.id = 'timer-container'
+    timerContainer.className = 'quiz-timer-container'
+
+    const timerBar = document.createElement('div')
+    timerBar.id = 'timer-bar'
+    timerBar.className = 'quiz-timer-bar'
+    
+    timerContainer.appendChild(timerBar)
+
+    const questionText = document.createElement('p')
+    questionText.className = 'quiz-question-text'
+    questionText.textContent = data.question
+
+    const inputsArea = document.createElement('div')
+    inputsArea.id = 'inputs-area'
+    inputsArea.className = 'quiz-inputs-area'
+
+    content.appendChild(timerContainer)
+    content.appendChild(questionText)
+    content.appendChild(inputsArea)
 
     if (data.alternatives) {
       this.renderAlternatives(inputsArea, data)
