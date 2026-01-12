@@ -356,15 +356,13 @@ export class Quiz extends Window {
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
 
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = '' 
+    content.innerHTML = ''
 
     const h2 = document.createElement('h2')
     h2.textContent = 'Victory!'
     h2.style.color = 'var(--color-emerald)'
-
     const pGreeting = document.createElement('p')
     pGreeting.textContent = `Well done, ${this.nickname}!`
-
     const pTime = document.createElement('p')
     pTime.textContent = 'Total Time: '
     const bTime = document.createElement('b')
@@ -373,7 +371,6 @@ export class Quiz extends Window {
 
     const hsDiv = document.createElement('div')
     hsDiv.className = 'quiz-highscore-list'
-
     const h3 = document.createElement('h3')
     h3.textContent = 'Hall of Fame'
     const ol = document.createElement('ol')
@@ -384,7 +381,6 @@ export class Quiz extends Window {
       li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
       ol.appendChild(li)
     })
-
     hsDiv.appendChild(h3)
     hsDiv.appendChild(ol)
 
@@ -398,6 +394,9 @@ export class Quiz extends Window {
     content.appendChild(pTime)
     content.appendChild(hsDiv)
     content.appendChild(restartBtn)
+
+    // Auto-focus
+    setTimeout(() => restartBtn.focus(), 50)
   }
 
   /**
@@ -407,13 +406,17 @@ export class Quiz extends Window {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
 
-    const h2 = document.createElement('h2'); h2.textContent = 'Top 5 High Scores'
-    const hsDiv = document.createElement('div'); hsDiv.className = 'quiz-highscore-list'
+    const h2 = document.createElement('h2')
+    h2.textContent = 'Top 5 High Scores'
+    const hsDiv = document.createElement('div')
+    hsDiv.className = 'quiz-highscore-list'
     const ol = document.createElement('ol')
 
     const topScores = this.storage.getHighScores()
     if (topScores.length === 0) {
-      const li = document.createElement('li'); li.textContent = 'No scores yet!'; ol.appendChild(li)
+      const li = document.createElement('li')
+      li.textContent = 'No scores yet!'
+      ol.appendChild(li)
     } else {
       topScores.forEach(score => {
         const li = document.createElement('li')
@@ -424,11 +427,14 @@ export class Quiz extends Window {
     hsDiv.appendChild(ol)
 
     const backBtn = document.createElement('button')
-    backBtn.textContent = 'Back'; backBtn.className = 'memory-btn'
+    backBtn.textContent = 'Back'
+    backBtn.className = 'memory-btn'
     backBtn.addEventListener('click', () => this.renderStartScreen())
 
-    content.appendChild(h2); content.appendChild(hsDiv); content.appendChild(backBtn)
-    
+    content.appendChild(h2)
+    content.appendChild(hsDiv)
+    content.appendChild(backBtn)
+
     // Auto-focus
     setTimeout(() => backBtn.focus(), 50)
   }
