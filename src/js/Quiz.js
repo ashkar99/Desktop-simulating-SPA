@@ -122,13 +122,21 @@ export class Quiz extends Window {
   }
 
   /**
-   * Fetches the question data from the server.
+   * Fetches a question from the API and updates the UI.
+   *
+   * @param {string} url - The API URL for the question.
    */
   async fetchQuestion (url) {
     try {
-      // Show simple loading state
-      this.element.querySelector('.window-content').innerHTML = '<div class="loader">Consulting the Oracle...</div>'
+      const content = this.element.querySelector('.window-content')
+      content.innerHTML = ''
+
+      const loader = document.createElement('div')
+      loader.className = 'loader'
+      loader.textContent = 'Consulting the Oracle...'
       
+      content.appendChild(loader)
+
       const data = await this.api.getQuestion(url)
       this.renderQuestion(data)
     } catch (error) {
