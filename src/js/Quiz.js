@@ -302,19 +302,39 @@ export class Quiz extends Window {
 
   /**
    * Renders the Game Over screen with options to restart.
+   *
+   * @param {string} message - The reason for game over.
    */
   renderGameOver (message) {
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = `
-      <h2 style="color:var(--color-terracotta)">Game Over</h2>
-      <p class="quiz-message error">${message}</p>
-      <div class="quiz-controls">
-        <button id="restart-btn" class="memory-btn">Try Again</button>
-        <button id="highscore-btn" class="memory-btn secondary">High Scores</button>
-      </div>
-    `
-    content.querySelector('#restart-btn').addEventListener('click', () => this.renderStartScreen())
-    content.querySelector('#highscore-btn').addEventListener('click', () => this.renderHighScoreScreen())
+    content.innerHTML = '' 
+    
+    const h2 = document.createElement('h2')
+    h2.textContent = 'Game Over'
+    h2.style.color = 'var(--color-terracotta)'
+
+    const p = document.createElement('p')
+    p.className = 'quiz-message error'
+    p.textContent = message
+
+    const controls = document.createElement('div')
+    controls.className = 'quiz-controls'
+
+    const restartBtn = document.createElement('button')
+    restartBtn.textContent = 'Try Again'
+    restartBtn.className = 'memory-btn'
+    restartBtn.addEventListener('click', () => this.renderStartScreen())
+
+    const highscoreBtn = document.createElement('button')
+    highscoreBtn.textContent = 'High Scores'
+    highscoreBtn.className = 'memory-btn secondary'
+    highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen())
+
+    controls.appendChild(restartBtn)
+    controls.appendChild(highscoreBtn)
+    content.appendChild(h2)
+    content.appendChild(p)
+    content.appendChild(controls)
   }
 
   /**
