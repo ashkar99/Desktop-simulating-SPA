@@ -506,6 +506,23 @@ body, html {
   opacity: 1;
 }
 
+/* --- Chat Status Indicators --- */
+.chat-status-channel {
+  margin-right: 10px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.chat-status-online {
+  color: var(--color-emerald);
+  font-weight: bold;
+}
+
+.chat-status-offline {
+  color: var(--color-terracotta);
+  font-weight: bold;
+}
+
 /* --- Message Area --- */
 .chat-messages {
   flex: 1;

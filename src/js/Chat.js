@@ -431,20 +431,19 @@ export class Chat extends Window {
   updateStatus (isConnected) {
     if (!this.statusText) return
 
-    this.statusText.innerHTML = '' 
+    this.statusText.innerHTML = ''
+
     const channelSpan = document.createElement('span')
     channelSpan.textContent = this.defaultChannel
-    channelSpan.style.marginRight = '10px'
-    channelSpan.style.opacity = '0.8'
-    channelSpan.style.fontWeight = 'normal'
+    channelSpan.className = 'chat-status-channel'
 
     const statusSpan = document.createElement('span')
     if (isConnected) {
       statusSpan.textContent = '● Online'
-      statusSpan.style.color = 'var(--color-emerald)'
+      statusSpan.className = 'chat-status-online'
     } else {
       statusSpan.textContent = '● Offline'
-      statusSpan.style.color = 'var(--color-terracotta)'
+      statusSpan.className = 'chat-status-offline'
     }
 
     this.statusText.appendChild(channelSpan)
