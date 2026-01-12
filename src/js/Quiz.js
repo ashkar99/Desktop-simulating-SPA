@@ -312,22 +312,18 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the Game Over screen with options to restart.
-   *
-   * @param {string} message - The reason for game over.
+   * Renders the Game Over screen.
    */
   renderGameOver (message) {
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = '' 
+    content.innerHTML = ''
 
     const h2 = document.createElement('h2')
     h2.textContent = 'Game Over'
     h2.style.color = 'var(--color-terracotta)'
-
     const p = document.createElement('p')
     p.className = 'quiz-message error'
     p.textContent = message
-
     const controls = document.createElement('div')
     controls.className = 'quiz-controls'
 
@@ -341,11 +337,20 @@ export class Quiz extends Window {
     highscoreBtn.className = 'memory-btn secondary'
     highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen())
 
+    restartBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') highscoreBtn.focus()
+    })
+    highscoreBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') restartBtn.focus()
+    })
+
     controls.appendChild(restartBtn)
     controls.appendChild(highscoreBtn)
     content.appendChild(h2)
     content.appendChild(p)
     content.appendChild(controls)
+
+    setTimeout(() => restartBtn.focus(), 50)
   }
 
   /**
