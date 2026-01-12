@@ -725,6 +725,27 @@ body, html {
   filter: drop-shadow(0 2px 4px var(--shadow-medium));
 }
 
+/* --- Mode Selector --- */
+.quiz-mode-selector {
+  display: flex;
+  gap: 15px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  color: var(--color-wood);
+}
+
+.quiz-mode-selector label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.quiz-mode-selector input {
+  accent-color: var(--color-emerald);
+  cursor: pointer;
+}
+
 .quiz-title {
   color: var(--color-wood);
   font-size: 1.5rem;

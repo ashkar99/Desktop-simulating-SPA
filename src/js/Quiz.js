@@ -1,5 +1,6 @@
 import { Window } from './Window.js'
 import { QuizAPI } from './api.js'
+import { LocalProvider } from './LocalProvider.js'
 import { HighScoreManager } from './storage.js'
 
 export class Quiz extends Window {
@@ -7,7 +8,7 @@ export class Quiz extends Window {
     super('Al-Andalus Quiz')
 
     // Dependencies
-    this.api = new QuizAPI()
+    this.api = null
     this.storage = new HighScoreManager()
 
     // Game State
@@ -49,8 +50,8 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the initial Start Screen with nickname input.
-   * Includes full keyboard navigation (Arrow Keys).
+   * Renders the initial Start Screen with nickname and mode selection.
+   * Refactored to use pure DOM creation for all elements.
    */
   renderStartScreen () {
     const content = this.element.querySelector('.window-content')
@@ -65,29 +66,76 @@ export class Quiz extends Window {
     const title = document.createElement('h2')
     title.className = 'quiz-title'
     title.textContent = 'Knowledge Challenge'
-    const p = document.createElement('p')
-    p.textContent = 'Enter your name, traveler.'
     
     const input = document.createElement('input')
-    input.type = 'text'; input.id = 'nickname'
+    input.type = 'text'
+    input.id = 'nickname'
     input.className = 'quiz-input'
     input.placeholder = 'Nickname (Max 15)'
-    input.maxLength = 15; input.autofocus = true
+    input.maxLength = 15
+    input.autofocus = true
 
+    const modeContainer = document.createElement('div')
+    modeContainer.className = 'quiz-mode-selector'
+
+    const labelServer = document.createElement('label')
+    const radioServer = document.createElement('input')
+    radioServer.type = 'radio'
+    radioServer.name = 'mode'
+    radioServer.value = 'server'
+    radioServer.checked = true 
+    const spanServer = document.createElement('span')
+    spanServer.textContent = 'RaNDom Quiz'
+    
+    labelServer.appendChild(radioServer)
+    labelServer.appendChild(spanServer)
+
+    const labelLocal = document.createElement('label')
+    const radioLocal = document.createElement('input')
+    radioLocal.type = 'radio'
+    radioLocal.name = 'mode'
+    radioLocal.value = 'local'
+    const spanLocal = document.createElement('span')
+    spanLocal.textContent = 'Al-Andalus Quiz'
+
+    labelLocal.appendChild(radioLocal)
+    labelLocal.appendChild(spanLocal)
+
+    modeContainer.appendChild(labelServer)
+    modeContainer.appendChild(labelLocal)
+  
     const controls = document.createElement('div')
     controls.className = 'quiz-controls'
+
     const startBtn = document.createElement('button')
-    startBtn.textContent = 'Start Journey'; startBtn.className = 'memory-btn'
+    startBtn.textContent = 'Start Journey'
+    startBtn.className = 'memory-btn'
+
     const highscoreBtn = document.createElement('button')
-    highscoreBtn.textContent = 'High Scores'; highscoreBtn.className = 'memory-btn secondary'
+    highscoreBtn.textContent = 'High Scores'
+    highscoreBtn.className = 'memory-btn secondary'
 
     const messageDiv = document.createElement('div')
-    messageDiv.id = 'message'; messageDiv.className = 'quiz-message'
+    messageDiv.id = 'message'
+    messageDiv.className = 'quiz-message'
 
-    const startGame = () => {
+    const startGame = async () => {
       const name = input.value.trim()
+      const mode = radioServer.checked ? 'server' : 'local'
+
       if (name) {
         this.nickname = name
+        
+        // SWITCH PROVIDER
+        if (mode === 'local') {
+          this.api = new LocalProvider()
+          await this.api.init()
+          this.startUrl = 1
+        } else {
+          this.api = new QuizAPI()
+          this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
+        }
+
         this.startGame()
       } else {
         this.showMessage('Please enter a nickname!', 'error')
@@ -107,16 +155,15 @@ export class Quiz extends Window {
       if (e.key === 'ArrowLeft') startBtn.focus()
       if (e.key === 'ArrowUp') input.focus()
     }
-
     startBtn.addEventListener('keydown', handleBtnNav)
     highscoreBtn.addEventListener('keydown', handleBtnNav)
 
-    content.appendChild(logo)
     controls.appendChild(startBtn)
     controls.appendChild(highscoreBtn)
+    content.appendChild(logo)
     content.appendChild(title)
-    content.appendChild(p)
     content.appendChild(input)
+    content.appendChild(modeContainer)
     content.appendChild(controls)
     content.appendChild(messageDiv)
 
