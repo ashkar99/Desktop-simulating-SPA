@@ -429,13 +429,26 @@ export class Chat extends Window {
    * @param {boolean} isConnected - Connection status.
    */
   updateStatus (isConnected) {
-    if (this.statusText) {
-      const statusIcon = isConnected
-        ? '<span style="color:var(--color-emerald)">● Online</span>'
-        : '<span style="color:var(--color-terracotta)">● Offline</span>'
-      const channelDisplay = `<span style="margin-right: 10px; opacity: 0.8; font-weight: normal;">${this.defaultChannel}</span>`
-      this.statusText.innerHTML = `${channelDisplay} ${statusIcon}`
+    if (!this.statusText) return
+
+    this.statusText.innerHTML = '' 
+    const channelSpan = document.createElement('span')
+    channelSpan.textContent = this.defaultChannel
+    channelSpan.style.marginRight = '10px'
+    channelSpan.style.opacity = '0.8'
+    channelSpan.style.fontWeight = 'normal'
+
+    const statusSpan = document.createElement('span')
+    if (isConnected) {
+      statusSpan.textContent = '● Online'
+      statusSpan.style.color = 'var(--color-emerald)'
+    } else {
+      statusSpan.textContent = '● Offline'
+      statusSpan.style.color = 'var(--color-terracotta)'
     }
+
+    this.statusText.appendChild(channelSpan)
+    this.statusText.appendChild(statusSpan)
   }
 
   /**
