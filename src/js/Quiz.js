@@ -346,7 +346,7 @@ export class Quiz extends Window {
 
     const content = this.element.querySelector('.window-content')
     content.innerHTML = '' 
-    
+
     const h2 = document.createElement('h2')
     h2.textContent = 'Victory!'
     h2.style.color = 'var(--color-emerald)'
@@ -394,27 +394,37 @@ export class Quiz extends Window {
    */
   renderHighScoreScreen () {
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = `
-      <h2>Top 5 High Scores</h2>
-      <div class="quiz-highscore-list">
-        <ol id="score-list-ol"></ol>
-      </div>
-      <button id="back-btn" class="memory-btn">Back</button>
-    `
+    content.innerHTML = '' 
 
-    const listEl = content.querySelector('#score-list-ol')
+    const h2 = document.createElement('h2')
+    h2.textContent = 'Top 5 High Scores'
+    const hsDiv = document.createElement('div')
+    hsDiv.className = 'quiz-highscore-list'
+    const ol = document.createElement('ol')
     const topScores = this.storage.getHighScores()
-    
-    if (topScores.length === 0) listEl.innerHTML = '<li>No scores yet!</li>'
-    else {
-        topScores.forEach(score => {
-            const li = document.createElement('li')
-            li.textContent = `${score.nickname} (${(score.time/1000).toFixed(2)}s)`
-            listEl.appendChild(li)
-        })
+
+    if (topScores.length === 0) {
+      const li = document.createElement('li')
+      li.textContent = 'No scores yet!'
+      ol.appendChild(li)
+    } else {
+      topScores.forEach(score => {
+        const li = document.createElement('li')
+        li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
+        ol.appendChild(li)
+      })
     }
 
-    content.querySelector('#back-btn').addEventListener('click', () => this.renderStartScreen())
+    hsDiv.appendChild(ol)
+
+    const backBtn = document.createElement('button')
+    backBtn.textContent = 'Back'
+    backBtn.className = 'memory-btn'
+    backBtn.addEventListener('click', () => this.renderStartScreen())
+
+    content.appendChild(h2)
+    content.appendChild(hsDiv)
+    content.appendChild(backBtn)
   }
 
   showMessage (msg, type) {
