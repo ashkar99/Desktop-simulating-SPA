@@ -20,6 +20,8 @@ export class Quiz extends Window {
     // Window Dimensions
     this.element.style.width = '400px'
     this.element.style.height = '500px'
+    this.element.style.minWidth = '320px'
+    this.element.style.minHeight = '500px'
 
     // Render Initial View
     this.renderStartScreen()
