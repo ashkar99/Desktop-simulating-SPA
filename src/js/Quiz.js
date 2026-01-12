@@ -211,7 +211,10 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders radio buttons for multiple choice questions.
+   * Renders radio buttons for multiple-choice questions.
+   *
+   * @param {HTMLElement} element - The DOM element to append inputs to.
+   * @param {object} data - The question data.
    */
   renderAlternatives (element, data) {
     const form = document.createElement('div')
@@ -220,30 +223,31 @@ export class Quiz extends Window {
     for (const [key, value] of Object.entries(data.alternatives)) {
       const label = document.createElement('label')
       label.className = 'quiz-radio-label'
-      label.innerHTML = `
-        <input type="radio" name="alt" value="${key}"> 
-        <span>${value}</span>
-      `
+
+      const radio = document.createElement('input')
+      radio.type = 'radio'
+      radio.name = 'alt'
+      radio.value = key
+
+      const span = document.createElement('span')
+      span.textContent = value
+
+      label.appendChild(radio)
+      label.appendChild(span)
       form.appendChild(label)
-      
-      // Select radio when clicking the whole box for better UX
-      label.addEventListener('click', () => {
-          const radio = label.querySelector('input')
-          if(radio) radio.checked = true
-      })
     }
 
     const btn = document.createElement('button')
     btn.textContent = 'Submit Answer'
     btn.className = 'memory-btn'
-    
+
     const submit = () => {
       const selected = form.querySelector('input[name="alt"]:checked')
       if (selected) {
         this.submitAnswer(data.nextURL, { answer: selected.value })
       }
     }
-    
+
     btn.addEventListener('click', submit)
     element.appendChild(form)
     element.appendChild(btn)
