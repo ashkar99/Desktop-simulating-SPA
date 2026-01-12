@@ -308,7 +308,7 @@ export class Quiz extends Window {
   renderGameOver (message) {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = '' 
-    
+
     const h2 = document.createElement('h2')
     h2.textContent = 'Game Over'
     h2.style.color = 'var(--color-terracotta)'
@@ -345,30 +345,48 @@ export class Quiz extends Window {
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
 
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = `
-      <h2 style="color:var(--color-emerald)">Victory!</h2>
-      <p>Well done, ${this.nickname}!</p>
-      <p>Total Time: <b>${timeInSeconds}s</b></p>
-      
-      <div class="quiz-highscore-list">
-        <h3>Hall of Fame</h3>
-        <ol id="score-list-ol"></ol>
-      </div>
+    content.innerHTML = '' 
+    
+    const h2 = document.createElement('h2')
+    h2.textContent = 'Victory!'
+    h2.style.color = 'var(--color-emerald)'
 
-      <button id="restart-btn" class="memory-btn">Play Again</button>
-    `
-    
-    // Render list
-    const listEl = content.querySelector('#score-list-ol')
+    const pGreeting = document.createElement('p')
+    pGreeting.textContent = `Well done, ${this.nickname}!`
+
+    const pTime = document.createElement('p')
+    pTime.textContent = 'Total Time: '
+    const bTime = document.createElement('b')
+    bTime.textContent = `${timeInSeconds}s`
+    pTime.appendChild(bTime)
+
+    const hsDiv = document.createElement('div')
+    hsDiv.className = 'quiz-highscore-list'
+
+    const h3 = document.createElement('h3')
+    h3.textContent = 'Hall of Fame'
+    const ol = document.createElement('ol')
+
     const topScores = this.storage.getHighScores()
-    
     topScores.forEach(score => {
-        const li = document.createElement('li')
-        li.textContent = `${score.nickname} (${(score.time/1000).toFixed(2)}s)`
-        listEl.appendChild(li)
+      const li = document.createElement('li')
+      li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
+      ol.appendChild(li)
     })
 
-    content.querySelector('#restart-btn').addEventListener('click', () => this.renderStartScreen())
+    hsDiv.appendChild(h3)
+    hsDiv.appendChild(ol)
+
+    const restartBtn = document.createElement('button')
+    restartBtn.textContent = 'Play Again'
+    restartBtn.className = 'memory-btn'
+    restartBtn.addEventListener('click', () => this.renderStartScreen())
+
+    content.appendChild(h2)
+    content.appendChild(pGreeting)
+    content.appendChild(pTime)
+    content.appendChild(hsDiv)
+    content.appendChild(restartBtn)
   }
 
   /**
