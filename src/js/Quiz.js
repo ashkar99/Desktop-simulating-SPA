@@ -55,6 +55,11 @@ export class Quiz extends Window {
     content.innerHTML = ''
     content.className = 'window-content quiz-layout'
 
+    const logo = document.createElement('img')
+    logo.src = './img/quiz-icon.png'
+    logo.alt = 'Quiz Logo'
+    logo.className = 'quiz-logo'
+
     const title = document.createElement('h2')
     title.className = 'quiz-title'
     title.textContent = 'Knowledge Challenge'
@@ -104,6 +109,7 @@ export class Quiz extends Window {
     startBtn.addEventListener('keydown', handleBtnNav)
     highscoreBtn.addEventListener('keydown', handleBtnNav)
 
+    content.appendChild(logo)
     controls.appendChild(startBtn)
     controls.appendChild(highscoreBtn)
     content.appendChild(title)

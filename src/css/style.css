@@ -707,7 +707,15 @@ body, html {
   padding: 20px;
   gap: 15px;
   text-align: center;
-  height: 100%; /* Ensure it fills the window */
+  height: 100%;
+}
+
+.quiz-logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 10px;
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 4px var(--shadow-medium));
 }
 
 .quiz-title {
@@ -745,7 +753,7 @@ body, html {
   font-weight: bold;
 }
 
-/* Secondary button style (Grey) */
+/* Secondary button style */
 .memory-btn.secondary {
   background-color: var(--color-azure);
   color: var(--color-white);
