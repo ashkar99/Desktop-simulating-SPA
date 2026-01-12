@@ -34,12 +34,15 @@ export class Quiz extends Window {
   }
 
   /**
-   * Helper to stop the timer (prevents memory leaks).
+   * Helper to stop the active countdown timer and accumulate elapsed time.
    */
   stopTimer () {
     if (this.timerInterval) {
       clearInterval(this.timerInterval)
       this.timerInterval = null
+      
+      const elapsed = Date.now() - this.questionStartTime
+      this.totalTime += elapsed
     }
   }
 
