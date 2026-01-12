@@ -47,10 +47,8 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the nickname entry screen.
-   */
-  /**
    * Renders the initial Start Screen with nickname input.
+   * Includes full keyboard navigation (Arrow Keys).
    */
   renderStartScreen () {
     const content = this.element.querySelector('.window-content')
@@ -60,32 +58,24 @@ export class Quiz extends Window {
     const title = document.createElement('h2')
     title.className = 'quiz-title'
     title.textContent = 'Knowledge Challenge'
-
     const p = document.createElement('p')
     p.textContent = 'Enter your name, traveler.'
-
+    
     const input = document.createElement('input')
-    input.type = 'text'
-    input.id = 'nickname'
+    input.type = 'text'; input.id = 'nickname'
     input.className = 'quiz-input'
     input.placeholder = 'Nickname (Max 15)'
-    input.maxLength = 15
-    input.autofocus = true
+    input.maxLength = 15; input.autofocus = true
 
     const controls = document.createElement('div')
     controls.className = 'quiz-controls'
-
     const startBtn = document.createElement('button')
-    startBtn.textContent = 'Start Journey'
-    startBtn.className = 'memory-btn'
-
+    startBtn.textContent = 'Start Journey'; startBtn.className = 'memory-btn'
     const highscoreBtn = document.createElement('button')
-    highscoreBtn.textContent = 'High Scores'
-    highscoreBtn.className = 'memory-btn secondary'
+    highscoreBtn.textContent = 'High Scores'; highscoreBtn.className = 'memory-btn secondary'
 
     const messageDiv = document.createElement('div')
-    messageDiv.id = 'message'
-    messageDiv.className = 'quiz-message'
+    messageDiv.id = 'message'; messageDiv.className = 'quiz-message'
 
     const startGame = () => {
       const name = input.value.trim()
@@ -99,20 +89,29 @@ export class Quiz extends Window {
 
     startBtn.addEventListener('click', startGame)
     highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen())
+
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') startGame()
+      if (e.key === 'ArrowDown') startBtn.focus()
     })
+
+    const handleBtnNav = (e) => {
+      if (e.key === 'ArrowRight') highscoreBtn.focus()
+      if (e.key === 'ArrowLeft') startBtn.focus()
+      if (e.key === 'ArrowUp') input.focus()
+    }
+
+    startBtn.addEventListener('keydown', handleBtnNav)
+    highscoreBtn.addEventListener('keydown', handleBtnNav)
 
     controls.appendChild(startBtn)
     controls.appendChild(highscoreBtn)
-
     content.appendChild(title)
     content.appendChild(p)
     content.appendChild(input)
     content.appendChild(controls)
     content.appendChild(messageDiv)
 
-    // Focus helper
     setTimeout(() => input.focus(), 50)
   }
 
