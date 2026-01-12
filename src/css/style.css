@@ -747,16 +747,16 @@ body, html {
 
 /* Secondary button style (Grey) */
 .memory-btn.secondary {
-  background-color: var(--color-gray);
-  color: #333;
-  border-color: #999;
+  background-color: var(--color-azure);
+  color: var(--color-white);
+  border-color: var(--color-gray);
 }
 
 /* --- Timer --- */
 .quiz-timer-container {
   width: 100%;
   height: 8px;
-  background-color: #ddd;
+  background-color: var(--color-muted);
   border-radius: 4px;
   margin-bottom: 15px;
   overflow: hidden;
@@ -818,7 +818,7 @@ body, html {
 
 /* --- High Score List --- */
 .quiz-highscore-list {
-  background-color: rgba(255,255,255,0.5);
+  background-color: var(--color-light-sandstone);
   padding: 15px;
   border-radius: 10px;
   border: 1px solid var(--color-gold);
