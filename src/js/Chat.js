@@ -80,13 +80,18 @@ export class Chat extends Window {
     content.innerHTML = ''
     content.className = 'window-content chat-login-screen'
 
+    const logo = document.createElement('img')
+    logo.src = './img/chat-icon.png'
+    logo.alt = 'Chat Logo'
+    logo.className = 'chat-logo'
+
     const label = document.createElement('h3')
     label.textContent = 'Enter your Username'
     label.className = 'chat-login-label'
 
     const input = document.createElement('input')
     input.type = 'text'
-    input.placeholder = 'e.g. Abd al-Rahman III (Max 12 chars)'
+    input.placeholder = 'e.g. Conqueror (Max 12 chars)'
     input.className = 'chat-login-input'
     input.maxLength = 12
 
@@ -112,6 +117,7 @@ export class Chat extends Window {
     btn.addEventListener('click', saveName)
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveName() })
 
+    content.appendChild(logo)
     content.appendChild(label)
     content.appendChild(input)
     content.appendChild(btn)

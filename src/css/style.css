@@ -626,6 +626,13 @@ body, html {
   gap: 15px;
   height: 100%;
 }
+.chat-logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 10px;
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 4px var(--shadow-medium));
+}
 
 .chat-login-label {
   color: var(--color-wood);
