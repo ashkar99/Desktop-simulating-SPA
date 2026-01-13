@@ -24,7 +24,7 @@ export class PWD {
     this.apps = [
       {
         id: 'memory',
-        name: 'Memory',
+        name: 'Memory Game',
         icon: './img/memory-icon.png',
         action: () => new MemoryGame()
       },
@@ -36,7 +36,7 @@ export class PWD {
       },
       {
         id: 'quiz',
-        name: 'Quiz',
+        name: 'Quizzes',
         icon: './img/quiz-icon.png',
         action: () => new Quiz()
       }
