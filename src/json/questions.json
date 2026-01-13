@@ -28,6 +28,17 @@
   },
   {
     "id": 4,
+    "question": "Al-Zahrawi (Abulcasis) is famous for his pioneering work in which field?",
+    "alternatives": {
+      "1": "Surgery",
+      "2": "Poetry",
+      "3": "Architecture",
+      "4": "Programmer"
+    },
+    "correctAnswer": "1"
+  },
+  {
+    "id": 5,
     "question": "Which city was the capital of the Caliphate?",
     "alternatives": {
       "1": "Seville",
@@ -38,12 +49,66 @@
     "correctAnswer": "3"
   },
   {
-    "id": 5,
+    "id": 6,
     "question": "True or False: The Giralda was originally a minaret.",
     "alternatives": {
       "1": "True",
       "2": "False"
     },
     "correctAnswer": "1"
+  },
+  {
+    "id": 7,
+    "question": "Who is credited with the first scientific attempt at flight in Cordoba?",
+    "alternatives": {
+      "1": "Ibn Battuta",
+      "2": "Abbas ibn Firnas",
+      "3": "Al-Idrisi",
+      "4": "Sinan"
+    },
+    "correctAnswer": "2"
+  },
+  {
+    "id": 8,
+    "question": "Which polymath introduced the 3-course meal, crystal glasses, and seasonal fashion to Cordoba?",
+    "alternatives": {
+      "1": "Al-Khwarizmi",
+      "2": "Boabdil",
+      "3": "Zryab",
+      "4": "Tariq ibn Ziyad"
+    },
+    "correctAnswer": "3"
+  },
+  {
+    "id": 9,
+    "question": "How long did the Al-Andalus Emirate last?",
+    "correctAnswer": "800 years"
+  },
+  {
+    "id": 10,
+    "question": "Ibn Rushd was a famous philosopher from Cordoba. What is his Westernized name?",
+    "correctAnswer": "averroes"
+  },
+  {
+    "id": 11,
+    "question": "The 'Noria', widely used in Al-Andalus agriculture, is a type of what?",
+    "alternatives": {
+      "1": "Sword",
+      "2": "Musical instrument",
+      "3": "Spice",
+      "4": "Water wheel"
+    },
+    "correctAnswer": "4"
+  },
+  {
+    "id": 12,
+    "question": "Where does Al-Andalus locate geographically?",
+    "alternatives": {
+      "1": "Morocco",
+      "2": "Spain",
+      "3": "Mexico",
+      "4": "Dagestan"
+    },
+    "correctAnswer": "2"
   }
 ]
