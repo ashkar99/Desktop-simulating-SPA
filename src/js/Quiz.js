@@ -20,7 +20,7 @@ export class Quiz extends Window {
 
     // Window Dimensions
     this.element.style.width = '400px'
-    this.element.style.height = '500px'
+    this.element.style.height = '570px'
     this.element.style.minWidth = '320px'
     this.element.style.minHeight = '500px'
 
@@ -50,8 +50,7 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the initial Start Screen with nickname and mode selection.
-   * Refactored to use pure DOM creation for all elements.
+   * Renders the initial Start Screen with nickname and mode toggle.
    */
   renderStartScreen () {
     const content = this.element.querySelector('.window-content')
@@ -75,35 +74,24 @@ export class Quiz extends Window {
     input.maxLength = 15
     input.autofocus = true
 
-    const modeContainer = document.createElement('div')
-    modeContainer.className = 'quiz-mode-selector'
+    let currentMode = 'server'
 
-    const labelServer = document.createElement('label')
-    const radioServer = document.createElement('input')
-    radioServer.type = 'radio'
-    radioServer.name = 'mode'
-    radioServer.value = 'server'
-    radioServer.checked = true 
-    const spanServer = document.createElement('span')
-    spanServer.textContent = 'RaNDom Quiz'
-    
-    labelServer.appendChild(radioServer)
-    labelServer.appendChild(spanServer)
+    const modeBtn = document.createElement('button')
+    modeBtn.className = 'memory-btn secondary'
+    modeBtn.style.marginTop = '10px'
+    modeBtn.style.fontSize = '0.9rem'
+    modeBtn.textContent = 'Mode: RaNDom' 
 
-    const labelLocal = document.createElement('label')
-    const radioLocal = document.createElement('input')
-    radioLocal.type = 'radio'
-    radioLocal.name = 'mode'
-    radioLocal.value = 'local'
-    const spanLocal = document.createElement('span')
-    spanLocal.textContent = 'Al-Andalus Quiz'
+    modeBtn.addEventListener('click', () => {
+      if (currentMode === 'server') {
+        currentMode = 'local'
+        modeBtn.textContent = 'Mode: Al-Andalus'
+      } else {
+        currentMode = 'server'
+        modeBtn.textContent = 'Mode: RaNDom'
+      }
+    })
 
-    labelLocal.appendChild(radioLocal)
-    labelLocal.appendChild(spanLocal)
-
-    modeContainer.appendChild(labelServer)
-    modeContainer.appendChild(labelLocal)
-  
     const controls = document.createElement('div')
     controls.className = 'quiz-controls'
 
@@ -121,13 +109,11 @@ export class Quiz extends Window {
 
     const startGame = async () => {
       const name = input.value.trim()
-      const mode = radioServer.checked ? 'server' : 'local'
 
       if (name) {
         this.nickname = name
         
-        // SWITCH PROVIDER
-        if (mode === 'local') {
+        if (currentMode === 'local') {
           this.api = new LocalProvider()
           await this.api.init()
           this.startUrl = 1
@@ -147,13 +133,18 @@ export class Quiz extends Window {
 
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') startGame()
+      if (e.key === 'ArrowDown') modeBtn.focus() 
+    })
+    
+    modeBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown') startBtn.focus()
+      if (e.key === 'ArrowUp') input.focus()
     })
 
     const handleBtnNav = (e) => {
       if (e.key === 'ArrowRight') highscoreBtn.focus()
       if (e.key === 'ArrowLeft') startBtn.focus()
-      if (e.key === 'ArrowUp') input.focus()
+      if (e.key === 'ArrowUp') modeBtn.focus()
     }
     startBtn.addEventListener('keydown', handleBtnNav)
     highscoreBtn.addEventListener('keydown', handleBtnNav)
@@ -163,7 +154,7 @@ export class Quiz extends Window {
     content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(input)
-    content.appendChild(modeContainer)
+    content.appendChild(modeBtn)
     content.appendChild(controls)
     content.appendChild(messageDiv)
 
