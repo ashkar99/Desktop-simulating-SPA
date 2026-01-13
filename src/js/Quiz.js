@@ -16,16 +16,16 @@ export class Quiz extends Window {
     this.totalTime = 0
     this.questionStartTime = 0
     this.timerInterval = null
-    this.timeLimit = 20
+    this.timeLimit = 10
     this.startUrl = null
+    this.activeKey = 'quiz-server-normal'
 
     // Window Dimensions
     this.element.style.width = '400px'
-    this.element.style.height = '570px'
+    this.element.style.height = '600px'
     this.element.style.minWidth = '320px'
-    this.element.style.minHeight = '500px'
+    this.element.style.minHeight = '550px'
 
-    // Render Initial View
     this.renderStartScreen()
   }
 
@@ -38,7 +38,7 @@ export class Quiz extends Window {
   }
 
   /**
-   * Starts the 20-second countdown timer.
+   * Starts the countdown timer.
    */
   startTimer () {
     this.questionStartTime = Date.now()
@@ -54,10 +54,13 @@ export class Quiz extends Window {
       const percentage = (remaining / limit) * 100
 
       if (timerBar) {
-          timerBar.style.width = `${percentage}%`
-          // Change color to red as it gets low
-          if (percentage < 30) timerBar.style.backgroundColor = 'var(--color-terracotta)'
-          else timerBar.style.backgroundColor = 'var(--color-emerald)'
+        timerBar.style.width = `${percentage}%`
+        // Change color to red as it gets low
+        if (percentage < 30) {
+          timerBar.style.backgroundColor = 'var(--color-terracotta)'
+        } else {
+          timerBar.style.backgroundColor = 'var(--color-emerald)'
+        }
       }
 
       if (remaining <= 0) {
@@ -81,7 +84,8 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the initial Start Screen with nickname, source mode, and difficulty level.
+   * Renders the Start Screen.
+   * Logic updated to handle unique High Score lists for each mode.
    */
   renderStartScreen () {
     const content = this.element.querySelector('.window-content')
@@ -93,13 +97,21 @@ export class Quiz extends Window {
     logo.alt = 'Quiz Logo'
     logo.className = 'quiz-logo'
 
-    const title = document.createElement('h2'); title.className = 'quiz-title'; title.textContent = 'Knowledge Challenge'
-    
+    const title = document.createElement('h2')
+    title.className = 'quiz-title'
+    title.textContent = 'Knowledge Challenge'
+
     const input = document.createElement('input')
-    input.type = 'text'; input.id = 'nickname'; input.className = 'quiz-input'
-    input.placeholder = 'Nickname (Max 15)'; input.maxLength = 15; input.autofocus = true
+    input.type = 'text'
+    input.id = 'nickname'
+    input.className = 'quiz-input'
+    input.placeholder = 'Nickname (Max 15)'
+    input.maxLength = 15
+    input.autofocus = true
 
     let currentSource = 'server'
+    let currentLevel = 'normal'
+
     const sourceBtn = document.createElement('button')
     sourceBtn.className = 'memory-btn'
 
@@ -119,7 +131,6 @@ export class Quiz extends Window {
       updateSourceBtn()
     })
 
-    let currentLevel = 'normal'
     const levelBtn = document.createElement('button')
     levelBtn.className = 'memory-btn'
 
@@ -135,6 +146,7 @@ export class Quiz extends Window {
       }
     }
     updateLevelBtn()
+
     levelBtn.addEventListener('click', () => {
       currentLevel = currentLevel === 'normal' ? 'hard' : 'normal'
       updateLevelBtn()
@@ -144,18 +156,23 @@ export class Quiz extends Window {
     controls.className = 'quiz-controls'
 
     const startBtn = document.createElement('button')
-    startBtn.textContent = 'Start Journey'; startBtn.className = 'memory-btn'
+    startBtn.textContent = 'Start Journey'
+    startBtn.className = 'memory-btn'
 
     const highscoreBtn = document.createElement('button')
-    highscoreBtn.textContent = 'High Scores'; highscoreBtn.className = 'memory-btn secondary'
+    highscoreBtn.textContent = 'High Scores'
+    highscoreBtn.className = 'memory-btn secondary'
 
     const messageDiv = document.createElement('div')
-    messageDiv.id = 'message'; messageDiv.className = 'quiz-message'
+    messageDiv.id = 'message'
+    messageDiv.className = 'quiz-message'
 
     const startGame = async () => {
       const name = input.value.trim()
       if (name) {
         this.nickname = name
+        
+        this.activeKey = `quiz-${currentSource}-${currentLevel}`
 
         if (currentSource === 'local') {
           this.api = new LocalProvider()
@@ -173,13 +190,17 @@ export class Quiz extends Window {
     }
 
     startBtn.addEventListener('click', startGame)
-    highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen())
+    
+    highscoreBtn.addEventListener('click', () => {
+      const key = `quiz-${currentSource}-${currentLevel}`
+      this.renderHighScoreScreen(key)
+    })
 
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') startGame()
-      if (e.key === 'ArrowDown') sourceBtn.focus() 
+      if (e.key === 'ArrowDown') sourceBtn.focus()
     })
-    
+
     sourceBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown') levelBtn.focus()
       if (e.key === 'ArrowUp') input.focus()
@@ -189,17 +210,19 @@ export class Quiz extends Window {
       if (e.key === 'ArrowDown') startBtn.focus()
       if (e.key === 'ArrowUp') sourceBtn.focus()
     })
-
+    
     const handleControlNav = (e) => {
       if (e.key === 'ArrowRight') highscoreBtn.focus()
       if (e.key === 'ArrowLeft') startBtn.focus()
       if (e.key === 'ArrowUp') levelBtn.focus()
     }
+
     startBtn.addEventListener('keydown', handleControlNav)
     highscoreBtn.addEventListener('keydown', handleControlNav)
 
     controls.appendChild(startBtn)
     controls.appendChild(highscoreBtn)
+
     content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(input)
@@ -221,8 +244,6 @@ export class Quiz extends Window {
 
   /**
    * Fetches a question from the API and updates the UI.
-   *
-   * @param {string} url - The API URL for the question.
    */
   async fetchQuestion (url) {
     try {
@@ -245,8 +266,6 @@ export class Quiz extends Window {
 
   /**
    * Renders the Question UI, including the timer and input area.
-   *
-   * @param {object} data - The question data object from the API.
    */
   renderQuestion (data) {
     const content = this.element.querySelector('.window-content')
@@ -297,10 +316,15 @@ export class Quiz extends Window {
     btn.className = 'memory-btn'
 
     const submit = () => {
-        if (input.value) this.submitAnswer(data.nextURL, { answer: input.value })
+      if (input.value) {
+        this.submitAnswer(data.nextURL, { answer: input.value })
+      }
     }
 
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit() })
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submit()
+    })
+    
     btn.addEventListener('click', submit)
 
     element.appendChild(input)
@@ -310,8 +334,6 @@ export class Quiz extends Window {
 
   /**
    * Renders radio buttons for multiple-choice questions.
-   * @param {HTMLElement} element - The DOM element to append inputs to.
-   * @param {object} data - The question data.
    */
   renderAlternatives (element, data) {
     const form = document.createElement('div')
@@ -401,7 +423,7 @@ export class Quiz extends Window {
     const highscoreBtn = document.createElement('button')
     highscoreBtn.textContent = 'High Scores'
     highscoreBtn.className = 'memory-btn secondary'
-    highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen())
+    highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen(this.activeKey))
 
     restartBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') highscoreBtn.focus()
@@ -420,22 +442,24 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the Victory screen and saves the score.
+   * Renders the Victory screen and saves the score to the specific list.
    */
   renderVictory () {
-    this.storage.saveScore(this.nickname, this.totalTime)
+    this.storage.saveScore(this.nickname, this.totalTime, this.activeKey)
+    
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
-
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = ''
+    content.innerHTML = '' 
 
     const h2 = document.createElement('h2')
     h2.textContent = 'Victory!'
     h2.style.color = 'var(--color-emerald)'
+
     const pGreeting = document.createElement('p')
     pGreeting.textContent = `Well done, ${this.nickname}!`
     const pTime = document.createElement('p')
     pTime.textContent = 'Total Time: '
+
     const bTime = document.createElement('b')
     bTime.textContent = `${timeInSeconds}s`
     pTime.appendChild(bTime)
@@ -446,12 +470,14 @@ export class Quiz extends Window {
     h3.textContent = 'Hall of Fame'
     const ol = document.createElement('ol')
 
-    const topScores = this.storage.getHighScores()
+    const topScores = this.storage.getHighScores(this.activeKey)
+    
     topScores.forEach(score => {
       const li = document.createElement('li')
       li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
       ol.appendChild(li)
     })
+
     hsDiv.appendChild(h3)
     hsDiv.appendChild(ol)
 
@@ -465,25 +491,32 @@ export class Quiz extends Window {
     content.appendChild(pTime)
     content.appendChild(hsDiv)
     content.appendChild(restartBtn)
-
-    // Auto-focus
+    
     setTimeout(() => restartBtn.focus(), 50)
   }
 
   /**
-   * Renders the High Score table (Top 5).
+   * Renders the High Score table.
+   * @param {string} listKey - The specific list to display (optional, defaults to active).
    */
-  renderHighScoreScreen () {
+  renderHighScoreScreen (listKey) {
+    const targetKey = listKey || this.activeKey
+    
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
 
+    const titleText = targetKey.replace('quiz-', '').replace('-', ' / ').toUpperCase()
+
     const h2 = document.createElement('h2')
-    h2.textContent = 'Top 5 High Scores'
+    h2.textContent = titleText
+
     const hsDiv = document.createElement('div')
     hsDiv.className = 'quiz-highscore-list'
+
     const ol = document.createElement('ol')
 
-    const topScores = this.storage.getHighScores()
+    const topScores = this.storage.getHighScores(targetKey)
+    
     if (topScores.length === 0) {
       const li = document.createElement('li')
       li.textContent = 'No scores yet!'
@@ -505,8 +538,7 @@ export class Quiz extends Window {
     content.appendChild(h2)
     content.appendChild(hsDiv)
     content.appendChild(backBtn)
-
-    // Auto-focus
+    
     setTimeout(() => backBtn.focus(), 50)
   }
 
