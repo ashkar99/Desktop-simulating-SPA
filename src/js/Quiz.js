@@ -77,7 +77,7 @@ export class Quiz extends Window {
     if (this.timerInterval) {
       clearInterval(this.timerInterval)
       this.timerInterval = null
-      
+
       const elapsed = Date.now() - this.questionStartTime
       this.totalTime += elapsed
     }
@@ -171,7 +171,7 @@ export class Quiz extends Window {
       const name = input.value.trim()
       if (name) {
         this.nickname = name
-        
+
         this.activeKey = `quiz-${currentSource}-${currentLevel}`
 
         if (currentSource === 'local') {
@@ -182,7 +182,7 @@ export class Quiz extends Window {
           this.api = new QuizAPI()
           this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
         }
-        
+
         this.startGame()
       } else {
         this.showMessage('Please enter a nickname!', 'error')
@@ -190,7 +190,7 @@ export class Quiz extends Window {
     }
 
     startBtn.addEventListener('click', startGame)
-    
+
     highscoreBtn.addEventListener('click', () => {
       const key = `quiz-${currentSource}-${currentLevel}`
       this.renderHighScoreScreen(key)
@@ -210,7 +210,7 @@ export class Quiz extends Window {
       if (e.key === 'ArrowDown') startBtn.focus()
       if (e.key === 'ArrowUp') sourceBtn.focus()
     })
-    
+
     const handleControlNav = (e) => {
       if (e.key === 'ArrowRight') highscoreBtn.focus()
       if (e.key === 'ArrowLeft') startBtn.focus()
@@ -244,6 +244,7 @@ export class Quiz extends Window {
 
   /**
    * Fetches a question from the API and updates the UI.
+   * @param {string} url - The URL to fetch the question from.
    */
   async fetchQuestion (url) {
     try {
@@ -253,7 +254,7 @@ export class Quiz extends Window {
       const loader = document.createElement('div')
       loader.className = 'loader'
       loader.textContent = 'Consulting the Oracle...'
-      
+
       content.appendChild(loader)
 
       const data = await this.api.getQuestion(url)
@@ -266,11 +267,12 @@ export class Quiz extends Window {
 
   /**
    * Renders the Question UI, including the timer and input area.
+   * @param {object} data - The question data from the API.
    */
   renderQuestion (data) {
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = '' 
-    
+    content.innerHTML = ''
+
     const timerContainer = document.createElement('div')
     timerContainer.id = 'timer-container'
     timerContainer.className = 'quiz-timer-container'
@@ -278,7 +280,7 @@ export class Quiz extends Window {
     const timerBar = document.createElement('div')
     timerBar.id = 'timer-bar'
     timerBar.className = 'quiz-timer-bar'
-    
+
     timerContainer.appendChild(timerBar)
 
     const questionText = document.createElement('p')
@@ -304,6 +306,8 @@ export class Quiz extends Window {
 
   /**
    * Renders a standard text input field.
+   * @param {HTMLElement} element - The container element to render the input into.
+   * @param {object} data - The question data from the API.
    */
   renderTextInput (element, data) {
     const input = document.createElement('input')
@@ -324,7 +328,7 @@ export class Quiz extends Window {
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') submit()
     })
-    
+
     btn.addEventListener('click', submit)
 
     element.appendChild(input)
@@ -334,6 +338,8 @@ export class Quiz extends Window {
 
   /**
    * Renders radio buttons for multiple-choice questions.
+   * @param {HTMLElement} element - The container element to render the alternatives into.
+   * @param {object} data - The question data from the API.
    */
   renderAlternatives (element, data) {
     const form = document.createElement('div')
@@ -377,13 +383,15 @@ export class Quiz extends Window {
     btn.addEventListener('click', submit)
     element.appendChild(form)
     element.appendChild(btn)
-    
+
     const firstInput = form.querySelector('input')
     if (firstInput) setTimeout(() => firstInput.focus(), 50)
   }
 
   /**
    * Submits the user's answer to the API.
+   * @param {string} url - The URL to submit the answer to.
+   * @param {object} answerPayload - The answer payload containing the user's answer.
    */
   async submitAnswer (url, answerPayload) {
     this.stopTimer()
@@ -401,6 +409,7 @@ export class Quiz extends Window {
 
   /**
    * Renders the Game Over screen.
+   * @param {string} message - The game over message to display.
    */
   renderGameOver (message) {
     const content = this.element.querySelector('.window-content')
@@ -446,10 +455,10 @@ export class Quiz extends Window {
    */
   renderVictory () {
     this.storage.saveScore(this.nickname, this.totalTime, this.activeKey)
-    
+
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
     const content = this.element.querySelector('.window-content')
-    content.innerHTML = '' 
+    content.innerHTML = ''
 
     const h2 = document.createElement('h2')
     h2.textContent = 'Victory!'
@@ -471,7 +480,7 @@ export class Quiz extends Window {
     const ol = document.createElement('ol')
 
     const topScores = this.storage.getHighScores(this.activeKey)
-    
+
     topScores.forEach(score => {
       const li = document.createElement('li')
       li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
@@ -491,17 +500,17 @@ export class Quiz extends Window {
     content.appendChild(pTime)
     content.appendChild(hsDiv)
     content.appendChild(restartBtn)
-    
+
     setTimeout(() => restartBtn.focus(), 50)
   }
 
   /**
    * Renders the High Score table.
-   * @param {string} listKey - The specific list to display (optional, defaults to active).
+   * @param {string} listKey - The specific list to display depending on mode.
    */
   renderHighScoreScreen (listKey) {
     const targetKey = listKey || this.activeKey
-    
+
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
 
@@ -516,7 +525,7 @@ export class Quiz extends Window {
     const ol = document.createElement('ol')
 
     const topScores = this.storage.getHighScores(targetKey)
-    
+
     if (topScores.length === 0) {
       const li = document.createElement('li')
       li.textContent = 'No scores yet!'
@@ -538,10 +547,15 @@ export class Quiz extends Window {
     content.appendChild(h2)
     content.appendChild(hsDiv)
     content.appendChild(backBtn)
-    
+
     setTimeout(() => backBtn.focus(), 50)
   }
 
+  /**
+   * Displays a message to the user.
+   * @param {string} msg - The message to display.
+   * @param {string} type - The type of message.
+   */
   showMessage (msg, type) {
     const el = this.element.querySelector('#message')
     if (el) {

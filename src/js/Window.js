@@ -82,7 +82,7 @@ export class Window {
 
   /**
    * Initiates dragging when clicking the header.
-   * @param {MouseEvent} e
+   * @param {MouseEvent} e - Mouse down event.
    */
   #startDrag (e) {
     e.preventDefault() // Prevent text selection
@@ -97,7 +97,7 @@ export class Window {
 
   /**
    * Updates window position during drag.
-   * @param {MouseEvent} e
+   * @param {MouseEvent} e - Mouse move event.
    */
   #drag (e) {
     if (!this.isDragging) return

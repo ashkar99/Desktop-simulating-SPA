@@ -13,40 +13,11 @@ export class Chat extends Window {
   constructor () {
     super('Chat Channel')
 
-    /**
-     * The WebSocket server URL.
-     * @type {string}
-     */
     this.serverUrl = 'wss://courselab.lnu.se/message-app/socket'
-
-    /**
-     * API Key for the LNU server.
-     * @type {string}
-     */
     this.apiKey = 'eDBE76deU7L0H9mEBgxUKVR0VCnq0XBd'
-
-    /**
-     * The current channel the user is connected to.
-     * @type {string}
-     */
     this.defaultChannel = 'PWD-General'
-
-    /**
-     * The current username.
-     * @type {string|null}
-     */
     this.username = localStorage.getItem('pwd-chat-username') || null
-
-    /**
-     * Local message history cache.
-     * @type {Array<object>}
-     */
     this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
-
-    /**
-     * The WebSocket connection instance.
-     * @type {WebSocket|null}
-     */
     this.socket = null
 
     // Window dimensions

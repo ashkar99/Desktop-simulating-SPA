@@ -80,6 +80,10 @@ export class PWD {
     })
   }
 
+  /**
+   * Opens a new window and manages its position and focus.
+   * @param {Window} windowObj - The window object to open.
+   */
   openWindow (windowObj) {
     // Hook up the Close Event to clean up PWD state
     windowObj.onClose = () => {
@@ -127,7 +131,7 @@ export class PWD {
 
   /**
    * Removes a window from tracking and passes focus to the next available one.
-   * @param windowObj
+   * @param {Window} windowObj - The window object to remove.
    */
   removeWindow (windowObj) {
     this.windows = this.windows.filter(w => w !== windowObj)
@@ -145,7 +149,7 @@ export class PWD {
 
   /**
    * Brings a specific window to the front.
-   * @param {Window} windowObj
+   * @param {Window} windowObj - The window object to focus.
    */
   #focusWindow (windowObj) {
     const currentZ = parseInt(windowObj.element.style.zIndex || 0)

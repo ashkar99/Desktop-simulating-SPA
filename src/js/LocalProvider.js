@@ -13,11 +13,12 @@ export class LocalProvider {
 
   /**
    * Simulates fetching a question by ID.
+   * @param {number|string} id - The question ID.
+   * @returns {object} The question data.
    */
   async getQuestion (id) {
     await new Promise(resolve => setTimeout(resolve, 200))
     const q = this.questions.find(item => item.id === Number(id))
-    
     if (!q) throw new Error('Question not found')
 
     // Return the data in the exact format the Quiz expects
@@ -31,6 +32,9 @@ export class LocalProvider {
 
   /**
    * Simulates sending an answer to the server.
+   * @param {number|string} id - The question ID.
+   * @param {object} answerPayload - The answer payload containing the user's answer.
+   * @returns {object} Result object with nextURL or victory message.
    */
   async sendAnswer (id, answerPayload) {
     await new Promise(resolve => setTimeout(resolve, 200))
