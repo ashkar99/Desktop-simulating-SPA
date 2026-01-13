@@ -78,17 +78,17 @@ export class Quiz extends Window {
 
     const modeBtn = document.createElement('button')
     modeBtn.className = 'memory-btn secondary'
-    modeBtn.style.marginTop = '10px'
-    modeBtn.style.fontSize = '0.9rem'
     modeBtn.textContent = 'Mode: RaNDom' 
 
     modeBtn.addEventListener('click', () => {
       if (currentMode === 'server') {
         currentMode = 'local'
         modeBtn.textContent = 'Mode: Al-Andalus'
+        modeBtn.style.backgroundColor = 'var(--color-emerald)'
       } else {
         currentMode = 'server'
         modeBtn.textContent = 'Mode: RaNDom'
+        modeBtn.style.backgroundColor = 'var(--color-azure)'
       }
     })
 
