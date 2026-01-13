@@ -25,7 +25,7 @@ export class LocalProvider {
       id: q.id,
       question: q.question,
       alternatives: q.alternatives,
-      nextURL: null
+      nextURL: q.id
     }
   }
 
