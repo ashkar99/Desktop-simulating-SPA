@@ -16,7 +16,8 @@ export class Quiz extends Window {
     this.totalTime = 0
     this.questionStartTime = 0
     this.timerInterval = null
-    this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
+    this.timeLimit = 20
+    this.startUrl = null
 
     // Window Dimensions
     this.element.style.width = '400px'
@@ -37,6 +38,36 @@ export class Quiz extends Window {
   }
 
   /**
+   * Starts the 20-second countdown timer.
+   */
+  startTimer () {
+    this.questionStartTime = Date.now()
+    const timerBar = this.element.querySelector('#timer-bar')
+    if (!timerBar) return
+
+    if (this.timerInterval) clearInterval(this.timerInterval)
+
+    this.timerInterval = setInterval(() => {
+      const elapsed = (Date.now() - this.questionStartTime) / 1000
+      const limit = this.timeLimit
+      const remaining = limit - elapsed
+      const percentage = (remaining / limit) * 100
+
+      if (timerBar) {
+          timerBar.style.width = `${percentage}%`
+          // Change color to red as it gets low
+          if (percentage < 30) timerBar.style.backgroundColor = 'var(--color-terracotta)'
+          else timerBar.style.backgroundColor = 'var(--color-emerald)'
+      }
+
+      if (remaining <= 0) {
+        this.stopTimer()
+        this.renderGameOver('Time is up!')
+      }
+    }, 100)
+  }
+
+  /**
    * Helper to stop the active countdown timer and accumulate elapsed time.
    */
   stopTimer () {
@@ -50,7 +81,7 @@ export class Quiz extends Window {
   }
 
   /**
-   * Renders the initial Start Screen with nickname and mode toggle.
+   * Renders the initial Start Screen with nickname, source mode, and difficulty level.
    */
   renderStartScreen () {
     const content = this.element.querySelector('.window-content')
@@ -62,58 +93,71 @@ export class Quiz extends Window {
     logo.alt = 'Quiz Logo'
     logo.className = 'quiz-logo'
 
-    const title = document.createElement('h2')
-    title.className = 'quiz-title'
-    title.textContent = 'Knowledge Challenge'
+    const title = document.createElement('h2'); title.className = 'quiz-title'; title.textContent = 'Knowledge Challenge'
     
     const input = document.createElement('input')
-    input.type = 'text'
-    input.id = 'nickname'
-    input.className = 'quiz-input'
-    input.placeholder = 'Nickname (Max 15)'
-    input.maxLength = 15
-    input.autofocus = true
+    input.type = 'text'; input.id = 'nickname'; input.className = 'quiz-input'
+    input.placeholder = 'Nickname (Max 15)'; input.maxLength = 15; input.autofocus = true
 
-    let currentMode = 'server'
+    let currentSource = 'server'
+    const sourceBtn = document.createElement('button')
+    sourceBtn.className = 'memory-btn'
 
-    const modeBtn = document.createElement('button')
-    modeBtn.className = 'memory-btn secondary'
-    modeBtn.textContent = 'Mode: RaNDom' 
-
-    modeBtn.addEventListener('click', () => {
-      if (currentMode === 'server') {
-        currentMode = 'local'
-        modeBtn.textContent = 'Mode: Al-Andalus'
-        modeBtn.style.backgroundColor = 'var(--color-emerald)'
+    const updateSourceBtn = () => {
+      if (currentSource === 'server') {
+        sourceBtn.textContent = 'Source: Server (LNU)'
+        sourceBtn.style.backgroundColor = 'var(--color-azure)'
       } else {
-        currentMode = 'server'
-        modeBtn.textContent = 'Mode: RaNDom'
-        modeBtn.style.backgroundColor = 'var(--color-azure)'
+        sourceBtn.textContent = 'Source: Local (Custom)'
+        sourceBtn.style.backgroundColor = 'var(--color-emerald)'
       }
+    }
+    updateSourceBtn()
+
+    sourceBtn.addEventListener('click', () => {
+      currentSource = currentSource === 'server' ? 'local' : 'server'
+      updateSourceBtn()
+    })
+
+    let currentLevel = 'normal'
+    const levelBtn = document.createElement('button')
+    levelBtn.className = 'memory-btn'
+
+    const updateLevelBtn = () => {
+      if (currentLevel === 'normal') {
+        levelBtn.textContent = 'Level: Normal'
+        levelBtn.style.backgroundColor = 'var(--color-gold)'
+        this.timeLimit = 10
+      } else {
+        levelBtn.textContent = 'Level: Hard'
+        levelBtn.style.backgroundColor = 'var(--color-terracotta)'
+        this.timeLimit = 5
+      }
+    }
+    updateLevelBtn()
+    levelBtn.addEventListener('click', () => {
+      currentLevel = currentLevel === 'normal' ? 'hard' : 'normal'
+      updateLevelBtn()
     })
 
     const controls = document.createElement('div')
     controls.className = 'quiz-controls'
 
     const startBtn = document.createElement('button')
-    startBtn.textContent = 'Start Journey'
-    startBtn.className = 'memory-btn'
+    startBtn.textContent = 'Start Journey'; startBtn.className = 'memory-btn'
 
     const highscoreBtn = document.createElement('button')
-    highscoreBtn.textContent = 'High Scores'
-    highscoreBtn.className = 'memory-btn secondary'
+    highscoreBtn.textContent = 'High Scores'; highscoreBtn.className = 'memory-btn secondary'
 
     const messageDiv = document.createElement('div')
-    messageDiv.id = 'message'
-    messageDiv.className = 'quiz-message'
+    messageDiv.id = 'message'; messageDiv.className = 'quiz-message'
 
     const startGame = async () => {
       const name = input.value.trim()
-
       if (name) {
         this.nickname = name
-        
-        if (currentMode === 'local') {
+
+        if (currentSource === 'local') {
           this.api = new LocalProvider()
           await this.api.init()
           this.startUrl = 1
@@ -121,7 +165,7 @@ export class Quiz extends Window {
           this.api = new QuizAPI()
           this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
         }
-
+        
         this.startGame()
       } else {
         this.showMessage('Please enter a nickname!', 'error')
@@ -133,28 +177,34 @@ export class Quiz extends Window {
 
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') startGame()
-      if (e.key === 'ArrowDown') modeBtn.focus() 
+      if (e.key === 'ArrowDown') sourceBtn.focus() 
     })
     
-    modeBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown') startBtn.focus()
+    sourceBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') levelBtn.focus()
       if (e.key === 'ArrowUp') input.focus()
     })
 
-    const handleBtnNav = (e) => {
+    levelBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') startBtn.focus()
+      if (e.key === 'ArrowUp') sourceBtn.focus()
+    })
+
+    const handleControlNav = (e) => {
       if (e.key === 'ArrowRight') highscoreBtn.focus()
       if (e.key === 'ArrowLeft') startBtn.focus()
-      if (e.key === 'ArrowUp') modeBtn.focus()
+      if (e.key === 'ArrowUp') levelBtn.focus()
     }
-    startBtn.addEventListener('keydown', handleBtnNav)
-    highscoreBtn.addEventListener('keydown', handleBtnNav)
+    startBtn.addEventListener('keydown', handleControlNav)
+    highscoreBtn.addEventListener('keydown', handleControlNav)
 
     controls.appendChild(startBtn)
     controls.appendChild(highscoreBtn)
     content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(input)
-    content.appendChild(modeBtn)
+    content.appendChild(sourceBtn)
+    content.appendChild(levelBtn)
     content.appendChild(controls)
     content.appendChild(messageDiv)
 
@@ -308,36 +358,6 @@ export class Quiz extends Window {
     
     const firstInput = form.querySelector('input')
     if (firstInput) setTimeout(() => firstInput.focus(), 50)
-  }
-
-  /**
-   * Starts the 20-second countdown timer.
-   */
-  startTimer () {
-    this.questionStartTime = Date.now()
-    const timerBar = this.element.querySelector('#timer-bar')
-    if (!timerBar) return
-
-    if (this.timerInterval) clearInterval(this.timerInterval)
-
-    this.timerInterval = setInterval(() => {
-      const elapsed = (Date.now() - this.questionStartTime) / 1000
-      const limit = 20 // 20 seconds limit
-      const remaining = limit - elapsed
-      const percentage = (remaining / limit) * 100
-
-      if (timerBar) {
-          timerBar.style.width = `${percentage}%`
-          // Change color to red as it gets low
-          if (percentage < 30) timerBar.style.backgroundColor = 'var(--color-terracotta)'
-          else timerBar.style.backgroundColor = 'var(--color-emerald)'
-      }
-
-      if (remaining <= 0) {
-        this.stopTimer()
-        this.renderGameOver('Time is up!')
-      }
-    }, 100)
   }
 
   /**
