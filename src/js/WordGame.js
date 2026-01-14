@@ -97,6 +97,17 @@ export class WordGame extends Window {
     const statsBar = document.createElement('div')
     statsBar.className = 'word-stats'
 
+    const heartsContainer = document.createElement('div')
+    heartsContainer.id = 'word-lives'
+    for (let i = 0; i < 6; i++) {
+      const heart = document.createElement('img')
+      heart.src = './img/full-heart.png'
+      heart.alt = 'Life'
+      heart.className = 'word-heart'
+      heartsContainer.appendChild(heart)
+    }
+    statsBar.appendChild(heartsContainer)
+    
     this.wordDisplay = document.createElement('div')
     this.wordDisplay.className = 'word-display'
     this.wordDisplay.textContent = '_ _ _ _ _ _' 
