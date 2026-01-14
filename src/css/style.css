@@ -908,3 +908,30 @@ body, html {
   margin-bottom: 15px;
   max-width: 80%;
 }
+
+/* --- Word Game Active View --- */
+.word-game-active {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--color-sandstone);
+  height: 100%;
+}
+
+.word-stats {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.word-display {
+  font-family: 'Courier New', monospace;
+  font-size: 3rem;
+  letter-spacing: 10px;
+  color: var(--color-wood);
+  text-align: center;
+  margin: 20px 0 40px 0;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+}
+

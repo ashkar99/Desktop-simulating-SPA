@@ -71,4 +71,39 @@ export class WordGame extends Window {
     console.log('TODO: Implement Game Loop')
     alert('Game mechanics coming in next commit!')
   }
+
+  /**
+   * Initializes Game State and switches UI.
+   */
+  startGame () {
+    const randomIndex = Math.floor(Math.random() * this.words.length)
+    this.secretWord = this.words[randomIndex]
+    
+    this.guessedLetters.clear()
+    this.lives = 6
+    this.isGameOver = false
+
+    this.renderGameUI()
+  }
+
+  /**
+   * Renders the active game interface.
+   */
+  renderGameUI () {
+    const content = this.element.querySelector('.window-content')
+    content.innerHTML = ''
+    content.className = 'window-content word-game-active'
+
+    const statsBar = document.createElement('div')
+    statsBar.className = 'word-stats'
+
+    this.wordDisplay = document.createElement('div')
+    this.wordDisplay.className = 'word-display'
+    this.wordDisplay.textContent = '_ _ _ _ _ _' 
+    
+
+    content.appendChild(statsBar)
+    content.appendChild(this.wordDisplay)
+  }
 }
+
