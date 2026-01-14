@@ -1,5 +1,5 @@
 import { Window } from './Window.js'
-import { ChatAPI } from './ChatAPI.js'
+import { ChatAPI } from './ChatApi.js'
 import { StorageManager } from './storage.js'
 
 /**
