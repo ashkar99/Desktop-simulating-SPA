@@ -136,7 +136,6 @@ export class Chat extends Window {
 
   /**
    * Displays the Channel Selector overlay.
-   * (UI Logic - No changes needed)
    */
   showChannelSelector () {
     const content = this.element.querySelector('.chat-wrapper')
