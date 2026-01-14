@@ -1,6 +1,6 @@
 import { Window } from './Window.js'
 import { ChatAPI } from './ChatApi.js'
-import { StorageManager } from './storage.js'
+import { StorageManager } from './StorageManager.js'
 
 /**
  * A real-time Chat Application using WebSockets.
