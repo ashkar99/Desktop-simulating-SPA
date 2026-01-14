@@ -1,5 +1,5 @@
 import { Window } from './Window.js'
-import { QuizAPI } from './api.js'
+import { QuizAPI } from './QuizApi.js'
 import { LocalProvider } from './LocalProvider.js'
 import { HighScoreManager } from './storage.js'
 
