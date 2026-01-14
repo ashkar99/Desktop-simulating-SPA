@@ -87,7 +87,7 @@ export class WordGame extends Window {
   }
 
   /**
-   * Renders the active game interface.
+   * Renders the active game interface (QWERTY Keyboard & Hearts).
    */
   renderGameUI () {
     const content = this.element.querySelector('.window-content')
@@ -101,9 +101,31 @@ export class WordGame extends Window {
     this.wordDisplay.className = 'word-display'
     this.wordDisplay.textContent = '_ _ _ _ _ _' 
     
+    const keyboard = document.createElement('div')
+    keyboard.className = 'word-keyboard'
+    
+    const rows = [
+      'QWERTYUIOP',
+      'ASDFGHJKL',
+      'ZXCVBNM'
+    ]
+
+    rows.forEach(rowString => {
+      const rowDiv = document.createElement('div')
+      rowDiv.className = 'keyboard-row'
+      
+      for (const char of rowString) {
+        const btn = document.createElement('button')
+        btn.textContent = char
+        btn.className = 'word-key'
+        rowDiv.appendChild(btn)
+      }
+      keyboard.appendChild(rowDiv)
+    })
 
     content.appendChild(statsBar)
     content.appendChild(this.wordDisplay)
+    content.appendChild(keyboard)
   }
 }
 

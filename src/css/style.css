@@ -935,3 +935,38 @@ body, html {
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
+/* QWERTY Layout Styles */
+.word-keyboard {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the rows */
+  gap: 8px;
+  width: 100%;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.word-key {
+  width: 40px; /* Fixed width for uniform look */
+  height: 40px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: var(--color-emerald);
+  color: var(--color-white);
+  border: 1px solid var(--color-gray);
+  border-radius: 4px;
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+.word-key:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+  z-index: 2;
+}
