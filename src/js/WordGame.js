@@ -150,10 +150,12 @@ export class WordGame extends Window {
     if (this.secretWord.includes(letter)) {
       if (btn) btn.classList.add('correct')
       this.updateWordDisplay()
+      this.checkWin()
     } else {
       if (btn) btn.classList.add('wrong')
       this.lives--
       this.updateHeartUI()
+      this.checkLoss()
     }
   }
 
@@ -170,6 +172,24 @@ export class WordGame extends Window {
     const heart = this.element.querySelector(`#heart-${heartIndex}`)
     if (heart) {
       heart.classList.add('lost')
+    }
+  }
+
+  checkWin () {
+    const isWin = this.secretWord.split('').every(c => this.guessedLetters.has(c))
+    if (isWin) {
+      this.isGameOver = true
+      this.wordDisplay.style.color = 'var(--color-emerald)'
+      setTimeout(() => alert('Victory! The Scroll is Safe.'), 200)
+    }
+  }
+
+  checkLoss () {
+    if (this.lives <= 0) {
+      this.isGameOver = true
+      this.wordDisplay.textContent = this.secretWord.split('').join(' ')
+      this.wordDisplay.style.color = 'var(--color-terracotta)'
+      setTimeout(() => alert('Defeat! The Scroll is Lost.'), 200)
     }
   }
 
