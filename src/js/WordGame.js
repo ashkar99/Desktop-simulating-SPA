@@ -9,17 +9,19 @@ export class WordGame extends Window {
   constructor () {
     super("The Caliph's Scroll")
 
-    this.element.style.width = '600px'
-    this.element.style.height = '500px'
+    // Window dimensions
+    this.element.style.width = '400px'
+    this.element.style.height = '600px'
+    this.element.style.minWidth = '320px'
+    this.element.style.minHeight = '550px'
 
-    // 1. Define the Data (The Word List)
     this.words = [
       'ALHAMBRA', 'CORDOBA', 'GRANADA', 'MOSQUE', 'PALACE',
       'JAVASCRIPT', 'MODULE', 'INTERFACE', 'VARIABLE', 'BROWSER',
       'CALIPHATE', 'GARDENS', 'ARCH', 'GEOMETRY', 'SCHOLAR'
     ]
 
-    // 2. Define Game State
+    // Game State
     this.secretWord = ''
     this.guessedLetters = new Set()
     this.lives = 6
@@ -36,24 +38,19 @@ export class WordGame extends Window {
     content.innerHTML = ''
     content.className = 'window-content word-game-layout'
 
-    // Theme: The Scroll Icon
-    const icon = document.createElement('div')
     const logo = document.createElement('img')
     logo.src = './img/word-icon.png'
     logo.alt = 'Scroll Icon'
     logo.className = 'word-logo'
+    logo.addEventListener('dragstart', (e) => e.preventDefault())
 
     const title = document.createElement('h2')
     title.textContent = "The Caliph's Scroll"
-    title.style.color = 'var(--color-wood)'
-    title.style.fontSize = '2rem'
-    title.style.margin = '10px 0'
+    title.className = 'word-title'
 
     const subtitle = document.createElement('p')
     subtitle.textContent = 'Decipher the ancient words to protect your shields.'
-    subtitle.style.fontStyle = 'italic'
-    subtitle.style.color = 'var(--color-azure)'
-    subtitle.style.marginBottom = '20px'
+    subtitle.className = 'word-subtitle'
 
     const startBtn = document.createElement('button')
     startBtn.textContent = 'Unroll Scroll'
@@ -64,7 +61,7 @@ export class WordGame extends Window {
       this.startGame()
     }
 
-    content.appendChild(icon)
+    content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(subtitle)
     content.appendChild(startBtn)

@@ -876,7 +876,7 @@ body, html {
 /* =========================================
    9. WORD GAME (THE SCROLL)
    ========================================= */
-/* --- Layout --- */
+/* ---  Layout --- */
 .word-game-layout {
   display: flex;
   flex-direction: column;
@@ -884,4 +884,27 @@ body, html {
   justify-content: center;
   text-align: center;
   background-color: var(--color-sandstone);
+  gap: 15px; 
+}
+
+/* --- Theme Elements --- */
+.word-logo {
+  width: 250px;
+  height: 250px;
+  margin-bottom: 5px;
+  filter: drop-shadow(0 4px 6px var(--shadow-medium));
+  user-select: none;
+}
+
+.word-title {
+  color: var(--color-wood);
+  font-size: 2rem;
+  margin: 0;
+}
+
+.word-subtitle {
+  font-style: italic;
+  color: var(--color-azure);
+  margin-bottom: 15px;
+  max-width: 80%;
 }
