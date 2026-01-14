@@ -1,11 +1,11 @@
 import { Window } from './Window.js'
-import { ChatAPI } from './ChatApi.js'
+import { ChatAPI } from './ChatAPI.js'
+import { StorageManager } from './storage.js'
 
 /**
  * A real-time Chat Application using WebSockets.
- * Features include persistent username/history, channel switching,
- * offline caching, and visual notifications.
- * @augments Window
+ * Refactored to use ChatAPI for networking and StorageManager for persistence.
+ * @augments Window - Inherits from the Window class.
  */
 export class Chat extends Window {
   /**
@@ -15,9 +15,12 @@ export class Chat extends Window {
     super('Chat Channel')
 
     this.api = new ChatAPI()
+    this.storage = new StorageManager()
     this.defaultChannel = 'PWD-General'
-    this.username = localStorage.getItem('pwd-chat-username') || null
-    this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
+    
+    // Load state from StorageManager
+    this.username = this.storage.getUsername()
+    this.messages = this.storage.getChatHistory(this.defaultChannel)
 
     // Window dimensions
     this.element.style.width = '380px'
@@ -33,18 +36,7 @@ export class Chat extends Window {
   }
 
   /**
-   * Generates a unique localStorage key based on the current channel.
-   * This ensures history is segregated by room.
-   * @readonly
-   * @returns {string} The storage key.
-   */
-  get historyKey () {
-    return `pwd-chat-history-${this.defaultChannel}`
-  }
-
-  /**
    * Renders the initial login screen for username entry.
-   * (No changes needed here, logic remains UI-specific)
    */
   renderUsernameScreen () {
     const content = this.element.querySelector('.window-content')
@@ -81,7 +73,7 @@ export class Chat extends Window {
       }
 
       this.username = name
-      localStorage.setItem('pwd-chat-username', name)
+      this.storage.saveUsername(name)
       this.connect()
     }
 
@@ -95,7 +87,7 @@ export class Chat extends Window {
   }
 
   /**
-   * Establishes the WebSocket connection and sets up event listeners.
+   * Establishes the WebSocket connection using ChatAPI.
    */
   connect () {
     this.renderChatInterface()
@@ -202,7 +194,8 @@ export class Chat extends Window {
   }
 
   /**
-   * Switches the active channel and reconnects the WebSocket.
+   * Switches the active channel and reconnects.
+   * Uses ChatAPI disconnect/connect and StorageManager for history.
    * @param {string} newChannel - The name of the channel to join.
    */
   switchChannel (newChannel) {
@@ -218,7 +211,8 @@ export class Chat extends Window {
     this.messageArea.innerHTML = ''
     this.element.querySelector('.chat-overlay')?.remove()
     
-    this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
+    // Load new history from StorageManager
+    this.messages = this.storage.getChatHistory(this.defaultChannel)
     this.renderCachedMessages()
     this.connect()
 
@@ -310,7 +304,7 @@ export class Chat extends Window {
   }
 
   /**
-   * Sends a message payload to the server.
+   * Sends a message payload to the server via ChatAPI.
    * @param {string} text - The message content.
    */
   sendMessage (text) {
@@ -324,7 +318,7 @@ export class Chat extends Window {
   }
 
   /**
-   * Adds a message to the UI and caches it in localStorage.
+   * Adds a message to the UI and caches it via StorageManager.
    * @param {string} sender - The username of the sender.
    * @param {string} text - The message content.
    * @param {boolean} isMe - True if the message was sent by the current user.
@@ -334,8 +328,7 @@ export class Chat extends Window {
     this.messages.push({ sender, text })
     if (this.messages.length > 50) this.messages.shift()
 
-    // Save to the channel-specific key
-    localStorage.setItem(this.historyKey, JSON.stringify(this.messages))
+    this.storage.saveChatHistory(this.defaultChannel, this.messages)
   }
 
   /**
@@ -362,7 +355,7 @@ export class Chat extends Window {
   }
 
   /**
-   * Loads and renders messages from localStorage for the current channel.
+   * Loads and renders messages for the current channel.
    */
   renderCachedMessages () {
     this.messages.forEach(msg => {
@@ -440,6 +433,7 @@ export class Chat extends Window {
    */
   logout () {
     this.api.disconnect()
+
     localStorage.removeItem('pwd-chat-username')
     this.username = null
 

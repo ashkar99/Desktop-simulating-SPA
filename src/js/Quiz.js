@@ -1,7 +1,7 @@
 import { Window } from './Window.js'
 import { QuizAPI } from './QuizApi.js'
 import { LocalProvider } from './LocalProvider.js'
-import { HighScoreManager } from './storage.js'
+import { StorageManager } from './StorageManager.js'
 
 export class Quiz extends Window {
   constructor () {
@@ -9,7 +9,7 @@ export class Quiz extends Window {
 
     // Dependencies
     this.api = null
-    this.storage = new HighScoreManager()
+    this.storage = new StorageManager()
 
     // Game State
     this.nickname = ''
