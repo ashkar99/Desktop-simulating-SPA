@@ -153,6 +153,7 @@ export class WordGame extends Window {
     } else {
       if (btn) btn.classList.add('wrong')
       this.lives--
+      this.updateHeartUI()
     }
   }
 
@@ -162,6 +163,14 @@ export class WordGame extends Window {
       .map(char => this.guessedLetters.has(char) ? char : '_')
       .join(' ')
     this.wordDisplay.textContent = display
+  }
+
+  updateHeartUI () {
+    const heartIndex = this.lives + 1
+    const heart = this.element.querySelector(`#heart-${heartIndex}`)
+    if (heart) {
+      heart.classList.add('lost')
+    }
   }
 
 }
