@@ -8,13 +8,14 @@ The Al-Andalus Quiz is a time-sensitive trivia application integrated into the P
 ### Core Requirements (Functional)
 * **Hybrid Data Source:** Users can toggle between connecting to the university server (LNU) or using a local JSON database.
 * **Question Types:** Supports both open-ended text input and multiple-choice (radio button) questions.
-* **Time Constraints:** Enforces a countdown timer for every question with Normal and Hard mode. If the timer hits zero, the game ends immediately.
+* **Persistent Timer:** A countdown timer is **visible at all times** during gameplay. If it hits zero, the game ends immediately.
+* **Game Over Navigation:** When a user answers incorrectly or times out, the game provides clear options to **Restart** or view the **High Score** list.
 * **High Score System:** Persists top 5 scores to `localStorage` via the shared `StorageManager`, displaying the nickname and total time taken.
 * **Feedback Loop:** Provides immediate visual feedback for network errors, wrong answers, or victory.
 
 ### Non-Functional Requirements
 * **Security (XSS Prevention):** All UI rendering uses `document.createElement` and `textContent`. No user-generated content is ever rendered via `innerHTML`.
-* **Accessibility:** The application is fully navigable via keyboard (Arrow keys, Enter).
+* **Accessibility:** The application is fully navigable via keyboard (Arrow keys, Enter) for rapid gameplay.
 * **Window Integration:** Extends the base `Window` class for dragging, closing, and focus management.
 
 ## 3. Solution Path
@@ -59,12 +60,17 @@ The solution uses the **Strategy Pattern** for data and a **Shared Service** for
 * **Hard Mode:** Reduces the limit to **5 seconds** per question for a greater challenge.
 * **Visual Cues:** The UI buttons change color (Gold for Normal, Terracotta for Hard) to indicate the active state.
 
-### B. "The Elevator" (Keyboard Navigation)
+### B. Segmentation Storage
+* **Segmented Storage:** High scores are saved to separate lists based on difficulty and source (e.g., `quiz-local-hard` -> local source quiz + hard mode).
+
+### C. "The Elevator" (Keyboard Navigation)
 * The Start Screen implements a vertical focus chain:
     * **Arrow Down:** Input -> Source Button -> Level Button -> Start Button.
     * **Arrow Up:** Start Button -> Level Button -> Source Button -> Input.
+    * **Arrow Right:** Start Button -> High Scores Button
+    * **Arrow Left:** High Scores Button -> Start Button 
 * The app automatically focuses the relevant input field or button on every screen transition (Start -> Question -> Victory), enabling a "mouse-less" experience.
 
-### C. Visual Polishing
+### D. Visual Polishing
 * **Colors:** Uses the standard Al-Andalus palette (Azure for Server mode, Emerald for Local mode).
 * **Loaders:** Displays a "Consulting the Oracle..." text loader during asynchronous fetch operations.
