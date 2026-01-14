@@ -38,6 +38,10 @@ export class WordGame extends Window {
 
     // Theme: The Scroll Icon
     const icon = document.createElement('div')
+    const logo = document.createElement('img')
+    logo.src = './img/word-icon.png'
+    logo.alt = 'Scroll Icon'
+    logo.className = 'word-logo'
 
     const title = document.createElement('h2')
     title.textContent = "The Caliph's Scroll"
