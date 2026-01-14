@@ -1,4 +1,5 @@
 import { Window } from './Window.js'
+import { ChatAPI } from './ChatApi.js'
 
 /**
  * A real-time Chat Application using WebSockets.
@@ -13,12 +14,10 @@ export class Chat extends Window {
   constructor () {
     super('Chat Channel')
 
-    this.serverUrl = 'wss://courselab.lnu.se/message-app/socket'
-    this.apiKey = 'eDBE76deU7L0H9mEBgxUKVR0VCnq0XBd'
+    this.api = new ChatAPI()
     this.defaultChannel = 'PWD-General'
     this.username = localStorage.getItem('pwd-chat-username') || null
     this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
-    this.socket = null
 
     // Window dimensions
     this.element.style.width = '380px'
@@ -45,6 +44,7 @@ export class Chat extends Window {
 
   /**
    * Renders the initial login screen for username entry.
+   * (No changes needed here, logic remains UI-specific)
    */
   renderUsernameScreen () {
     const content = this.element.querySelector('.window-content')
@@ -98,30 +98,21 @@ export class Chat extends Window {
    * Establishes the WebSocket connection and sets up event listeners.
    */
   connect () {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) return
-
     this.renderChatInterface()
     // Ensure seeing cached messages before connection
     if (this.messageArea.children.length === 0) {
       this.renderCachedMessages()
     }
+
     this.addSystemMessage(`Connecting to ${this.defaultChannel}...`)
     this.updateStatus(false)
 
-    this.socket = new window.WebSocket(this.serverUrl)
-
-    this.socket.addEventListener('open', () => {
-      this.addSystemMessage(`Connected to channel: ${this.defaultChannel}`)
-      this.updateStatus(true)
-    })
-
-    this.socket.addEventListener('message', (event) => {
-      try {
-        const data = JSON.parse(event.data)
-
-        if (data.type === 'heartbeat') return
-        if (data.channel !== this.defaultChannel) return
-
+    this.api.connect(this.defaultChannel, {
+      onOpen: () => {
+        this.addSystemMessage(`Connected to channel: ${this.defaultChannel}`)
+        this.updateStatus(true)
+      },
+      onMessage: (data) => {
         if (data.type === 'message') {
           const isMe = data.username === this.username
           this.addMessage(data.username, data.data, isMe)
@@ -131,22 +122,21 @@ export class Chat extends Window {
             this.notify()
           }
         }
-      } catch (e) { console.warn('Invalid JSON', e) }
-    })
-
-    this.socket.addEventListener('close', () => {
-      this.addSystemMessage('Disconnected.')
-      this.updateStatus(false)
-    })
-
-    this.socket.addEventListener('error', () => {
-      this.addSystemMessage('Connection error.')
-      this.updateStatus(false)
+      },
+      onClose: () => {
+        this.addSystemMessage('Disconnected.')
+        this.updateStatus(false)
+      },
+      onError: () => {
+        this.addSystemMessage('Connection error.')
+        this.updateStatus(false)
+      }
     })
   }
 
   /**
    * Displays the Channel Selector overlay.
+   * (UI Logic - No changes needed)
    */
   showChannelSelector () {
     const content = this.element.querySelector('.chat-wrapper')
@@ -223,13 +213,12 @@ export class Chat extends Window {
     }
 
     this.defaultChannel = newChannel
-
-    if (this.socket) {
-      this.socket.close()
-    }
+    
+    this.api.disconnect()
 
     this.messageArea.innerHTML = ''
     this.element.querySelector('.chat-overlay')?.remove()
+    
     this.messages = JSON.parse(localStorage.getItem(this.historyKey)) || []
     this.renderCachedMessages()
     this.connect()
@@ -327,18 +316,12 @@ export class Chat extends Window {
    */
   sendMessage (text) {
     if (!text.trim()) return
-    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+    
+    try {
+      this.api.sendMessage(text, this.username, this.defaultChannel)
+    } catch (error) {
       this.addSystemMessage('Error: Not connected. Please wait...')
-      return
     }
-    const payload = {
-      type: 'message',
-      data: text,
-      username: this.username,
-      channel: this.defaultChannel,
-      key: this.apiKey
-    }
-    this.socket.send(JSON.stringify(payload))
   }
 
   /**
@@ -442,9 +425,7 @@ export class Chat extends Window {
     const audio = new window.Audio('./audio/notification.mp3')
     audio.play().catch(e => { /* Ignore auto-play errors */ })
     const header = this.element.querySelector('.window-header')
-    if (header) {
-      header.classList.add('unread')
-    }
+    if (header) header.classList.add('unread')
   }
 
   /**
@@ -452,20 +433,14 @@ export class Chat extends Window {
    */
   markAsRead () {
     const header = this.element.querySelector('.window-header')
-    if (header) {
-      header.classList.remove('unread')
-    }
+    if (header) header.classList.remove('unread')
   }
 
   /**
    * Logs the user out, clears session, and returns to login screen.
    */
   logout () {
-    if (this.socket) {
-      this.socket.close()
-      this.socket = null
-    }
-
+    this.api.disconnect()
     localStorage.removeItem('pwd-chat-username')
     this.username = null
 
