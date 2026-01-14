@@ -104,22 +104,19 @@ export class WordGame extends Window {
       heart.src = './img/full-heart.png'
       heart.alt = 'Life'
       heart.className = 'word-heart'
+      heart.id = `heart-${i}` // ID helps find the heart
       heartsContainer.appendChild(heart)
     }
     statsBar.appendChild(heartsContainer)
     
     this.wordDisplay = document.createElement('div')
     this.wordDisplay.className = 'word-display'
-    this.wordDisplay.textContent = '_ _ _ _ _ _' 
+    this.updateWordDisplay() 
     
     const keyboard = document.createElement('div')
     keyboard.className = 'word-keyboard'
     
-    const rows = [
-      'QWERTYUIOP',
-      'ASDFGHJKL',
-      'ZXCVBNM'
-    ]
+    const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM']
 
     rows.forEach(rowString => {
       const rowDiv = document.createElement('div')
@@ -129,6 +126,8 @@ export class WordGame extends Window {
         const btn = document.createElement('button')
         btn.textContent = char
         btn.className = 'word-key'
+        btn.id = `key-${char}` // ID helps find the button
+        btn.onclick = () => this.handleGuess(char)
         rowDiv.appendChild(btn)
       }
       keyboard.appendChild(rowDiv)
@@ -138,5 +137,32 @@ export class WordGame extends Window {
     content.appendChild(this.wordDisplay)
     content.appendChild(keyboard)
   }
+
+  handleGuess (letter) {
+    if (this.isGameOver) return
+    if (this.guessedLetters.has(letter)) return
+
+    this.guessedLetters.add(letter)
+    
+    const btn = this.element.querySelector(`#key-${letter}`)
+    if (btn) btn.disabled = true
+
+    if (this.secretWord.includes(letter)) {
+      if (btn) btn.classList.add('correct')
+      this.updateWordDisplay()
+    } else {
+      if (btn) btn.classList.add('wrong')
+      this.lives--
+    }
+  }
+
+  updateWordDisplay () {
+    const display = this.secretWord
+      .split('')
+      .map(char => this.guessedLetters.has(char) ? char : '_')
+      .join(' ')
+    this.wordDisplay.textContent = display
+  }
+
 }
 
