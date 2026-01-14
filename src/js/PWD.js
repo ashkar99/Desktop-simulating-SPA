@@ -2,6 +2,7 @@ import { Window } from './Window.js'
 import { MemoryGame } from './MemoryGame.js'
 import { Chat } from './Chat.js'
 import { Quiz } from './Quiz.js'
+import { WordGame } from './WordGame.js'
 
 /**
  * The main Personal Web Desktop (PWD) application class.
@@ -39,6 +40,12 @@ export class PWD {
         name: 'Quizzes',
         icon: './img/quiz-icon.png',
         action: () => new Quiz()
+      },
+      {
+        id: 'wordgame',
+        name: 'The Scroll',
+        icon: './img/word-icon.png',
+        action: () => new WordGame()
       }
     ]
   }
