@@ -13,11 +13,20 @@ export class WordGame extends Window {
 
     this.element.classList.add('word-game-window')
 
-    this.words = [
-      'ALHAMBRA', 'CORDOBA', 'GRANADA', 'MOSQUE', 'PALACE',
-      'JAVASCRIPT', 'MODULE', 'INTERFACE', 'VARIABLE', 'BROWSER',
-      'CALIPHATE', 'GARDENS', 'ARCH', 'GEOMETRY', 'SCHOLAR'
-    ]
+    // 1. SPLIT WORDS INTO CATEGORIES
+    this.categories = {
+      scholar: [
+        'JAVASCRIPT', 'MODULE', 'INTERFACE', 'VARIABLE', 'BROWSER',
+        'OBJECT', 'ARRAY', 'FUNCTION', 'SYNTAX', 'PROMISE'
+      ],
+      architect: [
+        'ALHAMBRA', 'CORDOBA', 'GRANADA', 'MOSQUE', 'PALACE',
+        'CALIPHATE', 'GARDENS', 'ARCH', 'GEOMETRY', 'MINARET'
+      ]
+    }
+
+    // Default choice
+    this.selectedCategory = 'architect'
 
     this.secretWord = ''
     this.guessedLetters = new Set()
@@ -28,15 +37,10 @@ export class WordGame extends Window {
     this.renderStartScreen()
   }
 
-  /**
-   * Helper to play sound effects safely.
-   * @param {string} soundName - The name of the file in ./audio/ (without extension).
-   */
   playSound (soundName) {
     const audio = new window.Audio(`./audio/${soundName}.mp3`)
     audio.volume = 0.5
-    audio.play().catch(e => {
-    })
+    audio.play().catch(e => {})
   }
 
   renderStartScreen () {
@@ -55,33 +59,71 @@ export class WordGame extends Window {
     title.className = 'word-title'
 
     const subtitle = document.createElement('p')
-    subtitle.textContent = 'Decipher the ancient words to protect your realm from invaders.'
+    subtitle.textContent = 'Decipher the ancient words to protect your realm.'
     subtitle.className = 'word-subtitle'
 
     const streakInfo = document.createElement('p')
     streakInfo.textContent = `Current Streak: ${this.streak}`
     streakInfo.className = 'word-streak-info'
 
+    // 2. CATEGORY SELECTOR
+    const selectContainer = document.createElement('div')
+    selectContainer.className = 'word-select-container'
+
+    const label = document.createElement('label')
+    label.textContent = 'Choose Path: '
+    label.style.fontWeight = 'bold'
+    label.style.color = 'var(--color-wood)'
+
+    const select = document.createElement('select')
+    select.className = 'word-select'
+    
+    // Add Options
+    const opt1 = document.createElement('option')
+    opt1.value = 'architect'
+    opt1.textContent = 'The Architect (History)'
+    if (this.selectedCategory === 'architect') opt1.selected = true
+
+    const opt2 = document.createElement('option')
+    opt2.value = 'scholar'
+    opt2.textContent = 'The Scholar (Code)'
+    if (this.selectedCategory === 'scholar') opt2.selected = true
+
+    select.appendChild(opt1)
+    select.appendChild(opt2)
+
+    // Update state on change
+    select.addEventListener('change', (e) => {
+      this.selectedCategory = e.target.value
+    })
+
+    selectContainer.appendChild(label)
+    selectContainer.appendChild(select)
+
     const startBtn = document.createElement('button')
     startBtn.textContent = 'Unroll Scroll'
     startBtn.className = 'memory-btn'
     
     startBtn.onclick = () => this.startGame()
-    
-    startBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.startGame() })
+    startBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.startGame()
+    })
 
     content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(subtitle)
     content.appendChild(streakInfo)
+    content.appendChild(selectContainer) // <--- Add selector
     content.appendChild(startBtn)
 
     setTimeout(() => startBtn.focus(), 50)
   }
 
   startGame () {
-    const randomIndex = Math.floor(Math.random() * this.words.length)
-    this.secretWord = this.words[randomIndex]
+    // 3. USE SELECTED CATEGORY
+    const wordList = this.categories[this.selectedCategory]
+    const randomIndex = Math.floor(Math.random() * wordList.length)
+    this.secretWord = wordList[randomIndex]
     
     this.guessedLetters.clear()
     this.lives = 6
@@ -105,7 +147,7 @@ export class WordGame extends Window {
       heart.src = './img/full-heart.png'
       heart.alt = 'Life'
       heart.className = 'word-heart'
-      heart.id = `heart-${i}` // ID helps find the heart
+      heart.id = `heart-${i}`
       heartsContainer.appendChild(heart)
     }
     
