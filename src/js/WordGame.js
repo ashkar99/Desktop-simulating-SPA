@@ -57,18 +57,16 @@ export class WordGame extends Window {
     title.className = 'word-title'
 
     const subtitle = document.createElement('p')
-    subtitle.textContent = 'Decipher the ancient words to protect your realm.'
+    subtitle.textContent = 'Decipher the ancient words to protect your realm from invaders.'
     subtitle.className = 'word-subtitle'
 
     const streakInfo = document.createElement('p')
     streakInfo.textContent = `Current Streak: ${this.streak}`
     streakInfo.className = 'word-streak-info'
 
-    // --- TOGGLE BUTTON (Replaces Select) ---
     const pathBtn = document.createElement('button')
-    pathBtn.className = 'memory-btn' // Reuse generic style
-    
-    // Helper to update button text/color based on state
+    pathBtn.className = 'memory-btn'
+
     const updatePathBtn = () => {
       if (this.selectedCategory === 'architect') {
         pathBtn.textContent = 'Path: The Architect (History)'
@@ -78,38 +76,40 @@ export class WordGame extends Window {
         pathBtn.style.backgroundColor = 'var(--color-azure)'
       }
     }
-    updatePathBtn() // Set initial state
+    updatePathBtn()
 
-    pathBtn.onclick = () => {
-      // Toggle Logic
+    pathBtn.addEventListener('click', () => {
       this.selectedCategory = (this.selectedCategory === 'architect') ? 'scholar' : 'architect'
       updatePathBtn()
-    }
-    // Keyboard support for toggle
-    pathBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        this.selectedCategory = (this.selectedCategory === 'architect') ? 'scholar' : 'architect'
-        updatePathBtn()
-      }
     })
 
     const startBtn = document.createElement('button')
     startBtn.textContent = 'Unroll Scroll'
     startBtn.className = 'memory-btn'
-    
-    startBtn.onclick = () => this.startGame()
+    startBtn.addEventListener('click', () => this.startGame())
+
+    pathBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        startBtn.focus()
+      }
+    })
+
     startBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') this.startGame()
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        pathBtn.focus()
+      }
     })
 
     content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(subtitle)
     content.appendChild(streakInfo)
-    content.appendChild(pathBtn) // Add Toggle
+    content.appendChild(pathBtn)
     content.appendChild(startBtn)
 
-    setTimeout(() => startBtn.focus(), 50)
+    setTimeout(() => pathBtn.focus(), 50)
   }
 
   startGame () {
@@ -136,7 +136,7 @@ export class WordGame extends Window {
     heartsContainer.id = 'word-lives'
     for (let i = 1; i <= 6; i++) {
       const heart = document.createElement('img')
-      heart.src = './img/heart-full.png'
+      heart.src = './img/full-heart.png'
       heart.alt = 'Life'
       heart.className = 'word-heart'
       heart.id = `heart-${i}`
