@@ -918,28 +918,6 @@ body, html {
   max-width: 80%;
 }
 
-/* --- Word Game Dropdown --- */
-.word-select-container {
-  margin-bottom: 15px;
-}
-
-.word-select {
-  padding: 5px;
-  font-size: 1rem;
-  border: 2px solid var(--color-wood);
-  border-radius: 4px;
-  background-color: var(--color-sandstone);
-  color: var(--color-wood);
-  font-weight: bold;
-  cursor: pointer;
-  outline: none;
-}
-
-.word-select:focus {
-  border-color: var(--color-azure);
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
-}
-
 /* --- Word Game Active View --- */
 .word-game-active {
   display: flex;

@@ -13,7 +13,6 @@ export class WordGame extends Window {
 
     this.element.classList.add('word-game-window')
 
-    // 1. SPLIT WORDS INTO CATEGORIES
     this.categories = {
       scholar: [
         'JAVASCRIPT', 'MODULE', 'INTERFACE', 'VARIABLE', 'BROWSER',
@@ -25,8 +24,7 @@ export class WordGame extends Window {
       ]
     }
 
-    // Default choice
-    this.selectedCategory = 'architect'
+    this.selectedCategory = 'architect' // Default
 
     this.secretWord = ''
     this.guessedLetters = new Set()
@@ -66,39 +64,34 @@ export class WordGame extends Window {
     streakInfo.textContent = `Current Streak: ${this.streak}`
     streakInfo.className = 'word-streak-info'
 
-    // 2. CATEGORY SELECTOR
-    const selectContainer = document.createElement('div')
-    selectContainer.className = 'word-select-container'
-
-    const label = document.createElement('label')
-    label.textContent = 'Choose Path: '
-    label.style.fontWeight = 'bold'
-    label.style.color = 'var(--color-wood)'
-
-    const select = document.createElement('select')
-    select.className = 'word-select'
+    // --- TOGGLE BUTTON (Replaces Select) ---
+    const pathBtn = document.createElement('button')
+    pathBtn.className = 'memory-btn' // Reuse generic style
     
-    // Add Options
-    const opt1 = document.createElement('option')
-    opt1.value = 'architect'
-    opt1.textContent = 'The Architect (History)'
-    if (this.selectedCategory === 'architect') opt1.selected = true
+    // Helper to update button text/color based on state
+    const updatePathBtn = () => {
+      if (this.selectedCategory === 'architect') {
+        pathBtn.textContent = 'Path: The Architect (History)'
+        pathBtn.style.backgroundColor = 'var(--color-terracotta)'
+      } else {
+        pathBtn.textContent = 'Path: The Scholar (Code)'
+        pathBtn.style.backgroundColor = 'var(--color-azure)'
+      }
+    }
+    updatePathBtn() // Set initial state
 
-    const opt2 = document.createElement('option')
-    opt2.value = 'scholar'
-    opt2.textContent = 'The Scholar (Code)'
-    if (this.selectedCategory === 'scholar') opt2.selected = true
-
-    select.appendChild(opt1)
-    select.appendChild(opt2)
-
-    // Update state on change
-    select.addEventListener('change', (e) => {
-      this.selectedCategory = e.target.value
+    pathBtn.onclick = () => {
+      // Toggle Logic
+      this.selectedCategory = (this.selectedCategory === 'architect') ? 'scholar' : 'architect'
+      updatePathBtn()
+    }
+    // Keyboard support for toggle
+    pathBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        this.selectedCategory = (this.selectedCategory === 'architect') ? 'scholar' : 'architect'
+        updatePathBtn()
+      }
     })
-
-    selectContainer.appendChild(label)
-    selectContainer.appendChild(select)
 
     const startBtn = document.createElement('button')
     startBtn.textContent = 'Unroll Scroll'
@@ -113,14 +106,13 @@ export class WordGame extends Window {
     content.appendChild(title)
     content.appendChild(subtitle)
     content.appendChild(streakInfo)
-    content.appendChild(selectContainer) // <--- Add selector
+    content.appendChild(pathBtn) // Add Toggle
     content.appendChild(startBtn)
 
     setTimeout(() => startBtn.focus(), 50)
   }
 
   startGame () {
-    // 3. USE SELECTED CATEGORY
     const wordList = this.categories[this.selectedCategory]
     const randomIndex = Math.floor(Math.random() * wordList.length)
     this.secretWord = wordList[randomIndex]
@@ -144,7 +136,7 @@ export class WordGame extends Window {
     heartsContainer.id = 'word-lives'
     for (let i = 1; i <= 6; i++) {
       const heart = document.createElement('img')
-      heart.src = './img/full-heart.png'
+      heart.src = './img/heart-full.png'
       heart.alt = 'Life'
       heart.className = 'word-heart'
       heart.id = `heart-${i}`
