@@ -1,17 +1,11 @@
 import { Window } from './Window.js'
 import { StorageManager } from './StorageManager.js'
 
-/**
- * The Caliph's Scroll (Word Game).
- * A Hangman-style game where players decipher words to protect their shields.
- * @augments Window
- */
 export class WordGame extends Window {
   constructor () {
     super("The Caliph's Scroll")
     this.storage = new StorageManager()
 
-    // Window dimensions
     this.element.style.width = '400px'
     this.element.style.height = '600px'
     this.element.style.minWidth = '320px'
@@ -35,8 +29,16 @@ export class WordGame extends Window {
   }
 
   /**
-   * Renders the themed main menu.
+   * Helper to play sound effects safely.
+   * @param {string} soundName - The name of the file in ./audio/ (without extension).
    */
+  playSound (soundName) {
+    const audio = new window.Audio(`./audio/${soundName}.mp3`)
+    audio.volume = 0.5
+    audio.play().catch(e => {
+    })
+  }
+
   renderStartScreen () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -77,9 +79,6 @@ export class WordGame extends Window {
     setTimeout(() => startBtn.focus(), 50)
   }
 
-  /**
-   * Initializes Game State and switches UI.
-   */
   startGame () {
     const randomIndex = Math.floor(Math.random() * this.words.length)
     this.secretWord = this.words[randomIndex]
@@ -134,7 +133,7 @@ export class WordGame extends Window {
         const btn = document.createElement('button')
         btn.textContent = char
         btn.className = 'word-key'
-        btn.id = `key-${char}` // ID helps find the button
+        btn.id = `key-${char}`
         btn.onclick = () => this.handleGuess(char)
         rowDiv.appendChild(btn)
       }
@@ -168,11 +167,13 @@ export class WordGame extends Window {
 
     if (this.secretWord.includes(letter)) {
       if (btn) btn.classList.add('correct')
+      this.playSound('correct')
       this.updateWordDisplay()
       this.checkWin()
     } else {
       if (btn) btn.classList.add('wrong')
       this.lives--
+      this.playSound('wrong')
       this.updateHeartUI()
       this.checkLoss()
     }
@@ -201,6 +202,7 @@ export class WordGame extends Window {
       this.streak++
       this.storage.saveWordStreak(this.streak)
       
+      this.playSound('win')
       this.wordDisplay.classList.add('win')
       this.renderEndScreen('Victory!', 'The Scroll is Safe.')
     }
@@ -212,6 +214,7 @@ export class WordGame extends Window {
       this.streak = 0
       this.storage.saveWordStreak(this.streak)
       
+      this.playSound('lose')
       this.wordDisplay.textContent = this.secretWord.split('').join(' ')
       this.wordDisplay.classList.add('lose')
       this.renderEndScreen('Defeat', 'The Scroll is Lost.')
