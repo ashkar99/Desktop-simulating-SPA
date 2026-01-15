@@ -285,13 +285,34 @@ export class WordGame extends Window {
       restartBtn.textContent = 'Play Again'
       restartBtn.className = 'memory-btn'
       restartBtn.onclick = () => this.startGame()
-      
+
+      const menuBtn = document.createElement('button')
+      menuBtn.textContent = 'Back to Menu'
+      menuBtn.className = 'memory-btn'
+      menuBtn.style.marginTop = '10px' 
+      menuBtn.onclick = () => this.renderStartScreen()
+
+      restartBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault()
+          menuBtn.focus()
+        }
+      })
+
+      menuBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') {
+          e.preventDefault()
+          restartBtn.focus()
+        }
+      })
+
       setTimeout(() => restartBtn.focus(), 50)
 
       content.appendChild(title)
       content.appendChild(msg)
       content.appendChild(streakMsg)
       content.appendChild(restartBtn)
+      content.appendChild(menuBtn)
     }, 1000)
   }
 }
