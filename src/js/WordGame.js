@@ -65,11 +65,8 @@ export class WordGame extends Window {
     content.appendChild(title)
     content.appendChild(subtitle)
     content.appendChild(startBtn)
-  }
 
-  startGame () {
-    console.log('TODO: Implement Game Loop')
-    alert('Game mechanics coming in next commit!')
+    setTimeout(() => this.focus(), 50)
   }
 
   /**
@@ -86,9 +83,6 @@ export class WordGame extends Window {
     this.renderGameUI()
   }
 
-  /**
-   * Renders the active game interface (QWERTY Keyboard & Hearts).
-   */
   renderGameUI () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -99,7 +93,7 @@ export class WordGame extends Window {
 
     const heartsContainer = document.createElement('div')
     heartsContainer.id = 'word-lives'
-    for (let i = 0; i < 6; i++) {
+    for (let i = 1; i <= 6; i++) {
       const heart = document.createElement('img')
       heart.src = './img/full-heart.png'
       heart.alt = 'Life'
@@ -111,7 +105,7 @@ export class WordGame extends Window {
     
     this.wordDisplay = document.createElement('div')
     this.wordDisplay.className = 'word-display'
-    this.updateWordDisplay() 
+    this.updateWordDisplay()
     
     const keyboard = document.createElement('div')
     keyboard.className = 'word-keyboard'
@@ -136,6 +130,18 @@ export class WordGame extends Window {
     content.appendChild(statsBar)
     content.appendChild(this.wordDisplay)
     content.appendChild(keyboard)
+    
+    this.element.setAttribute('tabindex', '0')
+    this.element.style.outline = 'none'
+    this.element.focus()
+
+    this.element.onkeydown = (e) => {
+      const char = e.key.toUpperCase()
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      if (alphabet.includes(char)) {
+        this.handleGuess(char)
+      }
+    }
   }
 
   handleGuess (letter) {
@@ -180,7 +186,7 @@ export class WordGame extends Window {
     if (isWin) {
       this.isGameOver = true
       this.wordDisplay.style.color = 'var(--color-emerald)'
-      setTimeout(() => alert('Victory! The Scroll is Safe.'), 200)
+      this.renderEndScreen('Victory!', 'The Scroll is Safe.')
     }
   }
 
@@ -189,9 +195,48 @@ export class WordGame extends Window {
       this.isGameOver = true
       this.wordDisplay.textContent = this.secretWord.split('').join(' ')
       this.wordDisplay.style.color = 'var(--color-terracotta)'
-      setTimeout(() => alert('Defeat! The Scroll is Lost.'), 200)
+      this.renderEndScreen('Defeat', 'The Scroll is Lost.')
     }
   }
 
-}
+  /**
+   * Renders the end screen with the given title and message.
+   * @param {string} titleText - The title text to display.
+   * @param {string} msgText - The message text to display.
+   */
+  renderEndScreen (titleText, msgText) {
+    setTimeout(() => {
+      const content = this.element.querySelector('.window-content')
+      content.innerHTML = ''
+      content.className = 'window-content word-game-layout'
 
+      const title = document.createElement('h2')
+      title.textContent = titleText
+      title.className = 'word-title'
+      title.style.color = titleText === 'Victory!' ? 'var(--color-emerald)' : 'var(--color-terracotta)'
+
+      const msg = document.createElement('p')
+      msg.textContent = msgText
+      msg.className = 'word-subtitle'
+
+      if (titleText === 'Defeat') {
+        const reveal = document.createElement('p')
+        reveal.textContent = `The word was: ${this.secretWord}`
+        reveal.style.fontWeight = 'bold'
+        reveal.style.marginBottom = '10px'
+        content.appendChild(reveal)
+      }
+
+      const restartBtn = document.createElement('button')
+      restartBtn.textContent = 'Play Again'
+      restartBtn.className = 'memory-btn'
+      restartBtn.onclick = () => this.startGame()
+      
+      setTimeout(() => restartBtn.focus(), 50)
+
+      content.appendChild(title)
+      content.appendChild(msg)
+      content.appendChild(restartBtn)
+    }, 1000)
+  }
+}
