@@ -876,7 +876,7 @@ body, html {
 /* =========================================
    9. WORD GAME (THE SCROLL)
    ========================================= */
-/* ---  Layout --- */
+/* ---  Layout & Accessibility --- */
 .word-game-layout {
   display: flex;
   flex-direction: column;
@@ -885,6 +885,10 @@ body, html {
   text-align: center;
   background-color: var(--color-sandstone);
   gap: 15px; 
+}
+
+.word-game-window {
+  outline: none;
 }
 
 /* --- Theme Elements --- */
@@ -944,7 +948,7 @@ body, html {
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
-/* QWERTY Layout Styles */
+/* --- On-Screen QWERTY Keyboard --- */
 .word-keyboard {
   margin-top: auto;
   display: flex;
@@ -1004,4 +1008,37 @@ body, html {
   opacity: 0.2;
   filter: grayscale(100%);
   transform: scale(0.8);
+}
+
+/* --- Streak Information --- */
+.word-streak-info {
+  color: var(--color-terracotta);
+  font-weight: bold;
+}
+
+.word-game-streak {
+  color: var(--color-wood);
+  font-weight: bold;
+}
+
+.word-end-streak {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* --- End Game Reveal Styles --- */
+.word-title.win,
+.word-display.win {
+  color: var(--color-emerald);
+}
+
+.word-title.lose,
+.word-display.lose {
+  color: var(--color-terracotta);
+}
+
+.word-end-reveal {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: var(--color-wood);
 }

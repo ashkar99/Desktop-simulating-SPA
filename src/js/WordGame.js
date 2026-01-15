@@ -17,13 +17,14 @@ export class WordGame extends Window {
     this.element.style.minWidth = '320px'
     this.element.style.minHeight = '550px'
 
+    this.element.classList.add('word-game-window')
+
     this.words = [
       'ALHAMBRA', 'CORDOBA', 'GRANADA', 'MOSQUE', 'PALACE',
       'JAVASCRIPT', 'MODULE', 'INTERFACE', 'VARIABLE', 'BROWSER',
       'CALIPHATE', 'GARDENS', 'ARCH', 'GEOMETRY', 'SCHOLAR'
     ]
 
-    // Game State
     this.secretWord = ''
     this.guessedLetters = new Set()
     this.lives = 6
@@ -57,17 +58,13 @@ export class WordGame extends Window {
 
     const streakInfo = document.createElement('p')
     streakInfo.textContent = `Current Streak: ${this.streak}`
-    streakInfo.style.color = 'var(--color-terracotta)'
-    streakInfo.style.fontWeight = 'bold'
+    streakInfo.className = 'word-streak-info'
 
     const startBtn = document.createElement('button')
     startBtn.textContent = 'Unroll Scroll'
     startBtn.className = 'memory-btn'
     
-    startBtn.onclick = () => {
-      console.log('Game State Initialized')
-      this.startGame()
-    }
+    startBtn.onclick = () => this.startGame()
     
     startBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.startGame() })
 
@@ -114,8 +111,8 @@ export class WordGame extends Window {
     }
     
     const streakDisplay = document.createElement('div')
-    streakDisplay.textContent = `     Streak: ${this.streak}`
-    streakDisplay.style.color = 'var(--color-wood)'
+    streakDisplay.textContent = `Streak: ${this.streak}`
+    streakDisplay.className = 'word-game-streak'
 
     statsBar.appendChild(heartsContainer)
     statsBar.appendChild(streakDisplay)
@@ -149,7 +146,6 @@ export class WordGame extends Window {
     content.appendChild(keyboard)
     
     this.element.setAttribute('tabindex', '0')
-    this.element.style.outline = 'none'
     this.element.focus()
 
     this.element.onkeydown = (e) => {
@@ -204,7 +200,8 @@ export class WordGame extends Window {
       this.isGameOver = true
       this.streak++
       this.storage.saveWordStreak(this.streak)
-      this.wordDisplay.style.color = 'var(--color-emerald)'
+      
+      this.wordDisplay.classList.add('win')
       this.renderEndScreen('Victory!', 'The Scroll is Safe.')
     }
   }
@@ -214,17 +211,13 @@ export class WordGame extends Window {
       this.isGameOver = true
       this.streak = 0
       this.storage.saveWordStreak(this.streak)
+      
       this.wordDisplay.textContent = this.secretWord.split('').join(' ')
-      this.wordDisplay.style.color = 'var(--color-terracotta)'
+      this.wordDisplay.classList.add('lose')
       this.renderEndScreen('Defeat', 'The Scroll is Lost.')
     }
   }
 
-  /**
-   * Renders the end screen with the given title and message.
-   * @param {string} titleText - The title text to display.
-   * @param {string} msgText - The message text to display.
-   */
   renderEndScreen (titleText, msgText) {
     setTimeout(() => {
       const content = this.element.querySelector('.window-content')
@@ -234,7 +227,7 @@ export class WordGame extends Window {
       const title = document.createElement('h2')
       title.textContent = titleText
       title.className = 'word-title'
-      title.style.color = titleText === 'Victory!' ? 'var(--color-emerald)' : 'var(--color-terracotta)'
+      title.classList.add(titleText === 'Victory!' ? 'win' : 'lose')
 
       const msg = document.createElement('p')
       msg.textContent = msgText
@@ -242,14 +235,12 @@ export class WordGame extends Window {
 
       const streakMsg = document.createElement('p')
       streakMsg.textContent = `Current Streak: ${this.streak}`
-      streakMsg.style.fontWeight = 'bold'
-      streakMsg.style.marginBottom = '20px'
+      streakMsg.className = 'word-end-streak'
 
       if (titleText === 'Defeat') {
         const reveal = document.createElement('p')
         reveal.textContent = `The word was: ${this.secretWord}`
-        reveal.style.fontWeight = 'bold'
-        reveal.style.marginBottom = '10px'
+        reveal.className = 'word-end-reveal'
         content.appendChild(reveal)
       }
 
