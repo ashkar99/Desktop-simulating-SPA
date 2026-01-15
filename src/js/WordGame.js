@@ -49,7 +49,7 @@ export class WordGame extends Window {
     title.className = 'word-title'
 
     const subtitle = document.createElement('p')
-    subtitle.textContent = 'Decipher the ancient words to protect your shields.'
+    subtitle.textContent = 'Decipher the ancient words to protect your realm from invaders.'
     subtitle.className = 'word-subtitle'
 
     const startBtn = document.createElement('button')
