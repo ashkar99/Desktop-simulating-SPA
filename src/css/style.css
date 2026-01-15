@@ -214,10 +214,15 @@ body, html {
   height: 15px;
   background: linear-gradient(135deg, transparent 50%, var(--color-gold) 50%);
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 1px;
+  right: 1px;
   cursor: se-resize;
   z-index: 20;
+  border-bottom-right-radius: 8px;
+}
+
+.resize-handle:hover {
+  background: linear-gradient(135deg, transparent 40%, var(--color-terracotta) 40%);
 }
 
 /* =========================================
