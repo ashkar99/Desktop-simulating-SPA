@@ -90,4 +90,20 @@ export class StorageManager {
   
     this.#save(listKey, top5)
   }
+
+  /**
+   * Retrieves the best streak for the word game.
+   * @returns {number} The current best streak.
+   */
+  getWordStreak () {
+    return this.#load('pwd-word-streak', 0)
+  }
+
+  /**
+   * Saves the current streak.
+   * @param {number} streak - The number of consecutive wins.
+   */
+  saveWordStreak (streak) {
+    this.#save('pwd-word-streak', streak)
+  }
 }
