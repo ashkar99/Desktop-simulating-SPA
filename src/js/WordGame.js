@@ -1,4 +1,5 @@
 import { Window } from './Window.js'
+import { StorageManager } from './StorageManager.js'
 
 /**
  * The Caliph's Scroll (Word Game).
@@ -8,6 +9,7 @@ import { Window } from './Window.js'
 export class WordGame extends Window {
   constructor () {
     super("The Caliph's Scroll")
+    this.storage = new StorageManager()
 
     // Window dimensions
     this.element.style.width = '400px'
@@ -27,6 +29,7 @@ export class WordGame extends Window {
     this.lives = 6
     this.isGameOver = false
 
+    this.streak = this.storage.getWordStreak()
     this.renderStartScreen()
   }
 
@@ -52,6 +55,11 @@ export class WordGame extends Window {
     subtitle.textContent = 'Decipher the ancient words to protect your realm from invaders.'
     subtitle.className = 'word-subtitle'
 
+    const streakInfo = document.createElement('p')
+    streakInfo.textContent = `Current Streak: ${this.streak}`
+    streakInfo.style.color = 'var(--color-terracotta)'
+    streakInfo.style.fontWeight = 'bold'
+
     const startBtn = document.createElement('button')
     startBtn.textContent = 'Unroll Scroll'
     startBtn.className = 'memory-btn'
@@ -66,6 +74,7 @@ export class WordGame extends Window {
     content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(subtitle)
+    content.appendChild(streakInfo)
     content.appendChild(startBtn)
 
     setTimeout(() => startBtn.focus(), 50)
@@ -103,7 +112,13 @@ export class WordGame extends Window {
       heart.id = `heart-${i}` // ID helps find the heart
       heartsContainer.appendChild(heart)
     }
+    
+    const streakDisplay = document.createElement('div')
+    streakDisplay.textContent = `     Streak: ${this.streak}`
+    streakDisplay.style.color = 'var(--color-wood)'
+
     statsBar.appendChild(heartsContainer)
+    statsBar.appendChild(streakDisplay)
     
     this.wordDisplay = document.createElement('div')
     this.wordDisplay.className = 'word-display'
@@ -187,6 +202,8 @@ export class WordGame extends Window {
     const isWin = this.secretWord.split('').every(c => this.guessedLetters.has(c))
     if (isWin) {
       this.isGameOver = true
+      this.streak++
+      this.storage.saveWordStreak(this.streak)
       this.wordDisplay.style.color = 'var(--color-emerald)'
       this.renderEndScreen('Victory!', 'The Scroll is Safe.')
     }
@@ -195,6 +212,8 @@ export class WordGame extends Window {
   checkLoss () {
     if (this.lives <= 0) {
       this.isGameOver = true
+      this.streak = 0
+      this.storage.saveWordStreak(this.streak)
       this.wordDisplay.textContent = this.secretWord.split('').join(' ')
       this.wordDisplay.style.color = 'var(--color-terracotta)'
       this.renderEndScreen('Defeat', 'The Scroll is Lost.')
@@ -221,6 +240,11 @@ export class WordGame extends Window {
       msg.textContent = msgText
       msg.className = 'word-subtitle'
 
+      const streakMsg = document.createElement('p')
+      streakMsg.textContent = `Current Streak: ${this.streak}`
+      streakMsg.style.fontWeight = 'bold'
+      streakMsg.style.marginBottom = '20px'
+
       if (titleText === 'Defeat') {
         const reveal = document.createElement('p')
         reveal.textContent = `The word was: ${this.secretWord}`
@@ -238,6 +262,7 @@ export class WordGame extends Window {
 
       content.appendChild(title)
       content.appendChild(msg)
+      content.appendChild(streakMsg)
       content.appendChild(restartBtn)
     }, 1000)
   }
