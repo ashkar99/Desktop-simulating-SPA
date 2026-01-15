@@ -60,13 +60,15 @@ export class WordGame extends Window {
       console.log('Game State Initialized')
       this.startGame()
     }
+    
+    startBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.startGame() })
 
     content.appendChild(logo)
     content.appendChild(title)
     content.appendChild(subtitle)
     content.appendChild(startBtn)
 
-    setTimeout(() => this.focus(), 50)
+    setTimeout(() => startBtn.focus(), 50)
   }
 
   /**
