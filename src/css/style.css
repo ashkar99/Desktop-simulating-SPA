@@ -24,10 +24,10 @@
   --shadow-text-light: rgba(255,255,255,0.5)
 
   /* --- Functional Mappings --- */
-  --desktop-bg: var(--color-sandstone);
+  --desktop-bg: var(--color-dark-sandstone);
   --taskbar-bg: var(--color-wood);
   --taskbar-text: #EFEFEF;
-  --window-bg: var(--color-dark-sandstone);
+  --window-bg: var(--color-sandstone);
   --window-border: var(--color-gold);
 }
 
