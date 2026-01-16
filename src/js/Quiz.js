@@ -347,21 +347,33 @@ export class Quiz extends Window {
    * @param {string} url - The URL to submit the answer to.
    * @param {object} answerPayload - The answer payload containing the user's answer.
    */
+  /**
+   * Submits the user's answer to the API.
+   * Refactored to separate Network errors from Game Logic errors.
+   */
   async submitAnswer (url, answerPayload) {
     if (this.timer) {
       this.totalTime += this.timer.stop()
     }
 
+    let response
+    
+    // 1. Network Request: ONLY catch errors from the server/API
     try {
-      const response = await this.api.sendAnswer(url, answerPayload)
-      if (response.nextURL) {
-        this.playSound('correct')
-        this.fetchQuestion(response.nextURL)
-      } else {
-        this.renderVictory()
-      }
+      response = await this.api.sendAnswer(url, answerPayload)
     } catch (error) {
+      console.error('API Error:', error) // Log real error for debugging
       this.renderGameOver('Wrong Answer!')
+      return // Stop here
+    }
+
+    // 2. Game Logic: Runs only if the answer was accepted
+    // Any bugs here will now show in the console instead of triggering "Wrong Answer"
+    if (response.nextURL) {
+      this.playSound('correct')
+      this.fetchQuestion(response.nextURL)
+    } else {
+      this.renderVictory()
     }
   }
 
@@ -413,7 +425,7 @@ export class Quiz extends Window {
    */
   renderVictory () {
     this.playSound('win')
-    this.storage.saveScore(this.nickname, this.totalTime, this.activeKey)
+    this.storage.saveHighScore(this.nickname, this.totalTime, this.activeKey)
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
