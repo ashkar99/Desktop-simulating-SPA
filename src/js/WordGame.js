@@ -1,5 +1,6 @@
 import { Window } from './Window.js'
 import { StorageManager } from './StorageManager.js'
+import { Timer } from './Timer.js' // <--- Imported
 
 export class WordGame extends Window {
   constructor () {
@@ -49,13 +50,10 @@ export class WordGame extends Window {
     }
 
     this.levelKeys = ['easy', 'normal', 'hard', 'brutal', 'mujahid']
-    
-    // Default Settings
     this.selectedCategory = 'architect'
     this.selectedLevel = 'easy'
 
-    this.timeLimit = null
-    this.timerInterval = null
+    this.timer = null // <--- Timer instance
     this.currentWordObj = null
     this.secretWord = ''
     this.guessedLetters = new Set()
@@ -64,6 +62,11 @@ export class WordGame extends Window {
 
     this.streak = this.storage.getWordStreak()
     this.renderStartScreen()
+  }
+
+  close () {
+    if (this.timer) this.timer.stop()
+    super.close()
   }
 
   renderStartScreen () {
@@ -122,7 +125,6 @@ export class WordGame extends Window {
     levelBtn.addEventListener('click', () => {
       const currentIndex = this.levelKeys.indexOf(this.selectedLevel)
       const nextIndex = (currentIndex + 1) % this.levelKeys.length
-
       this.selectedLevel = this.levelKeys[nextIndex]
       updateLevelBtn()
     })
@@ -138,7 +140,6 @@ export class WordGame extends Window {
         levelBtn.focus()
       }
     })
-
     levelBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowUp') {
         e.preventDefault()
@@ -149,7 +150,6 @@ export class WordGame extends Window {
         startBtn.focus()
       }
     })
-
     startBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowUp') {
         e.preventDefault()
@@ -164,7 +164,6 @@ export class WordGame extends Window {
     content.appendChild(pathBtn)
     content.appendChild(levelBtn)
     content.appendChild(startBtn)
-
     setTimeout(() => pathBtn.focus(), 50)
   }
 
@@ -176,7 +175,6 @@ export class WordGame extends Window {
       const res = await fetch('./json/words.json')
       if (!res.ok) throw new Error('Failed to load words')
       this.categories = await res.json()
-      console.log('Scrolls deciphered (Data Loaded)')
     } catch (err) {
       console.error(err)
       // Fallback if JSON fails
@@ -195,27 +193,29 @@ export class WordGame extends Window {
 
   startGame () {
     const wordList = this.categories[this.selectedCategory]
-
-    if (!wordList || wordList.length === 0) {
-      alert('The scrolls are still arriving... (Data loading, try again in a second)')
-      return
-    }
+    if (!wordList || wordList.length === 0) return
 
     const randomIndex = Math.floor(Math.random() * wordList.length)
-    
     this.currentWordObj = wordList[randomIndex]
     this.secretWord = this.currentWordObj.word 
+    
     const config = this.levels[this.selectedLevel]
     this.lives = config.hearts
-    this.timeLimit = config.time
     
+    if (this.timer) this.timer.stop()
+
     this.guessedLetters.clear()
     this.isGameOver = false
 
     this.renderGameUI()
 
-    if (this.timeLimit) {
-      this.startTimer()
+    if (config.time) {
+      const content = this.element.querySelector('.window-content')
+      this.timer = new Timer(content, config.time, () => {
+        this.lives = 0
+        this.checkLoss(true)
+      })
+      this.timer.start()
     }
   }
   
@@ -223,17 +223,6 @@ export class WordGame extends Window {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
     content.className = 'window-content word-game-active'
-
-    if (this.timeLimit) {
-      const timerContainer = document.createElement('div')
-      timerContainer.className = 'timer-container'
-      
-      const timerFill = document.createElement('div')
-      timerFill.className = 'timer-fill'
-      
-      timerContainer.appendChild(timerFill)
-      content.appendChild(timerContainer)
-    }
 
     const statsBar = document.createElement('div')
     statsBar.className = 'word-stats'
@@ -267,13 +256,11 @@ export class WordGame extends Window {
 
     const keyboard = document.createElement('div')
     keyboard.className = 'word-keyboard'
-    
     const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM']
 
     rows.forEach(rowString => {
       const rowDiv = document.createElement('div')
       rowDiv.className = 'keyboard-row'
-      
       for (const char of rowString) {
         const btn = document.createElement('button')
         btn.textContent = char
@@ -300,36 +287,6 @@ export class WordGame extends Window {
         this.handleGuess(char)
       }
     }
-  }
-
-  startTimer () {
-    if (this.timerInterval) clearInterval(this.timerInterval)
-    
-    const startTime = Date.now()
-    const duration = this.timeLimit * 1000
-
-    this.timerInterval = setInterval(() => {
-      const elapsed = Date.now() - startTime
-      const remaining = duration - elapsed
-      
-      const percentage = Math.max(0, (remaining / duration) * 100)
-      const bar = this.element.querySelector('.word-timer-fill')
-      
-      if (bar) {
-        bar.style.width = `${percentage}%`
-        if (percentage < 20) {
-          bar.style.backgroundColor = 'var(--color-terracotta)'
-        } else {
-          bar.style.backgroundColor = 'var(--color-emerald)'
-        }
-      }
-
-      if (remaining <= 0) {
-        clearInterval(this.timerInterval)
-        this.lives = 0
-        this.checkLoss(true)
-      }
-    }, 100)
   }
 
   handleGuess (letter) {
@@ -366,15 +323,13 @@ export class WordGame extends Window {
   updateHeartUI () {
     const heartIndex = this.lives + 1
     const heart = this.element.querySelector(`#heart-${heartIndex}`)
-    if (heart) {
-      heart.classList.add('lost')
-    }
+    if (heart) heart.classList.add('lost')
   }
 
   checkWin () {
     const isWin = this.secretWord.split('').every(c => this.guessedLetters.has(c))
     if (isWin) {
-      if (this.timerInterval) clearInterval(this.timerInterval)
+      if (this.timer) this.timer.stop()
       this.isGameOver = true
       this.streak++
       this.storage.saveWordStreak(this.streak)
@@ -387,7 +342,7 @@ export class WordGame extends Window {
 
   checkLoss (isTimeout = false) {
     if (this.lives <= 0 || isTimeout) {
-      if (this.timerInterval) clearInterval(this.timerInterval)
+      if (this.timer) this.timer.stop()
       this.isGameOver = true
       this.streak = 0
       this.storage.saveWordStreak(this.streak)
@@ -450,17 +405,10 @@ export class WordGame extends Window {
       menuBtn.onclick = () => this.renderStartScreen()
 
       restartBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown') {
-          e.preventDefault()
-          menuBtn.focus()
-        }
+        if (e.key === 'ArrowDown') { e.preventDefault(); menuBtn.focus() }
       })
-
       menuBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowUp') {
-          e.preventDefault()
-          restartBtn.focus()
-        }
+        if (e.key === 'ArrowUp') { e.preventDefault(); restartBtn.focus() }
       })
 
       content.appendChild(title)
@@ -469,7 +417,6 @@ export class WordGame extends Window {
       content.appendChild(streakMsg)
       content.appendChild(restartBtn)
       content.appendChild(menuBtn)
-
       setTimeout(() => restartBtn.focus(), 50)
     }, 1000)
   }
