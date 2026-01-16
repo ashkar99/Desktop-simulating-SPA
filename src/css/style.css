@@ -24,7 +24,6 @@
   --shadow-text-light: rgba(255,255,255,0.5)
 
   /* --- Functional Mappings --- */
-  --desktop-bg: var(--color-dark-sandstone);
   --taskbar-bg: var(--color-wood);
   --taskbar-text: #EFEFEF;
   --window-bg: var(--color-sandstone);
@@ -58,7 +57,7 @@ body, html {
   position: relative; 
   width: 100%;
   height: 100vh;
-  background-color: var(--desktop-bg);
+  background-color: var(--color-dark-sandstone);
 }
 
 /* --- Timer --- */
