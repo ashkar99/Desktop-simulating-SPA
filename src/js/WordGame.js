@@ -17,35 +17,35 @@ export class WordGame extends Window {
     this.loadWords()
 
     this.levels = {
-      easy: { 
-        label: 'Level: Easy (Relaxed)', 
-        color: 'var(--color-azure)', 
-        hearts: 6, 
-        time: null 
+      easy: {
+        label: 'Level: Easy (Relaxed)',
+        color: 'var(--color-azure)',
+        hearts: 6,
+        time: null
       },
-      normal: { 
-        label: 'Level: Normal (60s)', 
-        color: 'var(--color-gold)', 
-        hearts: 6, 
-        time: 60 
+      normal: {
+        label: 'Level: Normal (60s)',
+        color: 'var(--color-gold)',
+        hearts: 6,
+        time: 60
       },
-      hard: { 
-        label: 'Level: Hard (3 Hearts)', 
-        color: 'var(--color-terracotta)', 
-        hearts: 3, 
-        time: 60 
+      hard: {
+        label: 'Level: Hard (3 Hearts)',
+        color: 'var(--color-terracotta)',
+        hearts: 3,
+        time: 60
       },
-      brutal: { 
-        label: 'Level: Brutal (30s)', 
-        color: '#8B0000', 
-        hearts: 3, 
-        time: 30 
+      brutal: {
+        label: 'Level: Brutal (30s)',
+        color: '#8B0000',
+        hearts: 3,
+        time: 30
       },
-      mujahid: { 
-        label: 'Level: Mujahid (1 Heart)', 
-        color: 'black', 
-        hearts: 1, 
-        time: 15 
+      mujahid: {
+        label: 'Level: Mujahid (1 Heart)',
+        color: 'black',
+        hearts: 1,
+        time: 15
       }
     }
 
@@ -106,7 +106,7 @@ export class WordGame extends Window {
       }
     }
     updatePathBtn()
-    
+
     pathBtn.addEventListener('click', () => {
       this.selectedCategory = (this.selectedCategory === 'architect') ? 'scholar' : 'architect'
       updatePathBtn()
@@ -119,7 +119,7 @@ export class WordGame extends Window {
       const config = this.levels[this.selectedLevel]
       levelBtn.textContent = config.label
       levelBtn.style.backgroundColor = config.color
-      levelBtn.style.color =  'white'
+      levelBtn.style.color = 'white'
     }
     updateLevelBtn()
 
@@ -198,11 +198,11 @@ export class WordGame extends Window {
 
     const randomIndex = Math.floor(Math.random() * wordList.length)
     this.currentWordObj = wordList[randomIndex]
-    this.secretWord = this.currentWordObj.word 
-    
+    this.secretWord = this.currentWordObj.word
+
     const config = this.levels[this.selectedLevel]
     this.lives = config.hearts
-    
+
     if (this.timer) this.timer.stop()
 
     this.guessedLetters.clear()
@@ -219,7 +219,7 @@ export class WordGame extends Window {
       this.timer.start()
     }
   }
-  
+
   renderGameUI () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -238,14 +238,14 @@ export class WordGame extends Window {
       heart.id = `heart-${i}`
       heartsContainer.appendChild(heart)
     }
-    
+
     const streakDisplay = document.createElement('div')
     streakDisplay.textContent = `Streak: ${this.streak}`
     streakDisplay.className = 'word-game-streak'
 
     statsBar.appendChild(heartsContainer)
     statsBar.appendChild(streakDisplay)
-    
+
     this.wordDisplay = document.createElement('div')
     this.wordDisplay.className = 'word-display'
     this.updateWordDisplay()
@@ -277,7 +277,7 @@ export class WordGame extends Window {
     content.appendChild(this.wordDisplay)
     content.appendChild(hintDisplay)
     content.appendChild(keyboard)
-    
+
     this.element.setAttribute('tabindex', '0')
     this.element.focus()
 
@@ -295,7 +295,7 @@ export class WordGame extends Window {
     if (this.guessedLetters.has(letter)) return
 
     this.guessedLetters.add(letter)
-    
+
     const btn = this.element.querySelector(`#key-${letter}`)
     if (btn) btn.disabled = true
 
@@ -333,13 +333,13 @@ export class WordGame extends Window {
       if (this.timer) this.timer.stop()
       this.isGameOver = true
       this.streak++
-      
+
       if (this.streak > this.bestStreak) {
         this.bestStreak = this.streak
         this.storage.saveBestStreak(this.bestStreak)
       }
       this.storage.saveWordStreak(this.streak)
-      
+
       this.playSound('win')
       this.wordDisplay.classList.add('win')
       this.renderEndScreen('Victory!', 'The Scroll is Safe.')
@@ -352,11 +352,11 @@ export class WordGame extends Window {
       this.isGameOver = true
       this.streak = 0
       this.storage.saveWordStreak(this.streak)
-      
+
       this.playSound('lose')
       this.wordDisplay.textContent = this.secretWord.split('').join(' ')
       this.wordDisplay.classList.add('lose')
-      
+
       const msg = isTimeout ? 'Time ran out!' : 'The Scroll is Lost.'
       this.renderEndScreen('Defeat', msg)
     }
@@ -379,7 +379,7 @@ export class WordGame extends Window {
 
       const defBox = document.createElement('div')
       defBox.className = 'word-definition-box'
-      
+
       const wordText = this.currentWordObj ? this.currentWordObj.word : this.secretWord
       const defText = this.currentWordObj ? this.currentWordObj.definition : 'Definition unavailable'
 
