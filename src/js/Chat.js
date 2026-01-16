@@ -17,7 +17,7 @@ export class Chat extends Window {
     this.api = new ChatAPI()
     this.storage = new StorageManager()
     this.defaultChannel = 'PWD-General'
-    
+
     // Load state from StorageManager
     this.username = this.storage.getUsername()
     this.messages = this.storage.getChatHistory(this.defaultChannel)
@@ -205,12 +205,12 @@ export class Chat extends Window {
     }
 
     this.defaultChannel = newChannel
-    
+
     this.api.disconnect()
 
     this.messageArea.innerHTML = ''
     this.element.querySelector('.chat-overlay')?.remove()
-    
+
     // Load new history from StorageManager
     this.messages = this.storage.getChatHistory(this.defaultChannel)
     this.renderCachedMessages()
@@ -309,7 +309,7 @@ export class Chat extends Window {
    */
   sendMessage (text) {
     if (!text.trim()) return
-    
+
     try {
       this.api.sendMessage(text, this.username, this.defaultChannel)
     } catch (error) {

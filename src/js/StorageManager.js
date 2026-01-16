@@ -3,7 +3,6 @@
  * @class - StorageManager.
  */
 export class StorageManager {
-  
   /**
    * Safely retrieves and parses a JSON item.
    * @param {string} key - LocalStorage key.
@@ -81,13 +80,14 @@ export class StorageManager {
    * @param {string} nickname - User's name.
    * @param {number} time - Total time in milliseconds.
    * @param {string} listName - The unique key for the mode.
+   * @param listKey
    */
   saveHighScore (nickname, time, listKey) {
     const scores = this.getHighScores(listKey)
     scores.push({ nickname, time })
     scores.sort((a, b) => a.time - b.time)
     const top5 = scores.slice(0, 5)
-  
+
     this.#save(listKey, top5)
   }
 

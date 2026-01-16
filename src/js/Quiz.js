@@ -1,502 +1,504 @@
 import { Window } from './Window.js'
-import { QuizAPI } from './QuizApi.js'
-import { LocalProvider } from './LocalProvider.js'
 import { StorageManager } from './StorageManager.js'
-import { Timer } from './Timer.js' // <--- Imported
+import { Timer } from './Timer.js'
 
-export class Quiz extends Window {
+/**
+ * Represents the Word Game (The Caliph's Scroll).
+ * A Hangman-style game with educational elements, themes, and difficulty levels.
+ * Extends the base Window class for PWD integration.
+ */
+export class WordGame extends Window {
+  /**
+   * Initializes the game window, loads resources, and sets up initial state.
+   */
   constructor () {
-    super('Al-Andalus Quiz')
-
-    // Dependencies
-    this.api = null
+    super("The Caliph's Scroll")
     this.storage = new StorageManager()
 
-    // Game State
-    this.nickname = ''
-    this.totalTime = 0
-    this.timer = null
-    this.timeLimit = 10
-    this.startUrl = null
-    this.activeKey = 'quiz-server-normal'
-
-    // Window Dimensions
+    // Window dimensions configuration
     this.element.style.width = '400px'
     this.element.style.height = '600px'
     this.element.style.minWidth = '320px'
     this.element.style.minHeight = '550px'
+    this.element.classList.add('word-game-window')
+
+    // Data containers
+    this.categories = { scholar: [], architect: [] }
+    this.loadWords()
+
+    // Difficulty Configuration
+    this.levels = {
+      easy: {
+        label: 'Level: Easy (Relaxed)',
+        color: 'var(--color-azure)',
+        hearts: 6,
+        time: null
+      },
+      normal: {
+        label: 'Level: Normal (60s)',
+        color: 'var(--color-gold)',
+        hearts: 6,
+        time: 60
+      },
+      hard: {
+        label: 'Level: Hard (3 Hearts)',
+        color: 'var(--color-terracotta)',
+        hearts: 3,
+        time: 60
+      },
+      brutal: {
+        label: 'Level: Brutal (30s)',
+        color: '#8B0000',
+        hearts: 3,
+        time: 30
+      },
+      mujahid: {
+        label: 'Level: Mujahid (1 Heart)',
+        color: 'black',
+        hearts: 1,
+        time: 15
+      }
+    }
+
+    // State Variables
+    this.levelKeys = ['easy', 'normal', 'hard', 'brutal', 'mujahid']
+    this.selectedCategory = 'architect'
+    this.selectedLevel = 'easy'
+
+    this.timer = null
+    this.currentWordObj = null
+    this.secretWord = ''
+    this.guessedLetters = new Set()
+    this.lives = 6
+    this.isGameOver = false
+
+    // Load stats from storage
+    this.streak = this.storage.getWordStreak()
+    this.bestStreak = this.storage.getBestStreak()
 
     this.renderStartScreen()
   }
 
   /**
-   * Cleans up the timer when the window is closed.
+   * clean up method when the window is closed.
+   * Stops any active timer to prevent memory leaks.
    */
   close () {
     if (this.timer) this.timer.stop()
     super.close()
   }
-  
-   /**
-   * Renders the Start Screen.
-   * Logic updated to handle unique High Score lists for each mode.
+
+  /**
+   * Renders the main menu (Start Screen).
+   * Contains the logo, stats, and buttons for Path (Category) and Level selection.
    */
   renderStartScreen () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
-    content.className = 'window-content quiz-layout'
+    content.className = 'window-content word-game-layout'
 
     const logo = document.createElement('img')
-    logo.src = './img/quiz-icon.png'
-    logo.alt = 'Quiz Logo'
-    logo.className = 'quiz-logo'
+    logo.src = './img/word-icon.png'
+    logo.alt = 'Scroll Icon'
+    logo.className = 'word-logo'
+    logo.addEventListener('dragstart', (e) => e.preventDefault())
 
     const title = document.createElement('h2')
-    title.className = 'quiz-title'
-    title.textContent = 'Knowledge Challenge'
+    title.textContent = "The Caliph's Scroll"
+    title.className = 'word-title'
 
-    const input = document.createElement('input')
-    input.type = 'text'
-    input.id = 'nickname'
-    input.className = 'quiz-input'
-    input.placeholder = 'Nickname (Max 15)'
-    input.maxLength = 15
-    input.autofocus = true
+    const subtitle = document.createElement('p')
+    subtitle.textContent = 'Decipher the ancient words to protect your realm from invaders.'
+    subtitle.className = 'word-subtitle'
 
-    let currentSource = 'server'
-    let currentLevel = 'normal'
+    const streakInfo = document.createElement('p')
+    streakInfo.textContent = `Current Streak: ${this.streak}  |  Best: ${this.bestStreak}`
+    streakInfo.className = 'word-streak-info'
 
-    const sourceBtn = document.createElement('button')
-    sourceBtn.className = 'memory-btn'
+    // --- Path Selector (Toggle) ---
+    const pathBtn = document.createElement('button')
+    pathBtn.className = 'memory-btn'
 
-    const updateSourceBtn = () => {
-      if (currentSource === 'server') {
-        sourceBtn.textContent = 'Source: Server (LNU)'
-        sourceBtn.style.backgroundColor = 'var(--color-azure)'
+    const updatePathBtn = () => {
+      if (this.selectedCategory === 'architect') {
+        pathBtn.textContent = 'Path: The Architect (History)'
+        pathBtn.style.backgroundColor = 'var(--color-terracotta)'
       } else {
-        sourceBtn.textContent = 'Source: Local (Custom)'
-        sourceBtn.style.backgroundColor = 'var(--color-emerald)'
+        pathBtn.textContent = 'Path: The Scholar (Code)'
+        pathBtn.style.backgroundColor = 'var(--color-azure)'
       }
     }
-    updateSourceBtn()
+    updatePathBtn()
 
-    sourceBtn.addEventListener('click', () => {
-      currentSource = currentSource === 'server' ? 'local' : 'server'
-      updateSourceBtn()
+    pathBtn.addEventListener('click', () => {
+      this.selectedCategory = (this.selectedCategory === 'architect') ? 'scholar' : 'architect'
+      updatePathBtn()
     })
 
+    // --- Level Selector (Toggle) ---
     const levelBtn = document.createElement('button')
     levelBtn.className = 'memory-btn'
 
     const updateLevelBtn = () => {
-      if (currentLevel === 'normal') {
-        levelBtn.textContent = 'Level: Normal'
-        levelBtn.style.backgroundColor = 'var(--color-gold)'
-        this.timeLimit = 10
-      } else {
-        levelBtn.textContent = 'Level: Hard'
-        levelBtn.style.backgroundColor = 'var(--color-terracotta)'
-        this.timeLimit = 5
-      }
+      const config = this.levels[this.selectedLevel]
+      levelBtn.textContent = config.label
+      levelBtn.style.backgroundColor = config.color
+      levelBtn.style.color = 'white'
     }
     updateLevelBtn()
 
     levelBtn.addEventListener('click', () => {
-      currentLevel = currentLevel === 'normal' ? 'hard' : 'normal'
+      const currentIndex = this.levelKeys.indexOf(this.selectedLevel)
+      const nextIndex = (currentIndex + 1) % this.levelKeys.length
+      this.selectedLevel = this.levelKeys[nextIndex]
       updateLevelBtn()
     })
 
-    const controls = document.createElement('div')
-    controls.className = 'quiz-controls'
-
     const startBtn = document.createElement('button')
-    startBtn.textContent = 'Start Journey'
+    startBtn.textContent = 'Unroll Scroll'
     startBtn.className = 'memory-btn'
+    startBtn.addEventListener('click', () => this.startGame())
 
-    const highscoreBtn = document.createElement('button')
-    highscoreBtn.textContent = 'High Scores'
-    highscoreBtn.className = 'memory-btn secondary'
-
-    const messageDiv = document.createElement('div')
-    messageDiv.id = 'message'
-    messageDiv.className = 'quiz-message'
-
-    const startGame = async () => {
-      const name = input.value.trim()
-      if (name) {
-        this.nickname = name
-        this.activeKey = `quiz-${currentSource}-${currentLevel}`
-
-        if (currentSource === 'local') {
-          this.api = new LocalProvider()
-          await this.api.init()
-          this.startUrl = 1
-        } else {
-          this.api = new QuizAPI()
-          this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
-        }
-        this.startGame()
-      } else {
-        this.showMessage('Please enter a nickname!', 'error')
+    // Keyboard Navigation for Menu
+    pathBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        levelBtn.focus()
       }
-    }
-
-    startBtn.addEventListener('click', startGame)
-
-    highscoreBtn.addEventListener('click', () => {
-      const key = `quiz-${currentSource}-${currentLevel}`
-      this.renderHighScoreScreen(key)
     })
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') startGame()
-      if (e.key === 'ArrowDown') sourceBtn.focus()
-    })
-
-    sourceBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown') levelBtn.focus()
-      if (e.key === 'ArrowUp') input.focus()
-    })
-
     levelBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown') startBtn.focus()
-      if (e.key === 'ArrowUp') sourceBtn.focus()
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        pathBtn.focus()
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        startBtn.focus()
+      }
     })
-
-    const handleControlNav = (e) => {
-      if (e.key === 'ArrowRight') highscoreBtn.focus()
-      if (e.key === 'ArrowLeft') startBtn.focus()
-      if (e.key === 'ArrowUp') levelBtn.focus()
-    }
-    startBtn.addEventListener('keydown', handleControlNav)
-    highscoreBtn.addEventListener('keydown', handleControlNav)
-
-    controls.appendChild(startBtn)
-    controls.appendChild(highscoreBtn)
+    startBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        pathBtn.focus()
+      }
+    })
 
     content.appendChild(logo)
     content.appendChild(title)
-    content.appendChild(input)
-    content.appendChild(sourceBtn)
+    content.appendChild(subtitle)
+    content.appendChild(streakInfo)
+    content.appendChild(pathBtn)
     content.appendChild(levelBtn)
-    content.appendChild(controls)
-    content.appendChild(messageDiv)
-
-    setTimeout(() => input.focus(), 50)
+    content.appendChild(startBtn)
+    setTimeout(() => pathBtn.focus(), 50)
   }
 
   /**
-   * Begins the quiz by fetching the first question.
+   * Asynchronously fetches word data from the JSON file.
+   * Updates this.categories with the loaded data.
    */
-  async startGame () {
-    this.totalTime = 0
-    await this.fetchQuestion(this.startUrl)
-  }
-
-  /**
-   * Fetches a question from the API and updates the UI.
-   * @param {string} url - The URL to fetch the question from.
-   */
-  async fetchQuestion (url) {
+  async loadWords () {
     try {
+      const res = await fetch('./json/words.json')
+      if (!res.ok) throw new Error('Failed to load words')
+      this.categories = await res.json()
+    } catch (err) {
+      console.error(err)
+      // Fallback data if JSON fetch fails
+      this.categories = {
+        scholar: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }],
+        architect: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }]
+      }
+    }
+  }
+
+  /**
+   * Plays a sound effect located in the audio directory.
+   * @param {string} soundName - The filename of the sound (without extension).
+   */
+  playSound (soundName) {
+    const audio = new window.Audio(`./audio/${soundName}.mp3`)
+    audio.volume = 0.5
+    audio.play().catch(e => {})
+  }
+
+  /**
+   * Initializes a new game session.
+   * Selects a random word, resets state, sets lives based on level, and starts the timer if applicable.
+   */
+  startGame () {
+    const wordList = this.categories[this.selectedCategory]
+    if (!wordList || wordList.length === 0) return
+
+    const randomIndex = Math.floor(Math.random() * wordList.length)
+    this.currentWordObj = wordList[randomIndex]
+    this.secretWord = this.currentWordObj.word
+
+    const config = this.levels[this.selectedLevel]
+    this.lives = config.hearts
+
+    if (this.timer) this.timer.stop()
+
+    this.guessedLetters.clear()
+    this.isGameOver = false
+
+    this.renderGameUI()
+
+    // Initialize Timer if the level requires it
+    if (config.time) {
+      const content = this.element.querySelector('.window-content')
+      this.timer = new Timer(content, config.time, () => {
+        this.lives = 0
+        this.checkLoss(true)
+      })
+      this.timer.start()
+    }
+  }
+
+  /**
+   * Renders the active game interface.
+   * Displays the stats bar, word placeholder, hint, and on-screen keyboard.
+   */
+  renderGameUI () {
+    const content = this.element.querySelector('.window-content')
+    content.innerHTML = ''
+    content.className = 'window-content word-game-active'
+
+    // Stats (Hearts & Streak)
+    const statsBar = document.createElement('div')
+    statsBar.className = 'word-stats'
+
+    const heartsContainer = document.createElement('div')
+    heartsContainer.id = 'word-lives'
+    for (let i = 1; i <= this.lives; i++) {
+      const heart = document.createElement('img')
+      heart.src = './img/full-heart.png'
+      heart.alt = 'Life'
+      heart.className = 'word-heart'
+      heart.id = `heart-${i}`
+      heartsContainer.appendChild(heart)
+    }
+
+    const streakDisplay = document.createElement('div')
+    streakDisplay.textContent = `Streak: ${this.streak}`
+    streakDisplay.className = 'word-game-streak'
+
+    statsBar.appendChild(heartsContainer)
+    statsBar.appendChild(streakDisplay)
+
+    // Word & Hint Display
+    this.wordDisplay = document.createElement('div')
+    this.wordDisplay.className = 'word-display'
+    this.updateWordDisplay()
+
+    const hintDisplay = document.createElement('div')
+    const hintText = this.currentWordObj ? this.currentWordObj.hint : '...'
+    hintDisplay.textContent = `Hint: ${hintText}`
+    hintDisplay.className = 'word-hint'
+
+    // Virtual Keyboard
+    const keyboard = document.createElement('div')
+    keyboard.className = 'word-keyboard'
+    const rows = ['QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM']
+
+    rows.forEach(rowString => {
+      const rowDiv = document.createElement('div')
+      rowDiv.className = 'keyboard-row'
+      for (const char of rowString) {
+        const btn = document.createElement('button')
+        btn.textContent = char
+        btn.className = 'word-key'
+        btn.id = `key-${char}`
+        btn.onclick = () => this.handleGuess(char)
+        rowDiv.appendChild(btn)
+      }
+      keyboard.appendChild(rowDiv)
+    })
+
+    content.appendChild(statsBar)
+    content.appendChild(this.wordDisplay)
+    content.appendChild(hintDisplay)
+    content.appendChild(keyboard)
+
+    // Window Focus & Keyboard Events
+    this.element.setAttribute('tabindex', '0')
+    this.element.focus()
+
+    this.element.onkeydown = (e) => {
+      const char = e.key.toUpperCase()
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      if (alphabet.includes(char)) {
+        this.handleGuess(char)
+      }
+    }
+  }
+
+  /**
+   * Processes a letter guess from the user.
+   * Updates state, plays sounds, and checks for win/loss conditions.
+   * @param {string} letter - The letter guessed by the user.
+   */
+  handleGuess (letter) {
+    if (this.isGameOver) return
+    if (this.guessedLetters.has(letter)) return
+
+    this.guessedLetters.add(letter)
+
+    // Disable the visual key
+    const btn = this.element.querySelector(`#key-${letter}`)
+    if (btn) btn.disabled = true
+
+    if (this.secretWord.includes(letter)) {
+      if (btn) btn.classList.add('correct')
+      this.playSound('correct')
+      this.updateWordDisplay()
+      this.checkWin()
+    } else {
+      if (btn) btn.classList.add('wrong')
+      this.lives--
+      this.playSound('wrong')
+      this.updateHeartUI()
+      this.checkLoss()
+    }
+  }
+
+  /**
+   * Updates the visual representation of the secret word.
+   * Hides unguessed letters with underscores.
+   */
+  updateWordDisplay () {
+    const display = this.secretWord
+      .split('')
+      .map(char => this.guessedLetters.has(char) ? char : '_')
+      .join(' ')
+    this.wordDisplay.textContent = display
+  }
+
+  /**
+   * Updates the visual heart container when a life is lost.
+   * Adds the 'lost' class to turn the heart gray/transparent.
+   */
+  updateHeartUI () {
+    const heartIndex = this.lives + 1
+    const heart = this.element.querySelector(`#heart-${heartIndex}`)
+    if (heart) heart.classList.add('lost')
+  }
+
+  /**
+   * Checks if the user has guessed all letters correctly.
+   * Stops timer, updates stats (streak/best streak), and renders victory screen.
+   */
+  checkWin () {
+    const isWin = this.secretWord.split('').every(c => this.guessedLetters.has(c))
+    if (isWin) {
+      if (this.timer) this.timer.stop()
+      this.isGameOver = true
+      this.streak++
+
+      // Update Best Streak if record broken
+      if (this.streak > this.bestStreak) {
+        this.bestStreak = this.streak
+        this.storage.saveBestStreak(this.bestStreak)
+      }
+      this.storage.saveWordStreak(this.streak)
+
+      this.playSound('win')
+      this.wordDisplay.classList.add('win')
+      this.renderEndScreen('Victory!', 'The Scroll is Safe.')
+    }
+  }
+
+  /**
+   * Checks if the user has run out of lives or time.
+   * Stops timer, resets streak, and renders defeat screen.
+   * @param {boolean} isTimeout - Whether the loss was caused by the timer running out.
+   */
+  checkLoss (isTimeout = false) {
+    if (this.lives <= 0 || isTimeout) {
+      if (this.timer) this.timer.stop()
+      this.isGameOver = true
+      this.streak = 0
+      this.storage.saveWordStreak(this.streak)
+
+      this.playSound('lose')
+      this.wordDisplay.textContent = this.secretWord.split('').join(' ')
+      this.wordDisplay.classList.add('lose')
+
+      const msg = isTimeout ? 'Time ran out!' : 'The Scroll is Lost.'
+      this.renderEndScreen('Defeat', msg)
+    }
+  }
+
+  /**
+   * Renders the Game Over screen (Victory or Defeat).
+   * Displays the word definition and options to play again or return to menu.
+   * @param {string} titleText - The title of the end screen (Victory!/Defeat).
+   * @param {string} msgText - The subtitle message.
+   */
+  renderEndScreen (titleText, msgText) {
+    setTimeout(() => {
       const content = this.element.querySelector('.window-content')
       content.innerHTML = ''
-      const loader = document.createElement('div')
-      loader.className = 'loader'
-      loader.textContent = 'Consulting the Oracle...'
-      content.appendChild(loader)
+      content.className = 'window-content word-game-layout'
 
-      const data = await this.api.getQuestion(url)
-      this.renderQuestion(data)
-    } catch (error) {
-      console.error(error)
-      this.renderGameOver('Network Error or Server Down.')
-    }
-  }
+      const title = document.createElement('h2')
+      title.textContent = titleText
+      title.className = 'word-title'
+      title.classList.add(titleText === 'Victory!' ? 'win' : 'lose')
 
-  /**
-   * Renders the Question UI, including the timer and input area.
-   * @param {object} data - The question data from the API.
-   */
-  renderQuestion (data) {
-    const content = this.element.querySelector('.window-content')
-    content.innerHTML = ''
+      const msg = document.createElement('p')
+      msg.textContent = msgText
+      msg.className = 'word-subtitle'
 
-    const timerWrapper = document.createElement('div')
-    timerWrapper.style.width = '100%'
-    content.appendChild(timerWrapper)
+      // Educational Definition Box
+      const defBox = document.createElement('div')
+      defBox.className = 'word-definition-box'
 
-    const questionText = document.createElement('p')
-    questionText.className = 'quiz-question-text'
-    questionText.textContent = data.question
+      const wordText = this.currentWordObj ? this.currentWordObj.word : this.secretWord
+      const defText = this.currentWordObj ? this.currentWordObj.definition : 'Definition unavailable'
 
-    const inputsArea = document.createElement('div')
-    inputsArea.id = 'inputs-area'
-    inputsArea.className = 'quiz-inputs-area'
+      const wordNode = document.createElement('strong')
+      wordNode.textContent = wordText
+      const br = document.createElement('br')
+      const defNode = document.createElement('span')
+      defNode.textContent = defText
+      defNode.style.fontStyle = 'italic'
+      defNode.style.fontSize = '0.9rem'
 
-    content.appendChild(questionText)
-    content.appendChild(inputsArea)
+      defBox.appendChild(wordNode)
+      defBox.appendChild(br)
+      defBox.appendChild(defNode)
 
-    if (data.alternatives) {
-      this.renderAlternatives(inputsArea, data)
-    } else {
-      this.renderTextInput(inputsArea, data)
-    }
+      const streakMsg = document.createElement('p')
+      streakMsg.textContent = `Current Streak: ${this.streak}  |  Best: ${this.bestStreak}`
+      streakMsg.className = 'word-end-streak'
 
-    this.timer = new Timer(timerWrapper, this.timeLimit, () => {
-      this.renderGameOver('Time is up!')
-    })
-    this.timer.start()
-  }
+      const restartBtn = document.createElement('button')
+      restartBtn.textContent = 'Play Again'
+      restartBtn.className = 'memory-btn'
+      restartBtn.onclick = () => this.startGame()
 
-  /**
-   * Renders a standard text input field.
-   * @param {HTMLElement} element - The container element to render the input into.
-   * @param {object} data - The question data from the API.
-   */
-  renderTextInput (element, data) {
-    const input = document.createElement('input')
-    input.type = 'text'
-    input.className = 'quiz-input'
-    input.placeholder = 'Type your answer...'
+      const menuBtn = document.createElement('button')
+      menuBtn.textContent = 'Back to Menu'
+      menuBtn.className = 'memory-btn'
+      menuBtn.style.marginTop = '10px'
+      menuBtn.onclick = () => this.renderStartScreen()
 
-    const btn = document.createElement('button')
-    btn.textContent = 'Submit'
-    btn.className = 'memory-btn'
-
-    const submit = () => {
-      if (input.value) {
-        this.submitAnswer(data.nextURL, { answer: input.value })
-      }
-    }
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') submit()
-    })
-
-    btn.addEventListener('click', submit)
-    element.appendChild(input)
-    element.appendChild(btn)
-    setTimeout(() => input.focus(), 50)
-  }
-
-  /**
-   * Renders radio buttons for multiple-choice questions.
-   * @param {HTMLElement} element - The container element to render the alternatives into.
-   * @param {object} data - The question data from the API.
-   */
-  renderAlternatives (element, data) {
-    const form = document.createElement('div')
-    form.className = 'quiz-alternatives-grid'
-
-    for (const [key, value] of Object.entries(data.alternatives)) {
-      const label = document.createElement('label')
-      label.className = 'quiz-radio-label'
-      
-      const radio = document.createElement('input')
-      radio.type = 'radio'
-      radio.name = 'alt'
-      radio.value = key
-      
-      const span = document.createElement('span')
-      span.textContent = value
-
-      label.appendChild(radio)
-      label.appendChild(span)
-      form.appendChild(label)
-    }
-
-    const btn = document.createElement('button')
-    btn.textContent = 'Submit Answer'
-    btn.className = 'memory-btn'
-
-    const submit = () => {
-      const selected = form.querySelector('input[name="alt"]:checked')
-      if (selected) {
-        this.submitAnswer(data.nextURL, { answer: selected.value })
-      }
-    }
-
-    form.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        submit()
-      }
-    })
-
-    btn.addEventListener('click', submit)
-    element.appendChild(form)
-    element.appendChild(btn)
-
-    const firstInput = form.querySelector('input')
-    if (firstInput) setTimeout(() => firstInput.focus(), 50)
-  }
-
-  /**
-   * Submits the user's answer to the API.
-   * @param {string} url - The URL to submit the answer to.
-   * @param {object} answerPayload - The answer payload containing the user's answer.
-   */
-  async submitAnswer (url, answerPayload) {
-    if (this.timer) {
-      this.totalTime += this.timer.stop()
-    }
-
-    try {
-      const response = await this.api.sendAnswer(url, answerPayload)
-      if (response.nextURL) {
-        this.fetchQuestion(response.nextURL)
-      } else {
-        this.renderVictory()
-      }
-    } catch (error) {
-      this.renderGameOver('Wrong Answer!')
-    }
-  }
-
-  /**
-   * Renders the Game Over screen.
-   * @param {string} message - The game over message to display.
-   */
-  renderGameOver (message) {
-    const content = this.element.querySelector('.window-content')
-    content.innerHTML = ''
-
-    const h2 = document.createElement('h2')
-    h2.textContent = 'Game Over'
-    h2.style.color = 'var(--color-terracotta)'
-    const p = document.createElement('p')
-    p.className = 'quiz-message error'
-    p.textContent = message
-    const controls = document.createElement('div')
-    controls.className = 'quiz-controls'
-
-    const restartBtn = document.createElement('button')
-    restartBtn.textContent = 'Try Again'
-    restartBtn.className = 'memory-btn'
-    restartBtn.addEventListener('click', () => this.renderStartScreen())
-
-    const highscoreBtn = document.createElement('button')
-    highscoreBtn.textContent = 'High Scores'
-    highscoreBtn.className = 'memory-btn secondary'
-    highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen(this.activeKey))
-
-    restartBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') highscoreBtn.focus()
-    })
-    highscoreBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') restartBtn.focus()
-    })
-
-    controls.appendChild(restartBtn)
-    controls.appendChild(highscoreBtn)
-    content.appendChild(h2)
-    content.appendChild(p)
-    content.appendChild(controls)
-    setTimeout(() => restartBtn.focus(), 50)
-  }
-
-  /**
-   * Renders the Victory screen and saves the score to the specific list.
-   */
-  renderVictory () {
-    this.storage.saveScore(this.nickname, this.totalTime, this.activeKey)
-    const timeInSeconds = (this.totalTime / 1000).toFixed(2)
-    const content = this.element.querySelector('.window-content')
-    content.innerHTML = ''
-
-    const h2 = document.createElement('h2')
-    h2.textContent = 'Victory!'
-    h2.style.color = 'var(--color-emerald)'
-
-    const pGreeting = document.createElement('p')
-    pGreeting.textContent = `Well done, ${this.nickname}!`
-    const pTime = document.createElement('p')
-    pTime.textContent = 'Total Time: '
-    const bTime = document.createElement('b')
-    bTime.textContent = `${timeInSeconds}s`
-    pTime.appendChild(bTime)
-
-    const hsDiv = document.createElement('div')
-    hsDiv.className = 'quiz-highscore-list'
-    const h3 = document.createElement('h3')
-    h3.textContent = 'Hall of Fame'
-    const ol = document.createElement('ol')
-
-    const topScores = this.storage.getHighScores(this.activeKey)
-    topScores.forEach(score => {
-      const li = document.createElement('li')
-      li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
-      ol.appendChild(li)
-    })
-    hsDiv.appendChild(h3)
-    hsDiv.appendChild(ol)
-
-    const restartBtn = document.createElement('button')
-    restartBtn.textContent = 'Play Again'
-    restartBtn.className = 'memory-btn'
-    restartBtn.addEventListener('click', () => this.renderStartScreen())
-
-    content.appendChild(h2)
-    content.appendChild(pGreeting)
-    content.appendChild(pTime)
-    content.appendChild(hsDiv)
-    content.appendChild(restartBtn)
-    setTimeout(() => restartBtn.focus(), 50)
-  }
-
-  /**
-   * Renders the High Score table.
-   * @param {string} listKey - The specific list to display depending on mode.
-   */
-  renderHighScoreScreen (listKey) {
-    const targetKey = listKey || this.activeKey
-    const content = this.element.querySelector('.window-content')
-    content.innerHTML = ''
-
-    const titleText = targetKey.replace('quiz-', '').replace('-', ' / ').toUpperCase()
-    const h2 = document.createElement('h2')
-    h2.textContent = titleText
-
-    const hsDiv = document.createElement('div')
-    hsDiv.className = 'quiz-highscore-list'
-    const ol = document.createElement('ol')
-    const topScores = this.storage.getHighScores(targetKey)
-
-    if (topScores.length === 0) {
-      const li = document.createElement('li')
-      li.textContent = 'No scores yet!'
-      ol.appendChild(li)
-    } else {
-      topScores.forEach(score => {
-        const li = document.createElement('li')
-        li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
-        ol.appendChild(li)
+      // Accessibility Navigation
+      restartBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); menuBtn.focus() }
       })
-    }
-    hsDiv.appendChild(ol)
+      menuBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') { e.preventDefault(); restartBtn.focus() }
+      })
 
-    const backBtn = document.createElement('button')
-    backBtn.textContent = 'Back'
-    backBtn.className = 'memory-btn'
-    backBtn.addEventListener('click', () => this.renderStartScreen())
-
-    content.appendChild(h2)
-    content.appendChild(hsDiv)
-    content.appendChild(backBtn)
-    setTimeout(() => backBtn.focus(), 50)
-  }
-
-  /**
-   * Displays a message to the user.
-   * @param {string} msg - The message to display.
-   * @param {string} type - The type of message.
-   */
-  showMessage (msg, type) {
-    const el = this.element.querySelector('#message')
-    if (el) {
-      el.textContent = msg
-      el.style.color = type === 'error' ? 'var(--color-terracotta)' : 'var(--color-emerald)'
-    }
+      content.appendChild(title)
+      content.appendChild(msg)
+      content.appendChild(defBox)
+      content.appendChild(streakMsg)
+      content.appendChild(restartBtn)
+      content.appendChild(menuBtn)
+      setTimeout(() => restartBtn.focus(), 50)
+    }, 1000)
   }
 }

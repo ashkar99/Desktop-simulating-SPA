@@ -8,11 +8,11 @@ export class Timer {
     this.parent = parentElement
     this.duration = durationSeconds * 1000 // ms
     this.onTimeout = onTimeout
-    
+
     this.intervalId = null
     this.startTime = 0
     this.barElement = null // The visible green bar
-    this.container = null  // The gray track
+    this.container = null // The gray track
   }
 
   /**
@@ -20,9 +20,9 @@ export class Timer {
    */
   start () {
     this.render() // 1. Create UI
-    
+
     this.startTime = Date.now()
-    
+
     // 2. Start Loop
     this.intervalId = setInterval(() => {
       const elapsed = Date.now() - this.startTime
@@ -32,7 +32,7 @@ export class Timer {
       // Update UI
       if (this.barElement) {
         this.barElement.style.width = `${percentage}%`
-        
+
         // Color Change Logic (Green -> Red)
         if (percentage < 25) {
           this.barElement.style.backgroundColor = 'var(--color-terracotta)'
@@ -75,7 +75,7 @@ export class Timer {
     this.barElement.className = 'timer-bar'
 
     this.container.appendChild(this.barElement)
-    
+
     // Insert at the top of the parent
     this.parent.prepend(this.container)
   }

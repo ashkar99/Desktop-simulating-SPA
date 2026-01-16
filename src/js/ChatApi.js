@@ -66,8 +66,8 @@ export class ChatAPI {
     const payload = {
       type: 'message',
       data: text,
-      username: username,
-      channel: channel,
+      username,
+      channel,
       key: this.apiKey
     }
 

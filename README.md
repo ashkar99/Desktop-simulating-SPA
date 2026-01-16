@@ -8,6 +8,8 @@ Please check that your application meets the requirements below before submittin
 
 TODO:
 - document.style in all files
+- window down limit wall ( bcs different window size)
+- quiz sounds
 
 ## F1: PWD Functional Requirements
 The PWD application should be a single page application.
