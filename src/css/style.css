@@ -21,9 +21,10 @@
   --shadow-medium: rgba(0, 0, 0, 0.4);
   --shadow-dark: rgba(0, 0, 0, 0.5);
   --shadow-focus: rgba(197, 160, 89, 0.8); /* Gold glow */
-  --shadow-text-light: rgba(255,255,255,0.5)
+  --shadow-text-light: rgba(255,255,255,0.5);
 
   /* --- Functional Mappings --- */
+  --desktop-bg: var(--color-dark-sandstone);
   --taskbar-bg: var(--color-wood);
   --taskbar-text: #EFEFEF;
   --window-bg: var(--color-sandstone);
@@ -57,7 +58,7 @@ body, html {
   position: relative; 
   width: 100%;
   height: 100vh;
-  background-color: var(--color-dark-sandstone);
+  background-color: var(--desktop-bg);
 }
 
 /* --- Timer --- */
