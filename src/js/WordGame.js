@@ -16,19 +16,46 @@ export class WordGame extends Window {
     this.loadWords()
 
     this.levels = {
-      easy: { label: 'Level: Easy (Relaxed)', color: 'var(--color-azure)' },
-      normal: { label: 'Level: Normal (60s)', color: 'var(--color-gold)' },
-      hard: { label: 'Level: Hard (3 Hearts)', color: 'var(--color-terracotta)' },
-      brutal: { label: 'Level: Brutal (30s)', color: '#8B0000' }, 
-      mujahid: { label: 'Level: Mujahid (1 Heart)', color: 'black' }
+      easy: { 
+        label: 'Level: Easy (Relaxed)', 
+        color: 'var(--color-azure)', 
+        hearts: 6, 
+        time: null 
+      },
+      normal: { 
+        label: 'Level: Normal (60s)', 
+        color: 'var(--color-gold)', 
+        hearts: 6, 
+        time: 60 
+      },
+      hard: { 
+        label: 'Level: Hard (3 Hearts)', 
+        color: 'var(--color-terracotta)', 
+        hearts: 3, 
+        time: 60 
+      },
+      brutal: { 
+        label: 'Level: Brutal (30s)', 
+        color: '#8B0000', 
+        hearts: 3, 
+        time: 30 
+      },
+      mujahid: { 
+        label: 'Level: Mujahid (1 Heart)', 
+        color: 'black', 
+        hearts: 1, 
+        time: 15 
+      }
     }
 
     this.levelKeys = ['easy', 'normal', 'hard', 'brutal', 'mujahid']
     
     // Default Settings
     this.selectedCategory = 'architect'
-    this.selectedLevel = 'normal'
+    this.selectedLevel = 'easy'
 
+    this.timeLimit = null
+    this.timerInterval = null
     this.currentWordObj = null
     this.secretWord = ''
     this.guessedLetters = new Set()
@@ -178,8 +205,10 @@ export class WordGame extends Window {
     
     this.currentWordObj = wordList[randomIndex]
     this.secretWord = this.currentWordObj.word 
+    const config = this.levels[this.selectedLevel]
+    this.lives = config.hearts
+    this.timeLimit = config.time
     this.guessedLetters.clear()
-    this.lives = 6
     this.isGameOver = false
 
     this.renderGameUI()
