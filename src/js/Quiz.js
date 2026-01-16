@@ -275,11 +275,11 @@ export class Quiz extends Window {
 
     const timerContainer = document.createElement('div')
     timerContainer.id = 'timer-container'
-    timerContainer.className = 'quiz-timer-container'
+    timerContainer.className = 'timer-container'
 
     const timerBar = document.createElement('div')
     timerBar.id = 'timer-bar'
-    timerBar.className = 'quiz-timer-bar'
+    timerBar.className = 'timer-bar'
 
     timerContainer.appendChild(timerBar)
 

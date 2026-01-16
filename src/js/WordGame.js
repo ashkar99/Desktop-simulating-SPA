@@ -208,16 +208,32 @@ export class WordGame extends Window {
     const config = this.levels[this.selectedLevel]
     this.lives = config.hearts
     this.timeLimit = config.time
+    
     this.guessedLetters.clear()
     this.isGameOver = false
 
     this.renderGameUI()
+
+    if (this.timeLimit) {
+      this.startTimer()
+    }
   }
   
   renderGameUI () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
     content.className = 'window-content word-game-active'
+
+    if (this.timeLimit) {
+      const timerContainer = document.createElement('div')
+      timerContainer.className = 'timer-container'
+      
+      const timerFill = document.createElement('div')
+      timerFill.className = 'timer-fill'
+      
+      timerContainer.appendChild(timerFill)
+      content.appendChild(timerContainer)
+    }
 
     const statsBar = document.createElement('div')
     statsBar.className = 'word-stats'
@@ -286,6 +302,36 @@ export class WordGame extends Window {
     }
   }
 
+  startTimer () {
+    if (this.timerInterval) clearInterval(this.timerInterval)
+    
+    const startTime = Date.now()
+    const duration = this.timeLimit * 1000
+
+    this.timerInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime
+      const remaining = duration - elapsed
+      
+      const percentage = Math.max(0, (remaining / duration) * 100)
+      const bar = this.element.querySelector('.word-timer-fill')
+      
+      if (bar) {
+        bar.style.width = `${percentage}%`
+        if (percentage < 20) {
+          bar.style.backgroundColor = 'var(--color-terracotta)'
+        } else {
+          bar.style.backgroundColor = 'var(--color-emerald)'
+        }
+      }
+
+      if (remaining <= 0) {
+        clearInterval(this.timerInterval)
+        this.lives = 0
+        this.checkLoss(true)
+      }
+    }, 100)
+  }
+
   handleGuess (letter) {
     if (this.isGameOver) return
     if (this.guessedLetters.has(letter)) return
@@ -328,6 +374,7 @@ export class WordGame extends Window {
   checkWin () {
     const isWin = this.secretWord.split('').every(c => this.guessedLetters.has(c))
     if (isWin) {
+      if (this.timerInterval) clearInterval(this.timerInterval)
       this.isGameOver = true
       this.streak++
       this.storage.saveWordStreak(this.streak)
@@ -338,8 +385,9 @@ export class WordGame extends Window {
     }
   }
 
-  checkLoss () {
-    if (this.lives <= 0) {
+  checkLoss (isTimeout = false) {
+    if (this.lives <= 0 || isTimeout) {
+      if (this.timerInterval) clearInterval(this.timerInterval)
       this.isGameOver = true
       this.streak = 0
       this.storage.saveWordStreak(this.streak)
@@ -347,7 +395,9 @@ export class WordGame extends Window {
       this.playSound('lose')
       this.wordDisplay.textContent = this.secretWord.split('').join(' ')
       this.wordDisplay.classList.add('lose')
-      this.renderEndScreen('Defeat', 'The Scroll is Lost.')
+      
+      const msg = isTimeout ? 'Time ran out!' : 'The Scroll is Lost.'
+      this.renderEndScreen('Defeat', msg)
     }
   }
 
