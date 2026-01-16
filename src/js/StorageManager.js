@@ -106,4 +106,15 @@ export class StorageManager {
   saveWordStreak (streak) {
     this.#save('pwd-word-streak', streak)
   }
+
+  getBestStreak () {
+    return parseInt(localStorage.getItem('word-best-streak')) || 0
+  }
+
+  saveBestStreak (streak) {
+    const currentBest = this.getBestStreak()
+    if (streak > currentBest) {
+      localStorage.setItem('word-best-streak', streak)
+    }
+  }
 }

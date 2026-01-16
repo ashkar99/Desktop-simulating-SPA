@@ -61,6 +61,7 @@ export class WordGame extends Window {
     this.isGameOver = false
 
     this.streak = this.storage.getWordStreak()
+    this.bestStreak = this.storage.getBestStreak()
     this.renderStartScreen()
   }
 
@@ -89,7 +90,7 @@ export class WordGame extends Window {
     subtitle.className = 'word-subtitle'
 
     const streakInfo = document.createElement('p')
-    streakInfo.textContent = `Current Streak: ${this.streak}`
+    streakInfo.textContent = `Current Streak: ${this.streak}  |  Best: ${this.bestStreak}`
     streakInfo.className = 'word-streak-info'
 
     const pathBtn = document.createElement('button')
@@ -332,6 +333,11 @@ export class WordGame extends Window {
       if (this.timer) this.timer.stop()
       this.isGameOver = true
       this.streak++
+      
+      if (this.streak > this.bestStreak) {
+        this.bestStreak = this.streak
+        this.storage.saveBestStreak(this.bestStreak)
+      }
       this.storage.saveWordStreak(this.streak)
       
       this.playSound('win')
@@ -390,7 +396,7 @@ export class WordGame extends Window {
       defBox.appendChild(defNode)
 
       const streakMsg = document.createElement('p')
-      streakMsg.textContent = `Current Streak: ${this.streak}`
+      streakMsg.textContent = `Current Streak: ${this.streak}  |  Best: ${this.bestStreak}`
       streakMsg.className = 'word-end-streak'
 
       const restartBtn = document.createElement('button')
