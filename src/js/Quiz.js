@@ -223,6 +223,7 @@ export class Quiz extends Window {
     content.innerHTML = ''
 
     const timerWrapper = document.createElement('div')
+    timerWrapper.style.width = '100%'
     content.appendChild(timerWrapper)
 
     const questionText = document.createElement('p')

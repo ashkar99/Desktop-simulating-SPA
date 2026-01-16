@@ -72,7 +72,7 @@ export class Timer {
     this.container.className = 'timer-container'
 
     this.barElement = document.createElement('div')
-    this.barElement.className = 'timer-fill'
+    this.barElement.className = 'timer-bar'
 
     this.container.appendChild(this.barElement)
     

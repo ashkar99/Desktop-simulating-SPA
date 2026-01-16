@@ -21,6 +21,7 @@
   --shadow-medium: rgba(0, 0, 0, 0.4);
   --shadow-dark: rgba(0, 0, 0, 0.5);
   --shadow-focus: rgba(197, 160, 89, 0.8); /* Gold glow */
+  --shadow-text-light: rgba(255,255,255,0.5)
 
   /* --- Functional Mappings --- */
   --desktop-bg: var(--color-sandstone);
@@ -888,7 +889,6 @@ body, html {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: var(--color-sandstone);
   gap: 15px; 
 }
 
@@ -923,7 +923,6 @@ body, html {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  background-color: var(--color-sandstone);
   height: 100%;
 }
 
@@ -941,7 +940,7 @@ body, html {
   width: 32px;
   height: 32px;
   margin: 0 4px;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 2px 2px var(--shadow-light));
   transition: transform 0.2s;
 }
 
@@ -958,7 +957,7 @@ body, html {
   color: var(--color-wood);
   text-align: center;
   margin: 20px 0 40px 0;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+  text-shadow: 1px 1px 0 --shadow-text-light;
 }
 
 /* --- On-Screen QWERTY Keyboard --- */
@@ -1002,14 +1001,14 @@ body, html {
   background-color: var(--color-emerald) !important;
   border-color: var(--color-emerald);
   opacity: 1 !important; 
-  color: white;
+  color: var(--color-white);
 }
 
 .word-key.wrong {
   background-color: var(--color-terracotta) !important;
   border-color: var(--color-terracotta);
   opacity: 0.8;
-  color: white;
+  color: var(--color-white);
 }
 
 .word-key:disabled {
@@ -1052,7 +1051,7 @@ body, html {
 }
 
 .word-definition-box {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--color-light-sandstone);
   padding: 15px;
   border-radius: 8px;
   margin: 15px 0;
