@@ -298,16 +298,27 @@ export class WordGame extends Window {
       msg.textContent = msgText
       msg.className = 'word-subtitle'
 
+      const defBox = document.createElement('div')
+      defBox.className = 'word-definition-box'
+      
+      const wordText = this.currentWordObj ? this.currentWordObj.word : this.secretWord
+      const defText = this.currentWordObj ? this.currentWordObj.definition : 'Definition unavailable'
+
+      const wordNode = document.createElement('strong')
+      wordNode.textContent = wordText
+      const br = document.createElement('br')
+      const defNode = document.createElement('span')
+      defNode.textContent = defText
+      defNode.style.fontStyle = 'italic'
+      defNode.style.fontSize = '0.9rem'
+
+      defBox.appendChild(wordNode)
+      defBox.appendChild(br)
+      defBox.appendChild(defNode)
+
       const streakMsg = document.createElement('p')
       streakMsg.textContent = `Current Streak: ${this.streak}`
       streakMsg.className = 'word-end-streak'
-
-      if (titleText === 'Defeat') {
-        const reveal = document.createElement('p')
-        reveal.textContent = `The word was: ${this.secretWord}`
-        reveal.className = 'word-end-reveal'
-        content.appendChild(reveal)
-      }
 
       const restartBtn = document.createElement('button')
       restartBtn.textContent = 'Play Again'
@@ -334,13 +345,14 @@ export class WordGame extends Window {
         }
       })
 
-      setTimeout(() => restartBtn.focus(), 50)
-
       content.appendChild(title)
       content.appendChild(msg)
+      content.appendChild(defBox)
       content.appendChild(streakMsg)
       content.appendChild(restartBtn)
       content.appendChild(menuBtn)
+
+      setTimeout(() => restartBtn.focus(), 50)
     }, 1000)
   }
 }
