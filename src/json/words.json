@@ -1,0 +1,106 @@
+{
+  "scholar": [
+    { 
+        "word": "JAVASCRIPT",
+        "hint": "The language of the web",
+        "definition": "A programming language that enables interactive web pages."
+    },
+    { 
+        "word": "MODULE",
+        "hint": "A separate unit of code",
+        "definition": "A self-contained file of code that encapsulates related functionality."
+    },
+    { 
+        "word": "INTERFACE",
+        "hint": "A shared boundary",
+        "definition": "A contract that defines the properties and methods an object must implement."
+    },
+    { 
+        "word": "VARIABLE",
+        "hint": "A container for data",
+        "definition": "A named storage location for holding a value that can change."
+    },
+    { 
+        "word": "BROWSER",
+        "hint": "Your window to the web",
+        "definition": "Application software for accessing the World Wide Web."
+    },
+    { 
+        "word": "OBJECT",
+        "hint": "Key-value pairs",
+        "definition": "A collection of related data and/or functionality."
+    },
+    { 
+        "word": "ARRAY",
+        "hint": "An ordered list",
+        "definition": "A data structure consisting of a collection of elements."
+    },
+    { 
+        "word": "FUNCTION",
+        "hint": "A block of reusable code",
+        "definition": "A set of statements that performs a task or calculates a value."
+    },
+    { 
+        "word": "SYNTAX",
+        "hint": "Grammar rules of code",
+        "definition": "The set of rules that define the combinations of symbols that are considered to be correctly structured."
+    },
+    { 
+        "word": "PROMISE",
+        "hint": "A future value",
+        "definition": "An object representing the eventual completion or failure of an asynchronous operation."
+    }
+  ],
+  "architect": [
+    { 
+        "word": "ALHAMBRA",
+        "hint": "The Red Fortress",
+        "definition": "A palace and fortress complex located in Granada, Spain."
+    },
+    { 
+        "word": "CORDOBA",
+        "hint": "City of the Great Mosque",
+        "definition": "A city in Andalusia known for its immense Mosque-Cathedral."
+    },
+    { 
+        "word": "GRANADA",
+        "hint": "The last stronghold",
+        "definition": "The capital of the province of Granada, home to the Alhambra."
+    },
+    { 
+        "word": "MOSQUE",
+        "hint": "Place of worship",
+        "definition": "A place of worship for Muslims."
+    },
+    { 
+        "word": "PALACE",
+        "hint": "Royal residence",
+        "definition": "A grand residence, especially a royal residence."
+    },
+    { 
+        "word": "CALIPHATE",
+        "hint": "Islamic state",
+        "definition": "The rule or reign of a caliph or chief Muslim ruler."
+    },
+    { 
+        "word": "GARDENS",
+        "hint": "Green sanctuary",
+        "definition": "Generalife is famous for these lush, water-filled spaces."
+    },
+    { 
+        "word": "ARCH",
+        "hint": "Curved structure",
+        "definition": "A curved symmetrical structure spanning an opening."
+    },
+    { 
+        "word": "GEOMETRY",
+        "hint": "Mathematical art",
+        "definition": "The branch of mathematics concerned with properties of space, used heavily in Islamic art."
+    },
+    { 
+        "word": "MINARET",
+        "hint": "Tall tower",
+        "definition": "A tall slender tower, typically part of a mosque, with a balcony."
+    }
+  ]
+}
