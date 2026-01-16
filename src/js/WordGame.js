@@ -110,7 +110,6 @@ export class WordGame extends Window {
         startBtn.focus()
       }
     })
-
     startBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowUp') {
         e.preventDefault()
@@ -157,7 +156,7 @@ export class WordGame extends Window {
 
     const heartsContainer = document.createElement('div')
     heartsContainer.id = 'word-lives'
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= this.lives; i++) {
       const heart = document.createElement('img')
       heart.src = './img/full-heart.png'
       heart.alt = 'Life'
@@ -176,7 +175,12 @@ export class WordGame extends Window {
     this.wordDisplay = document.createElement('div')
     this.wordDisplay.className = 'word-display'
     this.updateWordDisplay()
-    
+
+    const hintDisplay = document.createElement('div')
+    const hintText = this.currentWordObj ? this.currentWordObj.hint : '...'
+    hintDisplay.textContent = `Hint: ${hintText}`
+    hintDisplay.className = 'word-hint'
+
     const keyboard = document.createElement('div')
     keyboard.className = 'word-keyboard'
     
@@ -199,6 +203,7 @@ export class WordGame extends Window {
 
     content.appendChild(statsBar)
     content.appendChild(this.wordDisplay)
+    content.appendChild(hintDisplay)
     content.appendChild(keyboard)
     
     this.element.setAttribute('tabindex', '0')
