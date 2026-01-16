@@ -15,21 +15,19 @@ export class WordGame extends Window {
     this.categories = { scholar: [], architect: [] }
     this.loadWords()
 
-    // --- NEW: LEVEL CONFIGURATION ---
     this.levels = {
-      easy: { label: 'Level: Easy (Relaxed)', color: 'var(--color-emerald)' },
+      easy: { label: 'Level: Easy (Relaxed)', color: 'var(--color-azure)' },
       normal: { label: 'Level: Normal (60s)', color: 'var(--color-gold)' },
       hard: { label: 'Level: Hard (3 Hearts)', color: 'var(--color-terracotta)' },
-      brutal: { label: 'Level: Brutal (30s)', color: '#8B0000' }, // Dark Red
+      brutal: { label: 'Level: Brutal (30s)', color: '#8B0000' }, 
       mujahid: { label: 'Level: Mujahid (1 Heart)', color: 'black' }
     }
-    // Helper array to cycle through levels
+
     this.levelKeys = ['easy', 'normal', 'hard', 'brutal', 'mujahid']
     
     // Default Settings
     this.selectedCategory = 'architect'
     this.selectedLevel = 'normal'
-    // -------------------------------
 
     this.currentWordObj = null
     this.secretWord = ''
@@ -83,7 +81,6 @@ export class WordGame extends Window {
       updatePathBtn()
     })
 
-    // 2. NEW: Level Button (Toggle)
     const levelBtn = document.createElement('button')
     levelBtn.className = 'memory-btn'
 
@@ -91,7 +88,7 @@ export class WordGame extends Window {
       const config = this.levels[this.selectedLevel]
       levelBtn.textContent = config.label
       levelBtn.style.backgroundColor = config.color
-      levelBtn.style.color = (this.selectedLevel === 'mujahid' || this.selectedLevel === 'brutal') ? 'white' : 'var(--color-wood)'
+      levelBtn.style.color =  'white'
     }
     updateLevelBtn()
 
