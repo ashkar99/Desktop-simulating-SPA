@@ -1,6 +1,6 @@
 import { Window } from './Window.js'
 import { StorageManager } from './StorageManager.js'
-import { Timer } from './Timer.js' // <--- Imported
+import { Timer } from './Timer.js'
 
 export class WordGame extends Window {
   constructor () {
@@ -53,7 +53,7 @@ export class WordGame extends Window {
     this.selectedCategory = 'architect'
     this.selectedLevel = 'easy'
 
-    this.timer = null // <--- Timer instance
+    this.timer = null
     this.currentWordObj = null
     this.secretWord = ''
     this.guessedLetters = new Set()
