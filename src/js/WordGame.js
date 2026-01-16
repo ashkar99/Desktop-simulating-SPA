@@ -10,17 +10,26 @@ export class WordGame extends Window {
     this.element.style.height = '600px'
     this.element.style.minWidth = '320px'
     this.element.style.minHeight = '550px'
-
     this.element.classList.add('word-game-window')
 
-    this.categories = {
-      scholar: [],
-      architect: []
-    }
-    
+    this.categories = { scholar: [], architect: [] }
     this.loadWords()
 
+    // --- NEW: LEVEL CONFIGURATION ---
+    this.levels = {
+      easy: { label: 'Level: Easy (Relaxed)', color: 'var(--color-emerald)' },
+      normal: { label: 'Level: Normal (60s)', color: 'var(--color-gold)' },
+      hard: { label: 'Level: Hard (3 Hearts)', color: 'var(--color-terracotta)' },
+      brutal: { label: 'Level: Brutal (30s)', color: '#8B0000' }, // Dark Red
+      mujahid: { label: 'Level: Mujahid (1 Heart)', color: 'black' }
+    }
+    // Helper array to cycle through levels
+    this.levelKeys = ['easy', 'normal', 'hard', 'brutal', 'mujahid']
+    
+    // Default Settings
     this.selectedCategory = 'architect'
+    this.selectedLevel = 'normal'
+    // -------------------------------
 
     this.currentWordObj = null
     this.secretWord = ''
@@ -30,31 +39,6 @@ export class WordGame extends Window {
 
     this.streak = this.storage.getWordStreak()
     this.renderStartScreen()
-  }
-
-  /**
-   * Fetches the words from the JSON file.
-   */
-  async loadWords () {
-    try {
-      const res = await fetch('./json/words.json')
-      if (!res.ok) throw new Error('Failed to load words')
-      this.categories = await res.json()
-      console.log('Scrolls deciphered (Data Loaded)')
-    } catch (err) {
-      console.error(err)
-      // Fallback if JSON fails
-      this.categories = {
-        scholar: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }],
-        architect: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }]
-      }
-    }
-  }
-
-  playSound (soundName) {
-    const audio = new window.Audio(`./audio/${soundName}.mp3`)
-    audio.volume = 0.5
-    audio.play().catch(e => {})
   }
 
   renderStartScreen () {
@@ -93,10 +77,30 @@ export class WordGame extends Window {
       }
     }
     updatePathBtn()
-
+    
     pathBtn.addEventListener('click', () => {
       this.selectedCategory = (this.selectedCategory === 'architect') ? 'scholar' : 'architect'
       updatePathBtn()
+    })
+
+    // 2. NEW: Level Button (Toggle)
+    const levelBtn = document.createElement('button')
+    levelBtn.className = 'memory-btn'
+
+    const updateLevelBtn = () => {
+      const config = this.levels[this.selectedLevel]
+      levelBtn.textContent = config.label
+      levelBtn.style.backgroundColor = config.color
+      levelBtn.style.color = (this.selectedLevel === 'mujahid' || this.selectedLevel === 'brutal') ? 'white' : 'var(--color-wood)'
+    }
+    updateLevelBtn()
+
+    levelBtn.addEventListener('click', () => {
+      const currentIndex = this.levelKeys.indexOf(this.selectedLevel)
+      const nextIndex = (currentIndex + 1) % this.levelKeys.length
+
+      this.selectedLevel = this.levelKeys[nextIndex]
+      updateLevelBtn()
     })
 
     const startBtn = document.createElement('button')
@@ -107,9 +111,21 @@ export class WordGame extends Window {
     pathBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault()
+        levelBtn.focus()
+      }
+    })
+
+    levelBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        pathBtn.focus()
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
         startBtn.focus()
       }
     })
+
     startBtn.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowUp') {
         e.preventDefault()
@@ -122,9 +138,35 @@ export class WordGame extends Window {
     content.appendChild(subtitle)
     content.appendChild(streakInfo)
     content.appendChild(pathBtn)
+    content.appendChild(levelBtn)
     content.appendChild(startBtn)
 
     setTimeout(() => pathBtn.focus(), 50)
+  }
+
+  /**
+   * Fetches the words from the JSON file.
+   */
+  async loadWords () {
+    try {
+      const res = await fetch('./json/words.json')
+      if (!res.ok) throw new Error('Failed to load words')
+      this.categories = await res.json()
+      console.log('Scrolls deciphered (Data Loaded)')
+    } catch (err) {
+      console.error(err)
+      // Fallback if JSON fails
+      this.categories = {
+        scholar: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }],
+        architect: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }]
+      }
+    }
+  }
+
+  playSound (soundName) {
+    const audio = new window.Audio(`./audio/${soundName}.mp3`)
+    audio.volume = 0.5
+    audio.play().catch(e => {})
   }
 
   startGame () {
