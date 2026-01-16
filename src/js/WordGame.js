@@ -14,18 +14,15 @@ export class WordGame extends Window {
     this.element.classList.add('word-game-window')
 
     this.categories = {
-      scholar: [
-        'JAVASCRIPT', 'MODULE', 'INTERFACE', 'VARIABLE', 'BROWSER',
-        'OBJECT', 'ARRAY', 'FUNCTION', 'SYNTAX', 'PROMISE'
-      ],
-      architect: [
-        'ALHAMBRA', 'CORDOBA', 'GRANADA', 'MOSQUE', 'PALACE',
-        'CALIPHATE', 'GARDENS', 'ARCH', 'GEOMETRY', 'MINARET'
-      ]
+      scholar: [],
+      architect: []
     }
+    
+    this.loadWords()
 
-    this.selectedCategory = 'architect' // Default
+    this.selectedCategory = 'architect'
 
+    this.currentWordObj = null
     this.secretWord = ''
     this.guessedLetters = new Set()
     this.lives = 6
@@ -33,6 +30,25 @@ export class WordGame extends Window {
 
     this.streak = this.storage.getWordStreak()
     this.renderStartScreen()
+  }
+
+  /**
+   * Fetches the words from the JSON file.
+   */
+  async loadWords () {
+    try {
+      const res = await fetch('./json/words.json')
+      if (!res.ok) throw new Error('Failed to load words')
+      this.categories = await res.json()
+      console.log('Scrolls deciphered (Data Loaded)')
+    } catch (err) {
+      console.error(err)
+      // Fallback if JSON fails
+      this.categories = {
+        scholar: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }],
+        architect: [{ word: 'ERROR', hint: 'Check Console', definition: 'File not found' }]
+      }
+    }
   }
 
   playSound (soundName) {
@@ -114,16 +130,23 @@ export class WordGame extends Window {
 
   startGame () {
     const wordList = this.categories[this.selectedCategory]
+
+    if (!wordList || wordList.length === 0) {
+      alert('The scrolls are still arriving... (Data loading, try again in a second)')
+      return
+    }
+
     const randomIndex = Math.floor(Math.random() * wordList.length)
-    this.secretWord = wordList[randomIndex]
     
+    this.currentWordObj = wordList[randomIndex]
+    this.secretWord = this.currentWordObj.word 
     this.guessedLetters.clear()
     this.lives = 6
     this.isGameOver = false
 
     this.renderGameUI()
   }
-
+  
   renderGameUI () {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -289,7 +312,7 @@ export class WordGame extends Window {
       const menuBtn = document.createElement('button')
       menuBtn.textContent = 'Back to Menu'
       menuBtn.className = 'memory-btn'
-      menuBtn.style.marginTop = '10px' 
+      menuBtn.style.marginTop = '10px'
       menuBtn.onclick = () => this.renderStartScreen()
 
       restartBtn.addEventListener('keydown', (e) => {
