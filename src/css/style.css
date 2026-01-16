@@ -60,6 +60,23 @@ body, html {
   background-color: var(--desktop-bg);
 }
 
+/* --- Timer --- */
+.timer-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-muted);
+  border-radius: 4px;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  background-color: var(--color-emerald);
+  width: 100%;
+  transition: width 0.1s linear, background-color 0.5s;
+}
+
 /* =========================================
    3. TASKBAR (MACOS STYLE DOCK)
    ========================================= */
@@ -791,23 +808,6 @@ body, html {
   background-color: var(--color-azure);
   color: var(--color-white);
   border-color: var(--color-gray);
-}
-
-/* --- Timer --- */
-.timer-container {
-  width: 100%;
-  height: 8px;
-  background-color: var(--color-muted);
-  border-radius: 4px;
-  margin-bottom: 15px;
-  overflow: hidden;
-}
-
-.timer-bar {
-  height: 100%;
-  background-color: var(--color-emerald);
-  width: 100%;
-  transition: width 0.1s linear, background-color 0.5s;
 }
 
 /* --- Question Area --- */
