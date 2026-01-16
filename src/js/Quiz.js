@@ -2,6 +2,7 @@ import { Window } from './Window.js'
 import { QuizAPI } from './QuizApi.js'
 import { LocalProvider } from './LocalProvider.js'
 import { StorageManager } from './StorageManager.js'
+import { Timer } from './Timer.js' // <--- Imported
 
 export class Quiz extends Window {
   constructor () {
@@ -14,8 +15,7 @@ export class Quiz extends Window {
     // Game State
     this.nickname = ''
     this.totalTime = 0
-    this.questionStartTime = 0
-    this.timerInterval = null
+    this.timer = null
     this.timeLimit = 10
     this.startUrl = null
     this.activeKey = 'quiz-server-normal'
@@ -33,57 +33,11 @@ export class Quiz extends Window {
    * Cleans up the timer when the window is closed.
    */
   close () {
-    this.stopTimer()
+    if (this.timer) this.timer.stop()
     super.close()
   }
-
-  /**
-   * Starts the countdown timer.
-   */
-  startTimer () {
-    this.questionStartTime = Date.now()
-    const timerBar = this.element.querySelector('#timer-bar')
-    if (!timerBar) return
-
-    if (this.timerInterval) clearInterval(this.timerInterval)
-
-    this.timerInterval = setInterval(() => {
-      const elapsed = (Date.now() - this.questionStartTime) / 1000
-      const limit = this.timeLimit
-      const remaining = limit - elapsed
-      const percentage = (remaining / limit) * 100
-
-      if (timerBar) {
-        timerBar.style.width = `${percentage}%`
-        // Change color to red as it gets low
-        if (percentage < 30) {
-          timerBar.style.backgroundColor = 'var(--color-terracotta)'
-        } else {
-          timerBar.style.backgroundColor = 'var(--color-emerald)'
-        }
-      }
-
-      if (remaining <= 0) {
-        this.stopTimer()
-        this.renderGameOver('Time is up!')
-      }
-    }, 100)
-  }
-
-  /**
-   * Helper to stop the active countdown timer and accumulate elapsed time.
-   */
-  stopTimer () {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval)
-      this.timerInterval = null
-
-      const elapsed = Date.now() - this.questionStartTime
-      this.totalTime += elapsed
-    }
-  }
-
-  /**
+  
+   /**
    * Renders the Start Screen.
    * Logic updated to handle unique High Score lists for each mode.
    */
@@ -171,7 +125,6 @@ export class Quiz extends Window {
       const name = input.value.trim()
       if (name) {
         this.nickname = name
-
         this.activeKey = `quiz-${currentSource}-${currentLevel}`
 
         if (currentSource === 'local') {
@@ -182,7 +135,6 @@ export class Quiz extends Window {
           this.api = new QuizAPI()
           this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
         }
-
         this.startGame()
       } else {
         this.showMessage('Please enter a nickname!', 'error')
@@ -216,7 +168,6 @@ export class Quiz extends Window {
       if (e.key === 'ArrowLeft') startBtn.focus()
       if (e.key === 'ArrowUp') levelBtn.focus()
     }
-
     startBtn.addEventListener('keydown', handleControlNav)
     highscoreBtn.addEventListener('keydown', handleControlNav)
 
@@ -250,11 +201,9 @@ export class Quiz extends Window {
     try {
       const content = this.element.querySelector('.window-content')
       content.innerHTML = ''
-
       const loader = document.createElement('div')
       loader.className = 'loader'
       loader.textContent = 'Consulting the Oracle...'
-
       content.appendChild(loader)
 
       const data = await this.api.getQuestion(url)
@@ -273,15 +222,8 @@ export class Quiz extends Window {
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
 
-    const timerContainer = document.createElement('div')
-    timerContainer.id = 'timer-container'
-    timerContainer.className = 'timer-container'
-
-    const timerBar = document.createElement('div')
-    timerBar.id = 'timer-bar'
-    timerBar.className = 'timer-bar'
-
-    timerContainer.appendChild(timerBar)
+    const timerWrapper = document.createElement('div')
+    content.appendChild(timerWrapper)
 
     const questionText = document.createElement('p')
     questionText.className = 'quiz-question-text'
@@ -291,7 +233,6 @@ export class Quiz extends Window {
     inputsArea.id = 'inputs-area'
     inputsArea.className = 'quiz-inputs-area'
 
-    content.appendChild(timerContainer)
     content.appendChild(questionText)
     content.appendChild(inputsArea)
 
@@ -301,7 +242,10 @@ export class Quiz extends Window {
       this.renderTextInput(inputsArea, data)
     }
 
-    this.startTimer()
+    this.timer = new Timer(timerWrapper, this.timeLimit, () => {
+      this.renderGameOver('Time is up!')
+    })
+    this.timer.start()
   }
 
   /**
@@ -330,7 +274,6 @@ export class Quiz extends Window {
     })
 
     btn.addEventListener('click', submit)
-
     element.appendChild(input)
     element.appendChild(btn)
     setTimeout(() => input.focus(), 50)
@@ -348,12 +291,12 @@ export class Quiz extends Window {
     for (const [key, value] of Object.entries(data.alternatives)) {
       const label = document.createElement('label')
       label.className = 'quiz-radio-label'
-
+      
       const radio = document.createElement('input')
       radio.type = 'radio'
       radio.name = 'alt'
       radio.value = key
-
+      
       const span = document.createElement('span')
       span.textContent = value
 
@@ -394,7 +337,10 @@ export class Quiz extends Window {
    * @param {object} answerPayload - The answer payload containing the user's answer.
    */
   async submitAnswer (url, answerPayload) {
-    this.stopTimer()
+    if (this.timer) {
+      this.totalTime += this.timer.stop()
+    }
+
     try {
       const response = await this.api.sendAnswer(url, answerPayload)
       if (response.nextURL) {
@@ -446,7 +392,6 @@ export class Quiz extends Window {
     content.appendChild(h2)
     content.appendChild(p)
     content.appendChild(controls)
-
     setTimeout(() => restartBtn.focus(), 50)
   }
 
@@ -455,7 +400,6 @@ export class Quiz extends Window {
    */
   renderVictory () {
     this.storage.saveScore(this.nickname, this.totalTime, this.activeKey)
-
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
@@ -468,7 +412,6 @@ export class Quiz extends Window {
     pGreeting.textContent = `Well done, ${this.nickname}!`
     const pTime = document.createElement('p')
     pTime.textContent = 'Total Time: '
-
     const bTime = document.createElement('b')
     bTime.textContent = `${timeInSeconds}s`
     pTime.appendChild(bTime)
@@ -480,13 +423,11 @@ export class Quiz extends Window {
     const ol = document.createElement('ol')
 
     const topScores = this.storage.getHighScores(this.activeKey)
-
     topScores.forEach(score => {
       const li = document.createElement('li')
       li.textContent = `${score.nickname} (${(score.time / 1000).toFixed(2)}s)`
       ol.appendChild(li)
     })
-
     hsDiv.appendChild(h3)
     hsDiv.appendChild(ol)
 
@@ -500,7 +441,6 @@ export class Quiz extends Window {
     content.appendChild(pTime)
     content.appendChild(hsDiv)
     content.appendChild(restartBtn)
-
     setTimeout(() => restartBtn.focus(), 50)
   }
 
@@ -510,20 +450,16 @@ export class Quiz extends Window {
    */
   renderHighScoreScreen (listKey) {
     const targetKey = listKey || this.activeKey
-
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
 
     const titleText = targetKey.replace('quiz-', '').replace('-', ' / ').toUpperCase()
-
     const h2 = document.createElement('h2')
     h2.textContent = titleText
 
     const hsDiv = document.createElement('div')
     hsDiv.className = 'quiz-highscore-list'
-
     const ol = document.createElement('ol')
-
     const topScores = this.storage.getHighScores(targetKey)
 
     if (topScores.length === 0) {
@@ -547,7 +483,6 @@ export class Quiz extends Window {
     content.appendChild(h2)
     content.appendChild(hsDiv)
     content.appendChild(backBtn)
-
     setTimeout(() => backBtn.focus(), 50)
   }
 
