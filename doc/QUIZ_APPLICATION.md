@@ -31,10 +31,10 @@ The solution uses the **Strategy Pattern** for data and a **Shared Service** for
     * **Mode Handling:** The Start Screen allows toggling "Source" (Server/Local) and "Level" (Normal/Hard).
     * **Score Segmentation:** High Scores are saved to unique keys based on the selected settings (e.g., `quiz-server-normal`), ensuring users compete on fair grounds.
 
-3.  **Game Loop & Timer:**
-    * The timer is managed via `setInterval` (100ms precision).
-    * **Visuals:** The timer bar shrinks in width and changes color from **Emerald** to **Terracotta** when time runs low (<30%).
-    * **Accumulation:** When a question is answered, the elapsed time for that specific question is added to `this.totalTime`.
+3. **Game Loop & Timer (Component Architecture):**
+    * **Refactoring:** The countdown logic was moved from the main controller to a reusable `Timer` component (`Timer.js`).
+    * **Shared Logic:** This component is used by both the Quiz and the Word Game, ensuring consistent visual behavior (Green -> Red transition) and logic across the desktop.
+    * **Accumulation:** When the timer stops (via answer submission), the elapsed time returned by the component is added to `this.totalTime`.
 
 4.  **Shared Storage:**
     * Instead of writing raw `localStorage` code, the Quiz uses the `StorageManager` class (shared with Chat) to save and retrieve high scores safely.
@@ -52,6 +52,10 @@ The solution uses the **Strategy Pattern** for data and a **Shared Service** for
 * **Event Cleanup:**
     * *Learned:* Intervals (`setInterval`) continue running even if the window is closed.
     * *Fix:* Added a `close()` method override that calls `this.stopTimer()` to prevent memory leaks.
+
+* **Component Reusability (DRY Principle):**
+    * *Challenge:* Both the Quiz and Word Game required identical visual timers with "Game Over" callbacks.
+    * *Solution:* Extracted the timer logic into a standalone `Timer` class. This reduced code duplication and centralized the styling (CSS) and DOM creation for the timer bar.
 
 ## 5. Extensions & Advanced Features
 
@@ -74,3 +78,15 @@ The solution uses the **Strategy Pattern** for data and a **Shared Service** for
 ### D. Visual Polishing
 * **Colors:** Uses the standard Al-Andalus palette (Azure for Server mode, Emerald for Local mode).
 * **Loaders:** Displays a "Consulting the Oracle..." text loader during asynchronous fetch operations.
+
+### E. Audio Feedback
+
+* **Contextual Sound Effects:** The application provides immediate auditory cues to reinforce game state changes:
+    * **Correct Answer:** A chime (`correct.mp3`) plays when advancing to the next question.
+    * **Victory:** A celebratory sound (`win.mp3`) plays upon completing the quiz.
+    * **Defeat:** A distinct error sound (`lose.mp3`) plays on wrong answers or timeout.
+* **Error Handling:** Audio playback uses `.play().catch()` to ensure the game logic (navigation/scoring) continues smoothly even if the browser blocks autoplay or the sound file is missing.
+
+
+
+
