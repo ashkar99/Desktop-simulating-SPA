@@ -9,8 +9,8 @@
 ### Core Requirements (Functional)
 
 * **Dual Data Realms:** Users can toggle between two distinct word categories:
-* **The Architect:** Historical terms (e.g., *ALHAMBRA*, *MINARET*).
-* **The Scholar:** JavaScript terminology (e.g., *VARIABLE*, *PROMISE*).
+    * **The Architect:** Historical terms (e.g., *ALHAMBRA*, *MINARET*).
+    * **The Scholar:** JavaScript terminology (e.g., *VARIABLE*, *PROMISE*).
 
 
 * **Gameplay Mechanics:** Users guess letters via an on-screen QWERTY keyboard or physical keyboard input.
@@ -62,7 +62,7 @@ The solution emphasizes **Separation of Concerns** by offloading logic to specia
 
 * **CSS Variable Fallbacks:**
     * *Challenge:* The timer bar turned invisible during refactoring because the JS applied a CSS variable that wasn't defined in the global scope.
-    * *Solution:* Implemented robust fallback values in JavaScript (e.g., `var(--color-emerald, #2ecc71)`), ensuring the UI remains visible even if the theme breaks.
+    * *Solution:* Implemented robust fallback values in JavaScript, ensuring the UI remains visible even if the theme breaks.
 
 
 * **Focus Traps & Event Bubbling:**
@@ -92,9 +92,16 @@ The solution emphasizes **Separation of Concerns** by offloading logic to specia
 ### C. Visual Feedback & Polish
 
 * **Interactive Keyboard:** On-screen keys visually react to input:
-* **Green:** Correct guess.
-* **Red:** Incorrect guess.
+    * **Green:** Correct guess.
+    * **Red:** Incorrect guess.
 * **Disabled:** Letter already attempted.
-
-
 * **Heart Animation:** Hearts turn gray and semi-transparent (`.lost` class) when a life is lost, rather than disappearing entirely, maintaining the layout structure.
+
+### D. Audio Feedback
+
+* **Contextual Sound Effects:** The game provides immediate auditory cues to reinforce game state changes:
+    * **Correct Guess:** A satisfying chime plays when a letter is revealed.
+    * **Wrong Guess:** A distinct error sound indicates a lost life.
+    * **Victory/Defeat:** Unique musical cues play upon completing or failing a round.
+
+* **Non-Blocking Implementation:** Audio playback is handled asynchronously (`.play().catch()`) to ensure that missing sound files or browser autoplay policies do not crash the game logic. 
