@@ -109,7 +109,7 @@ export class PWD {
     // Check Bounds before positioning
     if (this.nextWindowY + winHeight > desktopH) {
       this.nextWindowY = 50
-      this.nextWindowX += 40 
+      this.nextWindowX += 40
     }
     if (this.nextWindowX + winWidth > desktopW) {
       this.nextWindowX = 50

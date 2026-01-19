@@ -36,8 +36,8 @@ export class Quiz extends Window {
     if (this.timer) this.timer.stop()
     super.close()
   }
-  
-   /**
+
+  /**
    * Renders the Start Screen.
    * Logic updated to handle unique High Score lists for each mode.
    */
@@ -304,12 +304,12 @@ export class Quiz extends Window {
     for (const [key, value] of Object.entries(data.alternatives)) {
       const label = document.createElement('label')
       label.className = 'quiz-radio-label'
-      
+
       const radio = document.createElement('input')
       radio.type = 'radio'
       radio.name = 'alt'
       radio.value = key
-      
+
       const span = document.createElement('span')
       span.textContent = value
 
@@ -352,6 +352,8 @@ export class Quiz extends Window {
   /**
    * Submits the user's answer to the API.
    * Refactored to separate Network errors from Game Logic errors.
+   * @param url
+   * @param answerPayload
    */
   async submitAnswer (url, answerPayload) {
     if (this.timer) {
@@ -359,7 +361,7 @@ export class Quiz extends Window {
     }
 
     let response
-    
+
     // 1. Network Request: ONLY catch errors from the server/API
     try {
       response = await this.api.sendAnswer(url, answerPayload)

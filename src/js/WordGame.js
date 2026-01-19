@@ -97,7 +97,7 @@ export class WordGame extends Window {
     pathBtn.className = 'memory-btn'
 
     const updatePathBtn = () => {
-      pathBtn.className = 'memory-btn path-btn' 
+      pathBtn.className = 'memory-btn path-btn'
 
       if (this.selectedCategory === 'architect') {
         pathBtn.textContent = 'Path: The Architect (History)'
@@ -120,7 +120,7 @@ export class WordGame extends Window {
     const updateLevelBtn = () => {
       const config = this.levels[this.selectedLevel]
       levelBtn.textContent = config.label
-      levelBtn.className = 'memory-btn level-btn' 
+      levelBtn.className = 'memory-btn level-btn'
       levelBtn.classList.add(this.selectedLevel)
     }
     updateLevelBtn()
