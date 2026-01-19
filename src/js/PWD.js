@@ -100,18 +100,26 @@ export class PWD {
     this.windows.push(windowObj)
     this.desktopArea.appendChild(windowObj.element)
 
-    // Position the CURRENT window & prepare for the NEXT one
+    // Measure the environment
+    const winHeight = windowObj.element.offsetHeight
+    const winWidth = windowObj.element.offsetWidth
+    const desktopH = this.desktopArea.clientHeight
+    const desktopW = this.desktopArea.clientWidth
+
+    // Check Bounds before positioning
+    if (this.nextWindowY + winHeight > desktopH) {
+      this.nextWindowY = 50
+      this.nextWindowX += 40 
+    }
+    if (this.nextWindowX + winWidth > desktopW) {
+      this.nextWindowX = 50
+      this.nextWindowY = 50
+    }
+
     windowObj.element.style.top = `${this.nextWindowY}px`
     windowObj.element.style.left = `${this.nextWindowX}px`
     this.nextWindowX += 20
     this.nextWindowY += 20
-
-    if (this.nextWindowY > window.innerHeight - 350) {
-      this.nextWindowY = 50; this.nextWindowX += 10
-    }
-    if (this.nextWindowX > window.innerWidth - 200) {
-      this.nextWindowX = 50; this.nextWindowY = 50
-    }
 
     this.#focusWindow(windowObj)
     if (typeof windowObj.focus === 'function') {
