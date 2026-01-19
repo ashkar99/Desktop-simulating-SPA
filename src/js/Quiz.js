@@ -22,7 +22,7 @@ export class Quiz extends Window {
 
     // Window Dimensions
     this.element.style.width = '400px'
-    this.element.style.height = '600px'
+    this.element.style.height = '625px'
     this.element.style.minWidth = '320px'
     this.element.style.minHeight = '550px'
 
@@ -70,12 +70,13 @@ export class Quiz extends Window {
     sourceBtn.className = 'memory-btn'
 
     const updateSourceBtn = () => {
+      sourceBtn.className = 'memory-btn quiz-source-btn'
       if (currentSource === 'server') {
         sourceBtn.textContent = 'Source: Server (LNU)'
-        sourceBtn.style.backgroundColor = 'var(--color-azure)'
+        sourceBtn.classList.add('server')
       } else {
         sourceBtn.textContent = 'Source: Local (Custom)'
-        sourceBtn.style.backgroundColor = 'var(--color-emerald)'
+        sourceBtn.classList.add('local')
       }
     }
     updateSourceBtn()
@@ -89,13 +90,14 @@ export class Quiz extends Window {
     levelBtn.className = 'memory-btn'
 
     const updateLevelBtn = () => {
+      levelBtn.className = 'memory-btn quiz-level-btn'
       if (currentLevel === 'normal') {
         levelBtn.textContent = 'Level: Normal'
-        levelBtn.style.backgroundColor = 'var(--color-gold)'
+        levelBtn.classList.add('normal')
         this.timeLimit = 10
       } else {
         levelBtn.textContent = 'Level: Hard'
-        levelBtn.style.backgroundColor = 'var(--color-terracotta)'
+        levelBtn.classList.add('hard')
         this.timeLimit = 5
       }
     }
@@ -388,7 +390,7 @@ export class Quiz extends Window {
 
     const h2 = document.createElement('h2')
     h2.textContent = 'Game Over'
-    h2.style.color = 'var(--color-terracotta)'
+    h2.classList.add('quiz-header-loss')
     const p = document.createElement('p')
     p.className = 'quiz-message error'
     p.textContent = message
@@ -432,7 +434,7 @@ export class Quiz extends Window {
 
     const h2 = document.createElement('h2')
     h2.textContent = 'Victory!'
-    h2.style.color = 'var(--color-emerald)'
+    h2.classList.add('quiz-header-win')
 
     const pGreeting = document.createElement('p')
     pGreeting.textContent = `Well done, ${this.nickname}!`
@@ -521,7 +523,7 @@ export class Quiz extends Window {
     const el = this.element.querySelector('#message')
     if (el) {
       el.textContent = msg
-      el.style.color = type === 'error' ? 'var(--color-terracotta)' : 'var(--color-emerald)'
+      el.className = `quiz-message ${type}`
     }
   }
 }

@@ -782,6 +782,40 @@ body, html {
   margin-bottom: 10px;
 }
 
+/* --- Quiz Game Styles --- */
+
+/* Source Toggle Button */
+.quiz-source-btn.server {
+  background-color: var(--color-azure) !important;
+}
+.quiz-source-btn.local {
+  background-color: var(--color-emerald) !important;
+}
+
+/* Level Toggle Button */
+.quiz-level-btn.normal {
+  background-color: var(--color-gold) !important;
+}
+.quiz-level-btn.hard {
+  background-color: var(--color-terracotta) !important;
+}
+
+/* Game Over / Victory Headers */
+.quiz-header-loss {
+  color: var(--color-terracotta) !important;
+}
+.quiz-header-win {
+  color: var(--color-emerald) !important;
+}
+
+/* Status Messages */
+.quiz-msg.error {
+  color: var(--color-terracotta) !important;
+}
+.quiz-msg.success {
+  color: var(--color-emerald) !important;
+}
+
 /* --- Controls --- */
 .quiz-input {
   padding: 10px;
