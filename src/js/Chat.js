@@ -1,6 +1,7 @@
 import { Window } from './Window.js'
 import { ChatAPI } from './ChatApi.js'
 import { StorageManager } from './StorageManager.js'
+import { SoundPlayer } from './SoundPlayer.js'
 
 /**
  * A real-time Chat Application using WebSockets.
@@ -111,7 +112,9 @@ export class Chat extends Window {
 
           // If it's NOT me, and the window is NOT the top one...
           if (!isMe && !this.element.classList.contains('active-window')) {
-            this.notify()
+            SoundPlayer.play('notification')
+            const header = this.element.querySelector('.window-header')
+            if (header) header.classList.add('unread')
           }
         }
       },
@@ -408,16 +411,6 @@ export class Chat extends Window {
   focus () {
     super.focus()
     this.markAsRead()
-  }
-
-  /**
-   * Triggers a visual notification (sound + red header).
-   */
-  notify () {
-    const audio = new window.Audio('./audio/notification.mp3')
-    audio.play().catch(e => { /* Ignore auto-play errors */ })
-    const header = this.element.querySelector('.window-header')
-    if (header) header.classList.add('unread')
   }
 
   /**

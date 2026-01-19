@@ -3,6 +3,7 @@ import { QuizAPI } from './QuizApi.js'
 import { LocalProvider } from './LocalProvider.js'
 import { StorageManager } from './StorageManager.js'
 import { Timer } from './Timer.js'
+import { SoundPlayer } from './SoundPlayer.js'
 
 export class Quiz extends Window {
   constructor () {
@@ -196,16 +197,6 @@ export class Quiz extends Window {
   }
 
   /**
-   * Plays a sound effect located in the audio directory.
-   * @param {string} soundName - The filename of the sound (without extension).
-   */
-  playSound (soundName) {
-    const audio = new window.Audio(`./audio/${soundName}.mp3`)
-    audio.volume = 0.5
-    audio.play().catch(e => {})
-  }
-
-  /**
    * Fetches a question from the API and updates the UI.
    * @param {string} url - The URL to fetch the question from.
    */
@@ -367,7 +358,7 @@ export class Quiz extends Window {
 
     // Runs only if the answer was accepted
     if (response.nextURL) {
-      this.playSound('correct')
+      SoundPlayer.play('correct')
       this.fetchQuestion(response.nextURL)
     } else {
       this.renderVictory()
@@ -379,7 +370,7 @@ export class Quiz extends Window {
    * @param {string} message - The game over message to display.
    */
   renderGameOver (message) {
-    this.playSound('lose')
+    SoundPlayer.play('lose')
     const content = this.element.querySelector('.window-content')
     content.innerHTML = ''
 
@@ -421,7 +412,7 @@ export class Quiz extends Window {
    * Renders the Victory screen and saves the score to the specific list.
    */
   renderVictory () {
-    this.playSound('win')
+    SoundPlayer.play('win')
     this.storage.saveHighScore(this.nickname, this.totalTime, this.activeKey)
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
     const content = this.element.querySelector('.window-content')

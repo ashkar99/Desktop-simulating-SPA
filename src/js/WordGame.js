@@ -1,6 +1,7 @@
 import { Window } from './Window.js'
 import { StorageManager } from './StorageManager.js'
 import { Timer } from './Timer.js'
+import { SoundPlayer } from './SoundPlayer.js'
 
 export class WordGame extends Window {
   constructor () {
@@ -188,12 +189,6 @@ export class WordGame extends Window {
     }
   }
 
-  playSound (soundName) {
-    const audio = new window.Audio(`./audio/${soundName}.mp3`)
-    audio.volume = 0.5
-    audio.play().catch(e => {})
-  }
-
   startGame () {
     const wordList = this.categories[this.selectedCategory]
     if (!wordList || wordList.length === 0) return
@@ -303,13 +298,13 @@ export class WordGame extends Window {
 
     if (this.secretWord.includes(letter)) {
       if (btn) btn.classList.add('correct')
-      this.playSound('correct')
+      SoundPlayer.play('correct')
       this.updateWordDisplay()
       this.checkWin()
     } else {
       if (btn) btn.classList.add('wrong')
       this.lives--
-      this.playSound('wrong')
+      SoundPlayer.play('wrong')
       this.updateHeartUI()
       this.checkLoss()
     }
@@ -342,7 +337,7 @@ export class WordGame extends Window {
       }
       this.storage.saveWordStreak(this.streak)
 
-      this.playSound('win')
+      SoundPlayer.play('win')
       this.wordDisplay.classList.add('win')
       this.renderEndScreen('Victory!', 'The Scroll is Safe.')
     }
@@ -355,7 +350,7 @@ export class WordGame extends Window {
       this.streak = 0
       this.storage.saveWordStreak(this.streak)
 
-      this.playSound('lose')
+      SoundPlayer.play('lose')
       this.wordDisplay.textContent = this.secretWord.split('').join(' ')
       this.wordDisplay.classList.add('lose')
 
