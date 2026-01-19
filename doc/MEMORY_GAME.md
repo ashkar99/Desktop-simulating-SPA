@@ -64,3 +64,10 @@ Beyond the basic requirements, the following extensions were implemented:
 * **Theming:** Uses the "Al-Andalus" color palette (Sandstone, Emerald, Azure, Gold).
 * **3D Animations:** CSS `transform: rotateY(180deg)` for realistic card flipping.
 * **Focus Following:** Mouse hover events take priority over keyboard focus to create a seamless "hybrid" input experience.
+
+### E. Audio Feedback
+
+* **Contextual Sound Effects:** The game provides immediate auditory cues to reinforce game state changes:
+    * **Correct Answer:** A chime (`correct.mp3`) plays when matching a pair of cards.
+    * **Victory:** A celebratory sound (`win.mp3`) plays upon completing the game.
+* **Error Handling:** `SoundPlayer.js` uses `.play().catch()` to ensure the game logic (navigation/scoring) continues smoothly even if the browser blocks autoplay or the sound file is missing.

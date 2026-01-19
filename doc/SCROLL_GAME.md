@@ -104,4 +104,4 @@ The solution emphasizes **Separation of Concerns** by offloading logic to specia
     * **Wrong Guess:** A distinct error sound indicates a lost life.
     * **Victory/Defeat:** Unique musical cues play upon completing or failing a round.
 
-* **Non-Blocking Implementation:** Audio playback is handled asynchronously (`.play().catch()`) to ensure that missing sound files or browser autoplay policies do not crash the game logic. 
+* **Non-Blocking Implementation:** Audio playback is handled `SoundPlayer.js` asynchronously (`.play().catch()`) to ensure that missing sound files or browser autoplay policies do not crash the game logic. 

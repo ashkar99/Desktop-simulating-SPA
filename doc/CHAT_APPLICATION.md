@@ -77,7 +77,7 @@ The following advanced features were implemented to meet Optional Requirements:
 ### C. Audio Notifications
 
 * **Sound Alert:** Integrated a non-intrusive notification sound (`notification.mp3`) that triggers only when a new message arrives from *another* user while the window is in the background.
-* **Browser Policy Handling:** Includes a `.catch()` block to gracefully handle modern browser policies that block auto-playing audio if the user hasn't interacted with the page yet.
+* **Browser Policy Handling:**  `SoundPlayer.js` includes a `play().catch()` block to gracefully handle modern browser policies that block auto-playing audio if the user hasn't interacted with the page yet.
 
 ### D. Advanced Persistence
 * **Username:** Remembers the user between sessions via `StorageManager.getUsername()`.

@@ -85,7 +85,7 @@ The solution uses the **Strategy Pattern** for data and a **Shared Service** for
     * **Correct Answer:** A chime (`correct.mp3`) plays when advancing to the next question.
     * **Victory:** A celebratory sound (`win.mp3`) plays upon completing the quiz.
     * **Defeat:** A distinct error sound (`lose.mp3`) plays on wrong answers or timeout.
-* **Error Handling:** Audio playback uses `.play().catch()` to ensure the game logic (navigation/scoring) continues smoothly even if the browser blocks autoplay or the sound file is missing.
+* **Error Handling:** `SoundPlayer.js` uses `.play().catch()` to ensure the game logic (navigation/scoring) continues smoothly even if the browser blocks autoplay or the sound file is missing.
 
 
 
