@@ -1,3 +1,4 @@
+import { SoundPlayer } from './SoundPlayer.js'
 import { Window } from './Window.js'
 
 /**
@@ -250,7 +251,7 @@ export class MemoryGame extends Window {
       img.src = `./img/${imgName}`
       img.alt = 'Memory Card'
       frontFace.appendChild(img)
-      
+
       const backFace = document.createElement('div')
       backFace.className = 'memory-card-face memory-card-back'
 
@@ -359,6 +360,7 @@ export class MemoryGame extends Window {
     if (!this.isTwoPlayer && !this.timerRunning) {
       this.startTimer()
     }
+    SoundPlayer.play('flip')
 
     card.classList.add('flipped')
     this.flippedCards.push(card)
@@ -374,27 +376,28 @@ export class MemoryGame extends Window {
     const isMatch = card1.dataset.symbol === card2.dataset.symbol
 
     if (isMatch) {
-      // --- MATCH FOUND ---
-      card1.classList.add('matched'); card2.classList.add('matched')
-      this.flippedCards = []
-      this.matches++
+      setTimeout(() => {
+        SoundPlayer.play('correct')
 
-      if (this.isTwoPlayer) {
-        // 2-Player: Update Score
-        this.scores[this.currentPlayer]++
-        this.updateScoreUI()
-      } else {
-        // 1-Player: Update Attempts
-        this.attempts++
-        if (this.attemptsDisplay) this.attemptsDisplay.textContent = `Attempts: ${this.attempts}`
-      }
+        card1.classList.add('matched'); card2.classList.add('matched')
+        this.flippedCards = [] // Unlock the board
+        this.matches++
 
-      // Check for Game Over
-      if (this.matches === (this.gridRows * this.gridCols) / 2) {
-        this.handleVictory()
-      }
+        // Update Scores
+        if (this.isTwoPlayer) {
+          this.scores[this.currentPlayer]++
+          this.updateScoreUI()
+        } else {
+          this.attempts++
+          if (this.attemptsDisplay) this.attemptsDisplay.textContent = `Attempts: ${this.attempts}`
+        }
+
+        // Check Victory
+        if (this.matches === (this.gridRows * this.gridCols) / 2) {
+          this.handleVictory()
+        }
+      }, 500)
     } else {
-      // --- NO MATCH ---
       if (!this.isTwoPlayer) {
         this.attempts++
         if (this.attemptsDisplay) this.attemptsDisplay.textContent = `Attempts: ${this.attempts}`
@@ -443,6 +446,7 @@ export class MemoryGame extends Window {
    */
   handleVictory () {
     this.stopTimer()
+    SoundPlayer.play('win')
 
     setTimeout(() => {
       let msg = ''
