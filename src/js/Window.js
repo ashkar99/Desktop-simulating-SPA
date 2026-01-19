@@ -6,6 +6,7 @@ export class Window {
   constructor (title) {
     this.title = title
     this.element = this.#createWindowElement()
+    this.activeMenuIndex = 0
 
     // Drag state variables
     this.isDragging = false
@@ -27,6 +28,35 @@ export class Window {
   #createWindowElement () {
     const wrapper = document.createElement('div')
     wrapper.classList.add('window')
+    
+    // Follow the Mouse (Hover to Focus)
+    wrapper.addEventListener('mouseover', (e) => {
+      // Check if the hover target is an interactive element
+      const target = e.target.closest('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+      
+      // If valid target and it's inside our window
+      if (target && wrapper.contains(target)) {
+        target.focus({ preventScroll: true })
+      }
+    })
+
+    // Click Window to Start Focus
+    wrapper.addEventListener('mousedown', (e) => {
+      // Ignore if user clicked a specific button
+      if (e.target.closest('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')) return
+      
+      if (e.target.closest('.window-header') || e.target.closest('.resize-handle')) return
+
+      const content = wrapper.querySelector('.window-content')
+      if (content) {
+        const firstFocusable = content.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+        if (firstFocusable) {
+          firstFocusable.focus({ preventScroll: true })
+          e.preventDefault() 
+        }
+      }
+    })
+
 
     const header = document.createElement('div')
     header.classList.add('window-header')
