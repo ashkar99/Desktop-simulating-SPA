@@ -119,7 +119,7 @@ export class Window {
     this.isDragging = true
     this.dragOffsetX = e.clientX - this.element.offsetLeft
     this.dragOffsetY = e.clientY - this.element.offsetTop
-    this.element.style.opacity = '0.8'
+    this.element.classList.add('dragging')
 
     document.addEventListener('mousemove', this.boundDrag)
     document.addEventListener('mouseup', this.boundStopDrag)
@@ -146,7 +146,7 @@ export class Window {
     document.removeEventListener('mousemove', this.boundDrag)
     document.removeEventListener('mouseup', this.boundStopDrag)
 
-    this.element.style.opacity = '1'
+    this.element.classList.remove('dragging')
   }
 
   #startResize (e) {

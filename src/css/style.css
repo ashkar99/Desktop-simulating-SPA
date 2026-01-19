@@ -213,6 +213,11 @@ body, html {
   padding: 0;
 }
 
+.window.dragging {
+  opacity: 0.8;
+  cursor: move; 
+}
+
 .close-btn {
   cursor: pointer;
   background: none;
