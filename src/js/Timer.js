@@ -12,7 +12,7 @@ export class Timer {
     this.intervalId = null
     this.startTime = 0
     this.barElement = null
-    this.container = null 
+    this.container = null
   }
 
   /**
