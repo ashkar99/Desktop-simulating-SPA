@@ -32,7 +32,7 @@ The core system is split into two primary classes: the **Manager** (`PWD`) and t
 1. **The Window Manager (`PWD.js`):**
     * **Lifecycle Management:** Maintains a registry (`this.windows`) of all open apps. When a window is closed, it is filtered out of this array to prevent memory leaks.
     * **Focus Logic:** Uses a global `zIndexCounter`. When a window is focused, this counter increments, and the window's `z-index` is updated. This guarantees that the most recently clicked window is always on top.
-    * **Smart Tiling:** Implements a "Cascade" positioning algorithm. New windows open at offset coordinates (`nextWindowX`, `nextWindowY`) to prevent them from completely covering existing windows.
+    * **Smart Tiling:** Implements a "Cascade" positioning algorithm. New windows open at offset coordinates (`nextWindowX`, `nextWindowY`) to prevent them from completely covering existing windows. (caused a bug because different window sizes and solved in section 4)
 
 
 2. **The Base Component (`Window.js`):**
@@ -50,6 +50,10 @@ The core system is split into two primary classes: the **Manager** (`PWD`) and t
 * **Aggressive Focus Restoration:**
     * *Challenge:* Clicking inside a window (e.g., on empty space) often caused the browser to shift focus to the `<body>`, making the window "inactive."
     * *Solution:* Implemented a `mousedown` listener on the window element that calls `e.preventDefault()` for non-interactive elements. This forces the browser to keep the focus context within the application.
+
+* **Window Stacking & Boundary Logic:**
+    * *Challenge:* The old cascading logic used hardcoded offsets and screen dimensions, causing windows to open partially off-screen or "fall off" the bottom of the desktop when multiple apps were opened.
+    * *Solution:* Upgraded the `openWindow` method to dynamically measure the new window's dimensions (`offsetHeight`, `offsetWidth`) and compare them against the `desktopArea` boundaries *before* placement. If a window would breach the bottom edge, the cascade resets to the top with a horizontal shift, ensuring all windows remain fully visible within the desktop frame.
 
 
 * **Ghost Dragging:**
