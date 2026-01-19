@@ -13,9 +13,9 @@ The Personal Web Desktop (PWD) is the central "operating system" for the single-
 * **Taskbar (Dock):** A MacOS-style dock at the bottom of the screen allows users to launch applications via icons.
 * **Z-Index Stacking:** The currently active window is always brought to the foreground (`z-index`), ensuring it visually overlaps inactive windows.
 * **Window Operations:** All windows support:
-* **Dragging:** Moving the window by clicking and holding the header.
-* **Closing:** Removing the window from the DOM and memory via a standard 'X' button.
-* **Focusing:** Clicking anywhere on a window activates it.
+    * **Dragging:** Moving the window by clicking and holding the header.
+    * **Closing:** Removing the window from the DOM and memory via a standard 'X' button.
+    * **Focusing:** Clicking anywhere on a window activates it and its keyboard functionality.
 
 
 ### Non-Functional Requirements
