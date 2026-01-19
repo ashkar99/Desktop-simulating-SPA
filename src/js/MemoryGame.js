@@ -91,7 +91,6 @@ export class MemoryGame extends Window {
       btn.className = 'memory-btn'
       btn.setAttribute('tabindex', '0')
 
-      // Special styling for Mode Toggle
       if (item.type === 'toggle') {
         btn.classList.add('memory-toggle-active')
       }
@@ -179,7 +178,7 @@ export class MemoryGame extends Window {
     }
 
     const content = this.element.querySelector('.window-content')
-    content.classList.add('game-mode') // Switch to Flexbox layout
+    content.classList.add('game-mode')
     content.innerHTML = ''
 
     // Create Status Bar
@@ -244,15 +243,20 @@ export class MemoryGame extends Window {
       card.setAttribute('tabindex', '0')
       card.setAttribute('role', 'button')
 
-      card.innerHTML = `
-        <div class="memory-card-face memory-card-front">
-          <img src="./img/${imgName}" alt="Memory Card">
-        </div>
-        <div class="memory-card-face memory-card-back"></div>
-      `
+      const frontFace = document.createElement('div')
+      frontFace.className = 'memory-card-face memory-card-front'
 
+      const img = document.createElement('img')
+      img.src = `./img/${imgName}`
+      img.alt = 'Memory Card'
+      frontFace.appendChild(img)
+      
+      const backFace = document.createElement('div')
+      backFace.className = 'memory-card-face memory-card-back'
+
+      card.appendChild(frontFace)
+      card.appendChild(backFace)
       card.addEventListener('keydown', (e) => this.handleGameKeydown(e, index))
-
       grid.appendChild(card)
       this.tiles.push(card)
     })

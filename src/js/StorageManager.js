@@ -1,13 +1,12 @@
 /**
- * specific logic for Quiz scores and Chat history.
- * @class - StorageManager.
+ * specific Storage logic for Quiz scores and Chat history.
  */
 export class StorageManager {
   /**
    * Safely retrieves and parses a JSON item.
    * @param {string} key - LocalStorage key.
-   * @param {any} defaultValue - Value to return if key doesn't exist.
-   * @returns {any} Parsed value or defaultValue.
+   * @param {string} defaultValue - Value to return if key doesn't exist.
+   * @returns {string} Parsed value or defaultValue.
    */
   #load (key, defaultValue) {
     const data = localStorage.getItem(key)
@@ -22,7 +21,7 @@ export class StorageManager {
   /**
    * Stringifies and saves an item.
    * @param {string} key - LocalStorage key.
-   * @param {any} value - Value to save.
+   * @param {string} value - Value to save.
    */
   #save (key, value) {
     try {
@@ -68,8 +67,8 @@ export class StorageManager {
 
   /**
    * Retrieves high scores for a specific list.
-   * @param {*} listKey - LocalStorage key for the high score list.
-   * @returns - Array of high score objects.
+   * @param {Array} listKey - LocalStorage key for the high score list.
+   * @returns {Array}- Array of high score objects.
    */
   getHighScores (listKey) {
     return this.#load(listKey, [])
@@ -79,8 +78,7 @@ export class StorageManager {
    * Saves a new score to a specific list.
    * @param {string} nickname - User's name.
    * @param {number} time - Total time in milliseconds.
-   * @param {string} listName - The unique key for the mode.
-   * @param listKey
+   * @param {string} listKey - The unique key for the mode.
    */
   saveHighScore (nickname, time, listKey) {
     const scores = this.getHighScores(listKey)

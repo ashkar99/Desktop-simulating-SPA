@@ -3,25 +3,27 @@
    ========================================= */
 :root {
   /* --- Al-Andalus Color Palette --- */
-  --color-sandstone: #F5E6C8;      /* Warm stone background */
-  --color-azure: #1A4B6E;          /* Deep architectural blue */
-  --color-terracotta: #BC5D41;     /* Earthy red */
-  --color-emerald: #2E5C48;        /* Garden green */
-  --color-gold: #C5A059;           /* Metallic accent */
-  --color-wood: #593c28;           /* Dark wood structure */
-  --color-dark-sandstone: #e4cda2; /* Window backgrounds */
-  --color-light-sandstone: rgba(245, 230, 200, 0.95); /* Highlighted elements */
-  --color-muted: #aaa;              /* Muted text and borders */
+  --color-sandstone: #F5E6C8;
+  --color-azure: #1A4B6E;
+  --color-terracotta: #BC5D41;
+  --color-blod: #8B0000;
+  --color-emerald: #2E5C48;
+  --color-gold: #C5A059;
+  --color-wood: #593c28;
+  --color-dark-sandstone: #e4cda2;
+  --color-light-sandstone: rgba(245, 230, 200, 0.95);
+  --color-muted: #aaa;
   
   /* --- Utility Colors --- */
   --color-white: #ffffff;
   --color-gray: #cccccc;
-  --color-focus-gold: #f6ba4b;     /* Standard gold for consistency */
+  --color-focus-gold: #f6ba4b;
+  
+  /* --- Shadows --- */
   --shadow-light: rgba(0, 0, 0, 0.2);
   --shadow-medium: rgba(0, 0, 0, 0.4);
   --shadow-dark: rgba(0, 0, 0, 0.5);
-  --shadow-focus: rgba(197, 160, 89, 0.8); /* Gold glow */
-  --shadow-text-light: rgba(255,255,255,0.5);
+  --shadow-focus: rgba(197, 160, 89, 0.8);
 
   /* --- Functional Mappings --- */
   --desktop-bg: var(--color-dark-sandstone);
@@ -1122,8 +1124,8 @@ body, html {
 .level-btn.easy { background-color: var(--color-azure) !important; color: white; }
 .level-btn.normal { background-color: var(--color-gold) !important; color: white; }
 .level-btn.hard { background-color: var(--color-terracotta) !important; color: white; }
-.level-btn.brutal { background-color: #8B0000 !important; color: white; }
-.level-btn.mujahid { background-color: black !important; color: white; }
+.level-btn.brutal { background-color: var(--color-blod) !important; color: white; }
+.level-btn.mujahid { background-color: var(--color-wood) !important; color: white; }
 
 /* End Screen Definition Text */
 .word-def-text {

@@ -13,8 +13,6 @@ export class Window {
     this.isResizing = false
     this.dragOffsetX = 0
     this.dragOffsetY = 0
-
-    // Bind methods to 'this' so adding/removing them easily
     this.boundDrag = this.#drag.bind(this)
     this.boundStopDrag = this.#stopDrag.bind(this)
     this.boundResize = this.#resize.bind(this)
@@ -34,7 +32,7 @@ export class Window {
       // Check if the hover target is an interactive element
       const target = e.target.closest('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
 
-      // If valid target and it's inside our window
+      // If valid target and it's inside the window
       if (target && wrapper.contains(target)) {
         target.focus({ preventScroll: true })
       }
@@ -150,7 +148,7 @@ export class Window {
 
   #startResize (e) {
     e.preventDefault()
-    e.stopPropagation() // Don't trigger drag
+    e.stopPropagation()
     this.isResizing = true
 
     // Capture starting dimensions
@@ -170,7 +168,6 @@ export class Window {
     const newWidth = this.startWidth + (e.clientX - this.startX)
     const newHeight = this.startHeight + (e.clientY - this.startY)
 
-    // Apply (CSS min-width/min-height will prevent it from getting too small)
     this.element.style.width = `${newWidth}px`
     this.element.style.height = `${newHeight}px`
   }

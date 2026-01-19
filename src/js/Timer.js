@@ -2,28 +2,27 @@ export class Timer {
   /**
    * @param {HTMLElement} parentElement - The element to append the timer bar to.
    * @param {number} durationSeconds - Total time in seconds.
-   * @param {function} onTimeout - Callback when time runs out.
+   * @param {boolean} onTimeout - Callback when time runs out.
    */
   constructor (parentElement, durationSeconds, onTimeout) {
     this.parent = parentElement
-    this.duration = durationSeconds * 1000 // ms
+    this.duration = durationSeconds * 1000
     this.onTimeout = onTimeout
 
     this.intervalId = null
     this.startTime = 0
-    this.barElement = null // The visible green bar
-    this.container = null // The gray track
+    this.barElement = null
+    this.container = null 
   }
 
   /**
    * Creates the UI and starts the countdown.
    */
   start () {
-    this.render() // 1. Create UI
+    this.render()
 
     this.startTime = Date.now()
 
-    // 2. Start Loop
     this.intervalId = setInterval(() => {
       const elapsed = Date.now() - this.startTime
       const remaining = this.duration - elapsed
@@ -32,8 +31,6 @@ export class Timer {
       // Update UI
       if (this.barElement) {
         this.barElement.style.width = `${percentage}%`
-
-        // Color Change Logic (Green -> Red)
         if (percentage < 25) {
           this.barElement.style.backgroundColor = 'var(--color-terracotta)'
         } else {
@@ -62,7 +59,7 @@ export class Timer {
   }
 
   /**
-   * Internal: Builds the DOM elements.
+   * Timer UI building.
    */
   render () {
     // Clean up old timer if exists

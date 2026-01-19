@@ -7,7 +7,6 @@ import { WordGame } from './WordGame.js'
 /**
  * The main Personal Web Desktop (PWD) application class.
  * This class manages the desktop environment, window stacking, and taskbar interactions.
- * @class
  */
 export class PWD {
   /**
@@ -65,7 +64,6 @@ export class PWD {
       const iconImg = document.createElement('img')
       iconImg.src = app.icon
       iconImg.alt = app.name
-      // Drag prevention for the image itself so it doesn't ghost-drag
       iconImg.addEventListener('dragstart', (e) => e.preventDefault())
 
       const iconLabel = document.createElement('span')

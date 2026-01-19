@@ -1,6 +1,5 @@
 /**
  * Handles WebSocket connection and protocol for the Chat application.
- * @class - ChatAPI.
  */
 export class ChatAPI {
   constructor () {

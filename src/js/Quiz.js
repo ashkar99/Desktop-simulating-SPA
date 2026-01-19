@@ -349,12 +349,6 @@ export class Quiz extends Window {
    * @param {string} url - The URL to submit the answer to.
    * @param {object} answerPayload - The answer payload containing the user's answer.
    */
-  /**
-   * Submits the user's answer to the API.
-   * Refactored to separate Network errors from Game Logic errors.
-   * @param url
-   * @param answerPayload
-   */
   async submitAnswer (url, answerPayload) {
     if (this.timer) {
       this.totalTime += this.timer.stop()
@@ -362,17 +356,16 @@ export class Quiz extends Window {
 
     let response
 
-    // 1. Network Request: ONLY catch errors from the server/API
+    // ONLY catch errors from the server/API
     try {
       response = await this.api.sendAnswer(url, answerPayload)
     } catch (error) {
-      console.error('API Error:', error) // Log real error for debugging
+      console.error('API Error:', error)
       this.renderGameOver('Wrong Answer!')
-      return // Stop here
+      return
     }
 
-    // 2. Game Logic: Runs only if the answer was accepted
-    // Any bugs here will now show in the console instead of triggering "Wrong Answer"
+    // Runs only if the answer was accepted
     if (response.nextURL) {
       this.playSound('correct')
       this.fetchQuestion(response.nextURL)
