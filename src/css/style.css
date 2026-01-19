@@ -387,6 +387,13 @@ body, html {
   
 }
 
+/* Memory Game Toggle Button State */
+.memory-toggle-active {
+  border: 2px solid var(--color-white);
+  font-weight: bold;
+  color: var(--color-white);
+}
+
 /* =========================================
    6. FOCUS MANAGEMENT
    ========================================= */
