@@ -1068,3 +1068,31 @@ body, html {
   max-width: 90%;
   text-align: center;
 }
+
+/* --- Word Game Styles --- */
+
+/* Path Button Variants */
+.path-btn.architect {
+  background-color: var(--color-terracotta) !important;
+}
+.path-btn.scholar {
+  background-color: var(--color-azure) !important;
+}
+
+/* Level Button Variants */
+.level-btn.easy { background-color: var(--color-azure) !important; color: white; }
+.level-btn.normal { background-color: var(--color-gold) !important; color: white; }
+.level-btn.hard { background-color: var(--color-terracotta) !important; color: white; }
+.level-btn.brutal { background-color: #8B0000 !important; color: white; }
+.level-btn.mujahid { background-color: black !important; color: white; }
+
+/* End Screen Definition Text */
+.word-def-text {
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* Menu Button Spacing */
+.menu-back-btn {
+  margin-top: 10px;
+}

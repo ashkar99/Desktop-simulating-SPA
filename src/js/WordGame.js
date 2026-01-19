@@ -97,12 +97,14 @@ export class WordGame extends Window {
     pathBtn.className = 'memory-btn'
 
     const updatePathBtn = () => {
+      pathBtn.className = 'memory-btn path-btn' 
+
       if (this.selectedCategory === 'architect') {
         pathBtn.textContent = 'Path: The Architect (History)'
-        pathBtn.style.backgroundColor = 'var(--color-terracotta)'
+        pathBtn.classList.add('architect')
       } else {
         pathBtn.textContent = 'Path: The Scholar (Code)'
-        pathBtn.style.backgroundColor = 'var(--color-azure)'
+        pathBtn.classList.add('scholar')
       }
     }
     updatePathBtn()
@@ -118,8 +120,8 @@ export class WordGame extends Window {
     const updateLevelBtn = () => {
       const config = this.levels[this.selectedLevel]
       levelBtn.textContent = config.label
-      levelBtn.style.backgroundColor = config.color
-      levelBtn.style.color = 'white'
+      levelBtn.className = 'memory-btn level-btn' 
+      levelBtn.classList.add(this.selectedLevel)
     }
     updateLevelBtn()
 
@@ -388,8 +390,7 @@ export class WordGame extends Window {
       const br = document.createElement('br')
       const defNode = document.createElement('span')
       defNode.textContent = defText
-      defNode.style.fontStyle = 'italic'
-      defNode.style.fontSize = '0.9rem'
+      defNode.classList.add('word-def-text')
 
       defBox.appendChild(wordNode)
       defBox.appendChild(br)
@@ -407,7 +408,7 @@ export class WordGame extends Window {
       const menuBtn = document.createElement('button')
       menuBtn.textContent = 'Back to Menu'
       menuBtn.className = 'memory-btn'
-      menuBtn.style.marginTop = '10px'
+      menuBtn.classList.add('menu-back-btn')
       menuBtn.onclick = () => this.renderStartScreen()
 
       restartBtn.addEventListener('keydown', (e) => {
