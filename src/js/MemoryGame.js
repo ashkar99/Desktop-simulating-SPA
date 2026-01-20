@@ -16,7 +16,7 @@ export class MemoryGame extends Window {
 
     this.images = [
       'astronomy.png', 'fountain.png', 'garden.png', 'grand-mosque.png',
-      'mosque2.png', 'person.png', 'sword.png', 'waterwheel.png'
+      'mosque.png', 'person.png', 'sword.png', 'waterwheel.png'
     ]
 
     // Game State
