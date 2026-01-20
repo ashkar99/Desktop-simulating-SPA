@@ -188,10 +188,6 @@ html {
   border: 1px solid var(--color-gold);
 }
 
-.desktop-icon:hover span {
-  display: block;
-}
-
 /* =========================================
    5. WINDOW SYSTEM
    ========================================= */
@@ -343,28 +339,6 @@ html {
   transition: width 0.1s linear, background-color 0.5s;
 }
 
-/* --- Focus Accessibility --- */
-.window-content button:focus,
-.memory-card:focus,
-.quiz-input:focus,
-.chat-login-input:focus,
-.word-key:focus {
-  outline: 4px solid var(--color-focus-gold) !important;
-  box-shadow: 0 0 10px var(--shadow-focus);
-  z-index: 100;
-  border-radius: 15px;
-}
-
-/* Specific override for memory cards to maintain shape */
-.memory-card:focus {
-  border-radius: 25px;
-  transform: scale(1.05);
-}
-
-.memory-card.flipped:focus {
-  transform: rotateY(180deg) scale(1.05);
-}
-
 /* =========================================
    7. APP: MEMORY GAME
    ========================================= */
@@ -413,7 +387,6 @@ html {
 
 .memory-card-front {
   transform: rotateY(180deg);
-  background-color: none;
 }
 
 .memory-card-front img {
@@ -463,6 +436,10 @@ html {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.desktop-icon:hover span {
+  display: block;
 }
 
 /* Menu */
@@ -606,6 +583,13 @@ html {
   opacity: 0.7;
 }
 
+.chat-input-area button img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: invert(1) brightness(2);
+}
+
 .chat-header-btn:hover img {
   filter: invert(1) brightness(2);
   opacity: 1;
@@ -679,20 +663,13 @@ html {
   flex-shrink: 0;
 }
 
-.chat-input-area button img {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  filter: invert(1) brightness(2);
-}
-
 .chat-bubble {
   max-width: 80%;
   padding: 8px 12px;
   border-radius: 10px;
   font-size: 0.9rem;
   line-height: 1.4;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   box-shadow: 1px 1px 3px var(--shadow-light);
   white-space: pre-wrap;
 }
@@ -1119,4 +1096,26 @@ html {
 
 .menu-back-btn {
   margin-top: 10px;
+}
+
+/* --- Focus Accessibility --- */
+.window-content button:focus,
+.memory-card:focus,
+.quiz-input:focus,
+.chat-login-input:focus,
+.word-key:focus {
+  outline: 4px solid var(--color-focus-gold) !important;
+  box-shadow: 0 0 10px var(--shadow-focus);
+  z-index: 100;
+  border-radius: 15px;
+}
+
+/* Specific override for memory cards to maintain shape */
+.memory-card:focus {
+  border-radius: 25px;
+  transform: scale(1.05);
+}
+
+.memory-card.flipped:focus {
+  transform: rotateY(180deg) scale(1.05);
 }
