@@ -9,10 +9,6 @@ import { WordGame } from './WordGame.js'
  * This class manages the desktop environment, window stacking, and taskbar interactions.
  */
 export class PWD {
-  /**
-   * Creates an instance of the PWD.
-   * Sets up references to the main desktop area and taskbar.
-   */
   constructor () {
     this.desktopArea = document.querySelector('#desktop-area')
     this.taskbar = document.querySelector('#taskbar')
@@ -52,6 +48,49 @@ export class PWD {
   init () {
     console.log('Al-Andalus PWD initialized.')
     this.#renderIcons()
+    this.#setupCenterWidget()
+  }
+
+  /**
+   * Creates the center widget containing the wallpaper and clock.
+   */
+  #setupCenterWidget () {
+    const container = document.createElement('div')
+    container.id = 'center-widget'
+
+    const img = document.createElement('img')
+    img.src = './img/wallpaper.png' 
+    img.alt = 'Al-Andalus Emblem'
+    img.className = 'widget-wallpaper'
+    
+    img.onerror = () => { img.style.display = 'none' }
+    const clockDiv = document.createElement('div')
+    clockDiv.className = 'widget-clock'
+    
+    const timeSpan = document.createElement('div')
+    timeSpan.className = 'clock-time'
+    
+    const dateSpan = document.createElement('div')
+    dateSpan.className = 'clock-date'
+
+    clockDiv.appendChild(timeSpan)
+    clockDiv.appendChild(dateSpan)
+    container.appendChild(clockDiv)
+    container.appendChild(img)
+    this.desktopArea.prepend(container)
+
+    const updateTime = () => {
+      const now = new Date()
+      const hours = String(now.getHours()).padStart(2, '0')
+      const minutes = String(now.getMinutes()).padStart(2, '0')
+      timeSpan.textContent = `${hours}:${minutes}`
+
+      const options = { weekday: 'long', month: 'long', day: 'numeric' }
+      dateSpan.textContent = now.toLocaleDateString('en-US', options)
+    }
+
+    updateTime()
+    setInterval(updateTime, 1000)
   }
 
   #renderIcons () {
@@ -90,7 +129,6 @@ export class PWD {
    * @param {Window} windowObj - The window object to open.
    */
   openWindow (windowObj) {
-    // Hook up the Close Event to clean up PWD state
     windowObj.onClose = () => {
       this.removeWindow(windowObj)
     }
@@ -127,14 +165,13 @@ export class PWD {
     // Aggressive Focus Restoration
     windowObj.element.addEventListener('mousedown', (e) => {
       this.#focusWindow(windowObj)
+      
+      // Generic check for ANY interactive element
+      const clickedInteractive = e.target.closest('button, input, textarea, a, select, [tabindex]:not([tabindex="-1"])')
 
-      // Check if the target is NOT a button, input, or card.
-      const clickedInteractive = e.target.closest('button, .memory-card, input, textarea, a')
       if (!clickedInteractive) {
-        // Prevent default browser behavior (which steals focus)
-        e.preventDefault()
-
-        // Force focus back to the game immediately
+        e.preventDefault() 
+        
         if (typeof windowObj.focus === 'function') {
           windowObj.focus()
         }

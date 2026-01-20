@@ -9,8 +9,8 @@ Please check that your application meets the requirements below before submittin
 TODO:
 
 - refactor 
-- memory audio feat
 - check the docs
+- 
 
 ## F1: PWD Functional Requirements
 The PWD application should be a single page application.

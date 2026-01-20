@@ -24,6 +24,7 @@
   --shadow-medium: rgba(0, 0, 0, 0.4);
   --shadow-dark: rgba(0, 0, 0, 0.5);
   --shadow-focus: rgba(197, 160, 89, 0.8);
+  --shadow-soft-glow:rgba(255, 255, 255, 0.8);
 
   /* --- Functional Mappings --- */
   --desktop-bg: var(--color-dark-sandstone);
@@ -1136,4 +1137,56 @@ body, html {
 /* Menu Button Spacing */
 .menu-back-btn {
   margin-top: 10px;
+}
+
+/* =========================================
+   10. CENTER WIDGET (Wallpaper + Glass Text Clock)
+   ========================================= */
+
+/* The Container for Image & Clock */
+#center-widget {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+  gap: 20px;
+}
+
+/* The Centered Image */
+.widget-wallpaper {
+  opacity: 0.8;
+}
+
+/* The Clock Container (Now Invisible) */
+.widget-clock {
+  text-align: center;
+  background: transparent;
+  padding: 10px;
+}
+
+/* The Glass Text Effect */
+.clock-time {
+  font-size: 5rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-gold);
+  text-shadow: 
+    1px 1px 2px var(--shadow-dark), 
+    0 0 15px var(--shadow-soft-glow);
+}
+
+.clock-date {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--color-terracotta);
+  text-shadow: 0 2px 4px var(--shadow-medium);
+  margin-top: 5px;
 }
