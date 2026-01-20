@@ -50,7 +50,7 @@ export class MemoryGame extends Window {
 
     // Reset Window Dimensions for Menu
     this.element.style.width = '400px'
-    this.element.style.height = '530px'
+    this.element.style.height = '570px'
     this.element.style.minWidth = '300px'
     this.element.style.minHeight = '530px'
 

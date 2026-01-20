@@ -4,27 +4,27 @@
 :root {
   /* --- Al-Andalus Color Palette --- */
   --color-sandstone: #F5E6C8;
+  --color-dark-sandstone: #e4cda2;
+  --color-light-sandstone: rgba(245, 230, 200, 0.95);
   --color-azure: #1A4B6E;
   --color-terracotta: #BC5D41;
   --color-blod: #8B0000;
   --color-emerald: #2E5C48;
   --color-gold: #C5A059;
   --color-wood: #593c28;
-  --color-dark-sandstone: #e4cda2;
-  --color-light-sandstone: rgba(245, 230, 200, 0.95);
   --color-muted: #aaa;
-  
+
   /* --- Utility Colors --- */
   --color-white: #ffffff;
   --color-gray: #cccccc;
   --color-focus-gold: #f6ba4b;
-  
+
   /* --- Shadows --- */
   --shadow-light: rgba(0, 0, 0, 0.2);
   --shadow-medium: rgba(0, 0, 0, 0.4);
   --shadow-dark: rgba(0, 0, 0, 0.5);
   --shadow-focus: rgba(197, 160, 89, 0.8);
-  --shadow-soft-glow:rgba(255, 255, 255, 0.8);
+  --shadow-soft-glow: rgba(255, 255, 255, 0.8);
 
   /* --- Functional Mappings --- */
   --desktop-bg: var(--color-dark-sandstone);
@@ -43,10 +43,11 @@
   padding: 0;
 }
 
-body, html {
+body,
+html {
   height: 100%;
   width: 100%;
-  overflow: hidden; /* PWD handles scrolling internally */
+  overflow: hidden;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -56,35 +57,67 @@ body, html {
   height: 100vh;
 }
 
+/* =========================================
+   3. DESKTOP LAYOUT & WIDGETS
+   ========================================= */
 #desktop-area {
   flex-grow: 1;
-  position: relative; 
+  position: relative;
   width: 100%;
   height: 100vh;
   background-color: var(--desktop-bg);
 }
 
-/* --- Timer --- */
-.timer-container {
-  width: 100%;
-  height: 8px;
-  background-color: var(--color-muted);
-  border-radius: 4px;
-  margin-bottom: 15px;
-  overflow: hidden;
+/* --- Center Widget (Wallpaper + Clock) --- */
+#center-widget {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+  gap: 20px;
 }
 
-.timer-bar {
-  height: 100%;
-  background-color: var(--color-emerald);
-  width: 100%;
-  transition: width 0.1s linear, background-color 0.5s;
+.widget-wallpaper {
+  opacity: 0.8;
+  /* Add sizing here if using an image tag directly, 
+     otherwise handled by JS or default size */
+}
+
+.widget-clock {
+  text-align: center;
+  background: transparent;
+  padding: 10px;
+}
+
+.clock-time {
+  font-size: 5rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-gold);
+  text-shadow:
+    1px 1px 2px var(--shadow-dark),
+    0 0 15px var(--shadow-soft-glow);
+}
+
+.clock-date {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--color-terracotta);
+  text-shadow: 0 2px 4px var(--shadow-medium);
+  margin-top: 5px;
 }
 
 /* =========================================
-   3. TASKBAR (MACOS STYLE DOCK)
+   4. TASKBAR (MACOS STYLE DOCK)
    ========================================= */
-/* Trigger Zone */
 #taskbar-container {
   position: fixed;
   bottom: 0;
@@ -95,24 +128,21 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  /* Hidden by default, leaves 10px visible as trigger */
   transform: translateY(calc(100% - 10px));
   transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Slide up on hover */
 #taskbar-container:hover {
   transform: translateY(0%);
 }
 
-/* The Visual Dock */
 #taskbar {
   width: 80%;
   height: 100%;
   background-color: var(--taskbar-bg);
   border: 2px solid var(--color-gold);
   border-bottom: none;
-  border-radius: 20px;
+  border-radius: 20px 20px 0 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,7 +151,6 @@ body, html {
   margin-bottom: 5px;
 }
 
-/* Dock Icons */
 .desktop-icon {
   width: 50px;
   height: 50px;
@@ -145,7 +174,6 @@ body, html {
   filter: drop-shadow(2px 2px 4px var(--shadow-dark));
 }
 
-/* Tooltips */
 .desktop-icon span {
   display: none;
   position: absolute;
@@ -165,7 +193,7 @@ body, html {
 }
 
 /* =========================================
-   4. WINDOW SYSTEM
+   5. WINDOW SYSTEM
    ========================================= */
 .window {
   position: absolute;
@@ -180,7 +208,6 @@ body, html {
   overflow: hidden;
 }
 
-/* Remove default focus outline from the window wrapper */
 .window:focus {
   outline: none;
 }
@@ -203,6 +230,27 @@ body, html {
   cursor: grabbing;
 }
 
+/* Notification Pulse */
+.window-header.unread {
+  background-color: var(--color-terracotta) !important;
+  transition: background-color 0.3s;
+  animation: pulse-header 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-header {
+  0% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.2);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+}
+
 .window-content {
   flex-grow: 1;
   padding: 10px;
@@ -218,7 +266,7 @@ body, html {
 
 .window.dragging {
   opacity: 0.8;
-  cursor: move; 
+  cursor: move;
 }
 
 .close-btn {
@@ -252,16 +300,81 @@ body, html {
 }
 
 /* =========================================
-   5. MEMORY GAME
+   6. SHARED UI COMPONENTS & UTILITIES
    ========================================= */
-   /* --- Layout & Cards --- */
+/* --- Buttons --- */
+.memory-btn {
+  width: 80%;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  background-color: var(--color-emerald);
+  color: var(--color-white);
+  border: 1px solid var(--color-gray);
+  border-radius: 4px;
+  transition: transform 0.1s, background-color 0.2s;
+  margin: 5px auto;
+  display: block;
+}
+
+.memory-btn:hover {
+  transform: scale(1.02);
+}
+
+.memory-btn.secondary {
+  background-color: var(--color-azure);
+  border-color: var(--color-gray);
+}
+
+/* --- Timer --- */
+.timer-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-muted);
+  border-radius: 4px;
+  margin-bottom: 15px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  background-color: var(--color-emerald);
+  width: 100%;
+  transition: width 0.1s linear, background-color 0.5s;
+}
+
+/* --- Focus Accessibility --- */
+.window-content button:focus,
+.memory-card:focus,
+.quiz-input:focus,
+.chat-login-input:focus,
+.word-key:focus {
+  outline: 4px solid var(--color-focus-gold) !important;
+  box-shadow: 0 0 10px var(--shadow-focus);
+  z-index: 100;
+  border-radius: 15px;
+}
+
+/* Specific override for memory cards to maintain shape */
+.memory-card:focus {
+  border-radius: 25px;
+  transform: scale(1.05);
+}
+
+.memory-card.flipped:focus {
+  transform: rotateY(180deg) scale(1.05);
+}
+
+/* =========================================
+   7. APP: MEMORY GAME
+   ========================================= */
 .memory-grid {
   display: grid;
   gap: 15px;
   padding: 20px;
   perspective: 1000px;
   width: 100%;
-  justify-items: center; 
+  justify-items: center;
   align-items: center;
   align-content: center;
   justify-content: center;
@@ -273,7 +386,7 @@ body, html {
 .memory-card {
   width: 100%;
   height: auto;
-  aspect-ratio: 1 / 1; 
+  aspect-ratio: 1 / 1;
   max-height: 100%;
   max-width: 100%;
   position: relative;
@@ -295,7 +408,7 @@ body, html {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .memory-card-front {
@@ -314,15 +427,15 @@ body, html {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: var(--color-dark-sandstone); 
+  background-color: var(--color-dark-sandstone);
 }
 
-/* --- Two Player Mode Styles --- */
+/* Two Player & Status */
 .player-score {
   padding: 5px 10px;
   border-radius: 5px;
   transition: all 0.3s;
-  opacity: 0.5; /* Dimmed by default */
+  opacity: 0.5;
 }
 
 .player-score.active-turn {
@@ -334,7 +447,6 @@ body, html {
   transform: scale(1.1);
 }
 
-/* --- Status Bar (Timer & Attempts) --- */
 .status-bar {
   display: flex;
   justify-content: space-between;
@@ -344,7 +456,7 @@ body, html {
   font-weight: bold;
   color: var(--color-wood);
   font-size: 1.1rem;
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 .status-bar span {
@@ -353,7 +465,7 @@ body, html {
   gap: 8px;
 }
 
-/* --- Menu & Start Screen --- */
+/* Menu */
 .memory-menu {
   display: flex;
   flex-direction: column;
@@ -378,24 +490,6 @@ body, html {
   text-align: center;
 }
 
-.memory-btn {
-  width: 80%;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 1rem;
-  background-color: var(--color-emerald); 
-  color: var(--color-white);
-  border: 1px solid var(--color-gray);
-  border-radius: 4px;
-  transition: transform 0.1s, background-color 0.2s;
-}
-
-.memory-btn:hover {
-  transform: scale(1.02);
-  
-}
-
-/* Memory Game Toggle Button State */
 .memory-toggle-active {
   border: 2px solid var(--color-white);
   font-weight: bold;
@@ -403,48 +497,16 @@ body, html {
 }
 
 /* =========================================
-   6. FOCUS MANAGEMENT
+   8. APP: CHAT
    ========================================= */
-/* Menu Buttons: FORCE focus visibility always */
-.window-content button:focus {
-  outline: 4px solid var(--color-focus-gold) !important;
-  box-shadow: 0 0 10px var(--shadow-focus);
-  z-index: 100;
-  transform: scale(1.05);
-  border-radius: 20px;
-}
-
-/* Memory Cards: FORCE focus visibility always */
-.memory-card:focus {
-  outline: 4px solid var(--color-focus-gold) !important;
-  z-index: 100;
-  transform: scale(1.05);
-  border-radius: 25px;
-}
-
-/* Rotation Fix: Maintain flip state when focused */
-.memory-card.flipped:focus {
-  transform: rotateY(180deg) scale(1.05);
-}
-
-/* Window Wrapper: Never show outline on the window frame itself */
-.window:focus {
-  outline: none;
-}
-
-/* =========================================
-   7. CHAT APPLICATION
-   ========================================= */
-/* --- Layout --- */
 .chat-wrapper {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;    
-  overflow: hidden; 
+  flex-grow: 1;
+  overflow: hidden;
   position: relative;
 }
 
-/* --- Channel Selector Overlay (Popup Style) --- */
 .chat-overlay {
   position: absolute;
   top: 0;
@@ -491,7 +553,14 @@ body, html {
   margin-top: 10px;
 }
 
-/* --- Header & Controls --- */
+.channel-input-custom {
+  flex: 1;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--color-gray);
+  font-family: inherit;
+}
+
 .chat-status {
   padding: 5px 10px;
   background: var(--taskbar-text);
@@ -500,7 +569,7 @@ body, html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 .chat-header-controls {
@@ -509,13 +578,12 @@ body, html {
   align-items: center;
 }
 
-/* Generic Header Button */
 .chat-header-btn {
   font-size: 0.7rem;
   padding: 4px 6px;
   cursor: pointer;
   background: none;
-  border: 1px solid #999;
+  border: 1px solid var(--color-gray);
   border-radius: 4px;
   transition: all 0.2s;
   color: inherit;
@@ -531,12 +599,11 @@ body, html {
   border-color: var(--color-terracotta);
 }
 
-/* Style for the icon inside the button */
 .chat-header-btn img {
   width: 14px;
   height: 14px;
   object-fit: contain;
-  opacity: 0.7; 
+  opacity: 0.7;
 }
 
 .chat-header-btn:hover img {
@@ -544,7 +611,6 @@ body, html {
   opacity: 1;
 }
 
-/* --- Chat Status Indicators --- */
 .chat-status-channel {
   margin-right: 10px;
   opacity: 0.8;
@@ -561,7 +627,6 @@ body, html {
   font-weight: bold;
 }
 
-/* --- Message Area --- */
 .chat-messages {
   flex: 1;
   min-height: 0;
@@ -581,7 +646,6 @@ body, html {
   margin: 5px 0;
 }
 
-/* --- Input Area --- */
 .chat-input-area {
   padding: 10px;
   background-color: var(--window-bg);
@@ -611,7 +675,7 @@ body, html {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border-radius: 50%; 
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
@@ -619,10 +683,9 @@ body, html {
   width: 20px;
   height: 20px;
   object-fit: contain;
-  filter: invert(1) brightness(2); 
+  filter: invert(1) brightness(2);
 }
 
-/* --- Bubbles --- */
 .chat-bubble {
   max-width: 80%;
   padding: 8px 12px;
@@ -655,7 +718,7 @@ body, html {
   font-weight: bold;
 }
 
-/* --- Login Screen --- */
+/* Login Screen */
 .chat-login-screen {
   display: flex;
   flex-direction: column;
@@ -664,6 +727,7 @@ body, html {
   gap: 15px;
   height: 100%;
 }
+
 .chat-logo {
   width: 180px;
   height: auto;
@@ -685,32 +749,6 @@ body, html {
   font-size: 1rem;
 }
 
-.chat-login-input:focus {
-  outline: none;
-  border-color: var(--color-emerald);
-  box-shadow: 0 0 5px var(--shadow-focus);
-}
-
-/* --- Channel Selector Overlay Styles --- */
-.chat-overlay-title {
-  color: var(--color-wood);
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.channel-input-custom {
-  flex: 1;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid var(--color-gray);
-  font-family: inherit;
-}
-
-.channel-join-btn {
-  padding: 0 15px;
-  width: auto;
-}
-
 .channel-cancel-btn {
   background: none;
   border: none;
@@ -726,24 +764,9 @@ body, html {
   color: var(--color-terracotta);
 }
 
-/* --- Notification --- */
-.window-header.unread {
-  background-color: var(--color-terracotta) !important;
-  transition: background-color 0.3s;
-  animation: pulse-header 1.5s infinite ease-in-out;
-}
-
-/* Gentle pulse effect */
-@keyframes pulse-header {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(1.2); }
-  100% { filter: brightness(1); }
-}
-
 /* =========================================
-   8. QUIZ APPLICATION
+   9. APP: QUIZ
    ========================================= */
-/* --- Layout --- */
 .quiz-layout {
   display: flex;
   flex-direction: column;
@@ -763,68 +786,12 @@ body, html {
   filter: drop-shadow(0 2px 4px var(--shadow-medium));
 }
 
-/* --- Mode Selector --- */
-.quiz-mode-selector {
-  display: flex;
-  gap: 15px;
-  margin: 10px 0;
-  font-size: 0.9rem;
-  color: var(--color-wood);
-}
-
-.quiz-mode-selector label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-}
-
-.quiz-mode-selector input {
-  accent-color: var(--color-emerald);
-  cursor: pointer;
-}
-
 .quiz-title {
   color: var(--color-wood);
   font-size: 1.5rem;
   margin-bottom: 10px;
 }
 
-/* --- Quiz Game Styles --- */
-
-/* Source Toggle Button */
-.quiz-source-btn.server {
-  background-color: var(--color-azure) !important;
-}
-.quiz-source-btn.local {
-  background-color: var(--color-emerald) !important;
-}
-
-/* Level Toggle Button */
-.quiz-level-btn.normal {
-  background-color: var(--color-gold) !important;
-}
-.quiz-level-btn.hard {
-  background-color: var(--color-terracotta) !important;
-}
-
-/* Game Over / Victory Headers */
-.quiz-header-loss {
-  color: var(--color-terracotta) !important;
-}
-.quiz-header-win {
-  color: var(--color-emerald) !important;
-}
-
-/* Status Messages */
-.quiz-msg.error {
-  color: var(--color-terracotta) !important;
-}
-.quiz-msg.success {
-  color: var(--color-emerald) !important;
-}
-
-/* --- Controls --- */
 .quiz-input {
   padding: 10px;
   width: 80%;
@@ -833,12 +800,6 @@ body, html {
   font-family: inherit;
   font-size: 1rem;
   text-align: center;
-}
-
-.quiz-input:focus {
-  outline: none;
-  border-color: var(--color-emerald);
-  box-shadow: 0 0 5px var(--shadow-focus);
 }
 
 .quiz-controls {
@@ -853,14 +814,33 @@ body, html {
   font-weight: bold;
 }
 
-/* Secondary button style */
-.memory-btn.secondary {
-  background-color: var(--color-azure);
-  color: var(--color-white);
-  border-color: var(--color-gray);
+/* Toggle Buttons (Source/Level) */
+.quiz-source-btn.server {
+  background-color: var(--color-azure) !important;
 }
 
-/* --- Question Area --- */
+.quiz-source-btn.local {
+  background-color: var(--color-emerald) !important;
+}
+
+.quiz-level-btn.normal {
+  background-color: var(--color-gold) !important;
+}
+
+.quiz-level-btn.hard {
+  background-color: var(--color-terracotta) !important;
+}
+
+/* Status Colors */
+.quiz-header-loss {
+  color: var(--color-terracotta) !important;
+}
+
+.quiz-header-win {
+  color: var(--color-emerald) !important;
+}
+
+/* Question UI */
 .quiz-question-text {
   font-size: 1.1rem;
   font-weight: bold;
@@ -877,7 +857,6 @@ body, html {
   gap: 15px;
 }
 
-/* --- Alternatives Grid (Radio Buttons) --- */
 .quiz-alternatives-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -907,7 +886,6 @@ body, html {
   flex-shrink: 0;
 }
 
-/* --- High Score List --- */
 .quiz-highscore-list {
   background-color: var(--color-light-sandstone);
   padding: 15px;
@@ -929,23 +907,24 @@ body, html {
 }
 
 /* =========================================
-   9. WORD GAME (THE SCROLL)
+   10. APP: WORD GAME (THE SCROLL)
    ========================================= */
-/* ---  Layout & Accessibility --- */
 .word-game-layout {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 15px; 
+  gap: 15px;
 }
 
-.word-game-window {
-  outline: none;
+.word-game-active {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100%;
 }
 
-/* --- Theme Elements --- */
 .word-logo {
   width: 200px;
   height: 200px;
@@ -960,6 +939,14 @@ body, html {
   margin: 0;
 }
 
+.word-title.win {
+  color: var(--color-emerald);
+}
+
+.word-title.lose {
+  color: var(--color-terracotta);
+}
+
 .word-subtitle {
   font-style: italic;
   color: var(--color-azure);
@@ -967,14 +954,7 @@ body, html {
   max-width: 80%;
 }
 
-/* --- Word Game Active View --- */
-.word-game-active {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  height: 100%;
-}
-
+/* Stats */
 .word-stats {
   display: flex;
   flex-direction: column;
@@ -984,13 +964,18 @@ body, html {
   margin-bottom: 20px;
 }
 
-/* Heart Styles */
 .word-heart {
   width: 32px;
   height: 32px;
   margin: 0 4px;
   filter: drop-shadow(0 2px 2px var(--shadow-light));
   transition: transform 0.2s;
+}
+
+.word-heart.lost {
+  opacity: 0.2;
+  filter: grayscale(100%);
+  transform: scale(0.8);
 }
 
 #word-lives {
@@ -1006,10 +991,18 @@ body, html {
   color: var(--color-wood);
   text-align: center;
   margin: 20px 0 40px 0;
-  text-shadow: 1px 1px 0 --shadow-text-light;
+  text-shadow: 1px 1px 0 var(--color-white);
 }
 
-/* --- On-Screen QWERTY Keyboard --- */
+.word-display.win {
+  color: var(--color-emerald);
+}
+
+.word-display.lose {
+  color: var(--color-terracotta);
+}
+
+/* Keyboard */
 .word-keyboard {
   margin-top: auto;
   display: flex;
@@ -1045,19 +1038,15 @@ body, html {
   z-index: 2;
 }
 
-/* --- Word Game Interaction States --- */
 .word-key.correct {
   background-color: var(--color-emerald) !important;
-  border-color: var(--color-emerald);
-  opacity: 1 !important; 
-  color: var(--color-white);
+  opacity: 1 !important;
 }
 
 .word-key.wrong {
   background-color: var(--color-terracotta) !important;
   border-color: var(--color-terracotta);
   opacity: 0.8;
-  color: var(--color-white);
 }
 
 .word-key:disabled {
@@ -1065,13 +1054,7 @@ body, html {
   transform: none;
 }
 
-.word-heart.lost {
-  opacity: 0.2;
-  filter: grayscale(100%);
-  transform: scale(0.8);
-}
-
-/* --- Streak Information --- */
+/* Info & Modals */
 .word-streak-info {
   color: var(--color-terracotta);
   font-weight: bold;
@@ -1088,17 +1071,6 @@ body, html {
   margin-bottom: 20px;
 }
 
-/* --- End Game Reveal Styles --- */
-.word-title.win,
-.word-display.win {
-  color: var(--color-emerald);
-}
-
-.word-title.lose,
-.word-display.lose {
-  color: var(--color-terracotta);
-}
-
 .word-definition-box {
   background-color: var(--color-light-sandstone);
   padding: 15px;
@@ -1111,82 +1083,40 @@ body, html {
   text-align: center;
 }
 
-/* --- Word Game Styles --- */
-
-/* Path Button Variants */
-.path-btn.architect {
-  background-color: var(--color-terracotta) !important;
-}
-.path-btn.scholar {
-  background-color: var(--color-azure) !important;
-}
-
-/* Level Button Variants */
-.level-btn.easy { background-color: var(--color-azure) !important; color: white; }
-.level-btn.normal { background-color: var(--color-gold) !important; color: white; }
-.level-btn.hard { background-color: var(--color-terracotta) !important; color: white; }
-.level-btn.brutal { background-color: var(--color-blod) !important; color: white; }
-.level-btn.mujahid { background-color: var(--color-wood) !important; color: white; }
-
-/* End Screen Definition Text */
 .word-def-text {
   font-style: italic;
   font-size: 0.9rem;
 }
 
-/* Menu Button Spacing */
+/* Menu Specifics */
+.path-btn.architect {
+  background-color: var(--color-terracotta) !important;
+}
+
+.path-btn.scholar {
+  background-color: var(--color-azure) !important;
+}
+
+.level-btn.easy {
+  background-color: var(--color-azure) !important;
+}
+
+.level-btn.normal {
+  background-color: var(--color-gold) !important;
+}
+
+.level-btn.hard {
+  background-color: var(--color-terracotta) !important;
+}
+
+.level-btn.brutal {
+  background-color: var(--color-blod) !important;
+}
+
+.level-btn.mujahid {
+  background-color: var(--color-wood) !important;
+}
+
 .menu-back-btn {
   margin-top: 10px;
-}
-
-/* =========================================
-   10. CENTER WIDGET (Wallpaper + Glass Text Clock)
-   ========================================= */
-
-/* The Container for Image & Clock */
-#center-widget {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 0;
-  pointer-events: none;
-  gap: 20px;
-}
-
-/* The Centered Image */
-.widget-wallpaper {
-  opacity: 0.8;
-}
-
-/* The Clock Container (Now Invisible) */
-.widget-clock {
-  text-align: center;
-  background: transparent;
-  padding: 10px;
-}
-
-/* The Glass Text Effect */
-.clock-time {
-  font-size: 5rem;
-  font-weight: 300;
-  line-height: 1;
-  color: var(--color-gold);
-  text-shadow: 
-    1px 1px 2px var(--shadow-dark), 
-    0 0 15px var(--shadow-soft-glow);
-}
-
-.clock-date {
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  color: var(--color-terracotta);
-  text-shadow: 0 2px 4px var(--shadow-medium);
-  margin-top: 5px;
 }
