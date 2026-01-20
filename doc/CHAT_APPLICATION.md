@@ -9,7 +9,9 @@ The Chat Application is a real-time messaging tool integrated into the Personal 
 * **WebSocket Integration:** Connects to the university's public WebSocket server using a custom JSON protocol.
 * **Message Persistence:** Caches message history in `localStorage` so messages remain visible even after a reload or offline state.
 * **Offline Handling:** Detects connection loss and updates the status indicator (Online/Offline) in real-time.
-* **Username System:** Enforces username entry before connection and persists the user's identity.
+* **Username System:** Enforces username entry before connection and persists the user's identity via `localStorage`.
+* **Session Control:** Users can log out or switch accounts via a dedicated header button, which clears the session data and disconnects the socket.
+* **Input Validation:** Enforces character limits for usernames (Max 12) and custom channel names (Max 15) to maintain UI integrity.
 
 ### Non-Functional Requirements
 * **Window Integration:** Extends the base `Window` class, inheriting dragging, z-index management, and focus behaviors.
@@ -65,19 +67,16 @@ The solution follows a modular architecture, splitting responsibilities into thr
 The following advanced features were implemented to meet Optional Requirements:
 
 ### A. Channel Switcher & Lobby
-
-* Users are not stuck in one room. A "Channel Lobby" overlay allows quick selection of preset rooms (General, Social, Help) or entry of a custom private room name.
-* **Smart Reconnection:** Switching channels automatically disconnects the API, clears the UI, loads the *specific* cached history ffrom `StorageManager`, and reconnects to the new stream.
+* Users are not stuck in one room. A "Channel Lobby" overlay allows quick selection of preset rooms (General, Social, Help, Random) or entry of a custom private room name.
+* **Smart Reconnection:** Switching channels automatically disconnects the API, clears the UI, loads the *specific* cached history from `StorageManager`, and reconnects to the new stream.
 
 ### B. Visual Notifications
-
 * **Visual Alert:** If a new message arrives while the window is inactive (blur), the window header turns **Terracotta (Red)** and pulses.
 * **Focus Logic:** Clicking anywhere in the window instantly restores the standard Green header.
 
 ### C. Audio Notifications
-
 * **Sound Alert:** Integrated a non-intrusive notification sound (`notification.mp3`) that triggers only when a new message arrives from *another* user while the window is in the background.
-* **Browser Policy Handling:**  `SoundPlayer.js` includes a `play().catch()` block to gracefully handle modern browser policies that block auto-playing audio if the user hasn't interacted with the page yet.
+* **Browser Policy Handling:** `SoundPlayer.js` includes a `play().catch()` block to gracefully handle modern browser policies that block auto-playing audio if the user hasn't interacted with the page yet.
 
 ### D. Advanced Persistence
 * **Username:** Remembers the user between sessions via `StorageManager.getUsername()`.

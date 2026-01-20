@@ -7,11 +7,12 @@ The Al-Andalus Quiz is a time-sensitive trivia application integrated into the P
 
 ### Core Requirements (Functional)
 * **Hybrid Data Source:** Users can toggle between connecting to the university server (LNU) or using a local JSON database.
+* **Input Validation:** Enforces a nickname entry (max 15 characters) before starting to ensure personalized scoring.
 * **Question Types:** Supports both open-ended text input and multiple-choice (radio button) questions.
 * **Persistent Timer:** A countdown timer is **visible at all times** during gameplay. If it hits zero, the game ends immediately.
 * **Game Over Navigation:** When a user answers incorrectly or times out, the game provides clear options to **Restart** or view the **High Score** list.
 * **High Score System:** Persists top 5 scores to `localStorage` via the shared `StorageManager`, displaying the nickname and total time taken.
-* **Feedback Loop:** Provides immediate visual feedback for network errors, wrong answers, or victory.
+* **Feedback Loop:** Provides immediate visual feedback for validation errors, network issues, wrong answers, or victory.
 
 ### Non-Functional Requirements
 * **Security (XSS Prevention):** All UI rendering uses `document.createElement` and `textContent`. No user-generated content is ever rendered via `innerHTML`.
@@ -80,13 +81,8 @@ The solution uses the **Strategy Pattern** for data and a **Shared Service** for
 * **Loaders:** Displays a "Consulting the Oracle..." text loader during asynchronous fetch operations.
 
 ### E. Audio Feedback
-
 * **Contextual Sound Effects:** The application provides immediate auditory cues to reinforce game state changes:
     * **Correct Answer:** A chime (`correct.mp3`) plays when advancing to the next question.
     * **Victory:** A celebratory sound (`win.mp3`) plays upon completing the quiz.
     * **Defeat:** A distinct error sound (`lose.mp3`) plays on wrong answers or timeout.
 * **Error Handling:** `SoundPlayer.js` uses `.play().catch()` to ensure the game logic (navigation/scoring) continues smoothly even if the browser blocks autoplay or the sound file is missing.
-
-
-
-

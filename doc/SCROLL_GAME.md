@@ -7,13 +7,13 @@
 ## 2. Features
 
 ### Core Requirements (Functional)
-
 * **Dual Data Realms:** Users can toggle between two distinct word categories:
     * **The Architect:** Historical terms (e.g., *ALHAMBRA*, *MINARET*).
     * **The Scholar:** JavaScript terminology (e.g., *VARIABLE*, *PROMISE*).
 
 
 * **Gameplay Mechanics:** Users guess letters via an on-screen QWERTY keyboard or physical keyboard input.
+* **Input Guarding:** Logic prevents users from guessing the same letter twice by disabling the on-screen button and ignoring the physical keystroke, protecting the player from accidental penalties.
 * **Win/Loss Logic:**
     * **Victory:** All letters revealed before lives/time run out.
     * **Defeat:** Lives reach zero or the timer expires.
@@ -27,7 +27,6 @@
 * **Persistent Stats:** Tracks "Current Streak" and "Best Streak" (High Score) using `localStorage`.
 
 ### Non-Functional Requirements
-
 * **Component Architecture:** Utilizes a reusable `Timer` class for countdown logic and UI rendering.
 * **External Data:** Word lists, hints, and definitions are loaded asynchronously from a local JSON file (`words.json`).
 * **Accessibility:** Fully navigable via keyboard (Tab, Arrow Keys, Enter) with visual focus states for all interactive elements.
@@ -65,6 +64,11 @@ The solution emphasizes **Separation of Concerns** by offloading logic to specia
     * *Solution:* Implemented robust fallback values in JavaScript, ensuring the UI remains visible even if the theme breaks.
 
 
+* **Physical Keyboard Capture:**
+    * *Challenge:* The game needed to detect physical keystrokes (A-Z) without the user having to click inside a specific text input field.
+    * *Solution:* Applied `tabindex="0"` and programmatically called `.focus()` on the main `.word-game-window` container. This allows a standard `<div>` to capture global `keydown` events directly.
+
+
 * **Focus Traps & Event Bubbling:**
     * *Challenge:* The standard `<select>` dropdown blocked the Window Manager's focus logic, making the window unclickable.
     * *Solution:* Replaced the dropdown with a **Toggle Button** for the Category and Difficulty selectors. This not only fixed the bug but improved the keyboard navigation experience (Arrow Up/Down flow).
@@ -73,7 +77,6 @@ The solution emphasizes **Separation of Concerns** by offloading logic to specia
 ## 5. Extensions & Advanced Features
 
 ### A. Progressive Difficulty Levels
-
 * **Easy:** 6 Hearts, No Timer (Relaxed).
 * **Normal:** 6 Hearts, 60s Timer.
 * **Hard:** 3 Hearts, 60s Timer.
@@ -81,16 +84,12 @@ The solution emphasizes **Separation of Concerns** by offloading logic to specia
 * **Mujahid:** 1 Heart, 15s Timer (Sudden Death).
 
 ### B. "The Elevator" (Keyboard Navigation)
-
 * The Start Screen implements a vertical focus loop similar to the Quiz:
 * **Arrow Down:** Path Toggle -> Difficulty Toggle -> Start Button.
 * **Arrow Up:** Start Button -> Difficulty Toggle -> Path Toggle.
-
-
 * **Game Over Screen:** Players can toggle between **"Play Again"** and **"Back to Menu"** using Up/Down arrows, preventing them from getting stuck in a gameplay loop.
 
 ### C. Visual Feedback & Polish
-
 * **Interactive Keyboard:** On-screen keys visually react to input:
     * **Green:** Correct guess.
     * **Red:** Incorrect guess.
@@ -98,10 +97,8 @@ The solution emphasizes **Separation of Concerns** by offloading logic to specia
 * **Heart Animation:** Hearts turn gray and semi-transparent (`.lost` class) when a life is lost, rather than disappearing entirely, maintaining the layout structure.
 
 ### D. Audio Feedback
-
 * **Contextual Sound Effects:** The game provides immediate auditory cues to reinforce game state changes:
     * **Correct Guess:** A satisfying chime plays when a letter is revealed.
     * **Wrong Guess:** A distinct error sound indicates a lost life.
     * **Victory/Defeat:** Unique musical cues play upon completing or failing a round.
-
-* **Non-Blocking Implementation:** Audio playback is handled `SoundPlayer.js` asynchronously (`.play().catch()`) to ensure that missing sound files or browser autoplay policies do not crash the game logic. 
+* **Non-Blocking Implementation:** Audio playback is handled `SoundPlayer.js` asynchronously (`.play().catch()`) to ensure that missing sound files or browser autoplay policies do not crash the game logic.

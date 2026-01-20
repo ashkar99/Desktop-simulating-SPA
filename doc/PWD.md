@@ -8,9 +8,9 @@ The Personal Web Desktop (PWD) is the central "operating system" for the single-
 ## 2. Features
 
 ### Core Requirements (Functional)
-
 * **Window Management:** Users can open multiple application instances simultaneously without conflict.
 * **Taskbar (Dock):** A MacOS-style dock at the bottom of the screen allows users to launch applications via icons.
+* **Center Widget:** Displays a digital clock (Time/Date) and a decorative wallpaper emblem in the center of the desktop.
 * **Z-Index Stacking:** The currently active window is always brought to the foreground (`z-index`), ensuring it visually overlaps inactive windows.
 * **Window Operations:** All windows support:
     * **Dragging:** Moving the window by clicking and holding the header.
@@ -19,7 +19,6 @@ The Personal Web Desktop (PWD) is the central "operating system" for the single-
 
 
 ### Non-Functional Requirements
-
 * **Modular Architecture:** The system uses ES Modules (`import/export`) to dynamically load application classes (`MemoryGame`, `Chat`, `Quiz`) only when needed.
 * **Visual Consistency:** Enforces a shared "Al-Andalus" design language (Sandstone, Emerald, Gold) across all windows via global CSS variables.
 * **Responsive Layout:** The desktop area fills `100vh`, and the taskbar features a slide-up animation to maximize screen real estate.
@@ -32,7 +31,7 @@ The core system is split into two primary classes: the **Manager** (`PWD`) and t
 1. **The Window Manager (`PWD.js`):**
     * **Lifecycle Management:** Maintains a registry (`this.windows`) of all open apps. When a window is closed, it is filtered out of this array to prevent memory leaks.
     * **Focus Logic:** Uses a global `zIndexCounter`. When a window is focused, this counter increments, and the window's `z-index` is updated. This guarantees that the most recently clicked window is always on top.
-    * **Smart Tiling:** Implements a "Cascade" positioning algorithm. New windows open at offset coordinates (`nextWindowX`, `nextWindowY`) to prevent them from completely covering existing windows. (caused a bug because different window sizes and solved in section 4)
+    * **Smart Tiling:** Implements a "Cascade" positioning algorithm. New windows open at offset coordinates (`nextWindowX`, `nextWindowY`) to prevent them from completely covering existing windows.
 
 
 2. **The Base Component (`Window.js`):**
@@ -44,22 +43,23 @@ The core system is split into two primary classes: the **Manager** (`PWD`) and t
 3. **The Taskbar System:**
     * The taskbar is generated dynamically based on an `apps` configuration array. This makes it easy to add new apps (like the Quiz) by simply adding an object to the list.
 
-
 ## 4. Key Learnings
 
 * **Aggressive Focus Restoration:**
     * *Challenge:* Clicking inside a window (e.g., on empty space) often caused the browser to shift focus to the `<body>`, making the window "inactive."
     * *Solution:* Implemented a `mousedown` listener on the window element that calls `e.preventDefault()` for non-interactive elements. This forces the browser to keep the focus context within the application.
 
+* **Hybrid Focus Model (Hover):**
+    * *Challenge:* Pure click-to-focus felt clunky when moving quickly between windows or elements.
+    * *Solution:* Implemented "Focus Following" via a `mouseover` listener in the base `Window` class. Hovering over interactive elements (inputs, buttons) instantly grants them focus, creating a fluid workflow.
+
 * **Window Stacking & Boundary Logic:**
     * *Challenge:* The old cascading logic used hardcoded offsets and screen dimensions, causing windows to open partially off-screen or "fall off" the bottom of the desktop when multiple apps were opened.
-    * *Solution:* Upgraded the `openWindow` method to dynamically measure the new window's dimensions (`offsetHeight`, `offsetWidth`) and compare them against the `desktopArea` boundaries *before* placement. If a window would breach the bottom edge, the cascade resets to the top with a horizontal shift, ensuring all windows remain fully visible within the desktop frame.
-
+    * *Solution:* Upgraded the `openWindow` method to dynamically measure the new window's dimensions (`offsetHeight`, `offsetWidth`) and compare them against the `desktopArea` boundaries *before* placement.
 
 * **Ghost Dragging:**
     * *Challenge:* Dragging a window rapidly sometimes caused the mouse to leave the header area, breaking the drag operation.
-    * *Solution:* Attached the `mousemove` and `mouseup` listeners to the `document` (global scope) instead of the element itself during a drag operation. This ensures the drag continues even if the cursor moves outside the window bounds.
-
+    * *Solution:* Attached the `mousemove` and `mouseup` listeners to the `document` (global scope) instead of the element itself during a drag operation.
 
 * **CSS Context Stacking:**
     * *Learned:* Using `transform` on the Taskbar created a new stacking context, initially causing it to render *behind* windows.
@@ -69,17 +69,19 @@ The core system is split into two primary classes: the **Manager** (`PWD`) and t
 ## 5. Extensions & Advanced Features
 
 ### A. Window Resizing
-
 * Implemented a custom drag handle in the bottom-right corner of every window.
 * **Logic:** Calculates the delta between the mouse start position and current position, updating `width` and `height` styles in real-time.
 * **Constraints:** Enforces `min-width` and `min-height` via CSS and JS to prevent windows from collapsing into unusable sizes.
 
 ### B. "MacOS" Style Dock
-
 * The taskbar is hidden by default (positioned off-screen).
 * **Interaction:** It slides up smoothly (`transition: transform 0.4s`) only when the user hovers near the bottom of the screen, maximizing the usable workspace.
 * **Feedback:** Icons scale up (`transform: scale(1.1)`) and display tooltips on hover.
 
 ### C. Application Encapsulation
-
 * The `Window` class provides a generic `window-content` container. Sub-classes (like `MemoryGame` or `Chat`) simply append their specific UI to this container, ensuring a clear Separation of Concerns between the Window Frame (System) and the Application Logic (User).
+
+### D. Desktop Widgets
+* **Central HUD:** A non-interactive "Heads Up Display" positioned at the absolute center of the desktop.
+* **Real-time Clock:** Updates every second via `setInterval` within the `PWD` class.
+* **Visuals:** Uses CSS `backdrop-filter: blur` and semi-transparent text to achieve a modern "Glassmorphism" look that blends with the background.
