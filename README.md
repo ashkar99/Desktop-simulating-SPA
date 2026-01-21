@@ -1,92 +1,129 @@
-# Project Requirements: Personal Web Desktop (PWD)
+# Al-Andalus SPA (Personal Web Desktop)
 
-The requirements are divided into Feature sections (F1, F2, and so on). All feature sections are mandatory, except those marked with **(OPTIONAL)** which can be implemented to reach a higher grade.
+![Al-Andalus Desktop](src/img/wallpaper.png)
 
-Please check that your application meets the requirements below before submitting your final version.
+## 1. Overview
 
----
+**Al-Andalus SPA** is a Single Page Application (SPA) that simulates a fully functional desktop environment within the browser. Built entirely with Vanilla JavaScript, it features a custom window manager, a MacOS-style dock, and a suite of integrated applications, all wrapped in a cohesive ["Al-Andalus"](Al-Andalus.md) aesthetic (Sandstone, Emerald, and Gold).
 
-## F1: PWD Functional Requirements
-The PWD application should be a single page application.
+The project demonstrates advanced DOM manipulation, component-based architecture, and asynchronous state management without relying on external UI frameworks.
 
-* The user shall be able to open multiple windows (not browser windows/tabs but custom windows created using the DOM) within the application.
-* The user shall be able to drag and move the windows inside the PWD.
-* The user shall be able to open new windows of the desired application by clicking or double clicking an icon at the desktop.
-* The icon used to close the window should be represented in the upper bar of the window.
-* Windows should get focus when clicked/dragged.
-* The window with focus shall be on top of all other windows.
-* The following three window applications should at least be included in the desktop application:
-    * A memory game.
-    * A chat connected to a central chat channel using websockets.
-    * One, by you, designed and decided application (perhaps the quiz or another application).
+### 1.1 Table of Contents
+* [1. Overview](#1-overview)
+* [2. SPA Description](#2-spa-description)
+    * [2.1 Project Content](#21-project-content)
+* [3. Getting Started](#3-getting-started)
+    * [3.1 Setting up the Environment](#31-setting-up-the-environment)
+* [4. How to Run](#4-how-to-run)
+* [5. Documentation](#5-documentation)
+* [6. Features & Highlights](#6-features--highlights)
+* [7. Credits](#7-credits)
+* [8. License](#8-license)
 
-## F2: PWD Non-Functional Requirements
-* The application shall be visually appealing.
-* The `README.md` should contain a short description on the application with a representative image. It should also explain how the user can start the application.
-* A complete git commit history should be present for assessment. For this assignment somewhere between 30 and 200 commits is normal.
-* The code shall be organized in appropriate ES modules.
-* All exported functions, modules and classes should be commented using JSDoc.
-* The code standard standard should be followed.
-* The linters (html, css, javascript) should pass without notices when running `npm run lint`.
-* Build the distribution code and verify that it works. The distribution code should be saved in `dist/`.
 
-## F3: Memory Game Window Application
-*Read for a description of the memory application.*
-These are the requirements for the Memory application that should exists as a window application in the PWD.
+## 2. SPA Description
 
-* The user should be able to open and play multiple memory games simultaneously.
-* The user should be able to play the game using only the keyboard (accessibility).
-* One, by you decided, extended feature for the game.
+The application acts as an operating system shell. It manages the lifecycle of "windows" (DOM elements), handling z-index stacking, dragging, resizing, and focus management. It allows multiple applications to run simultaneously, preserving their state (like chat history or game progress) even when minimized or backgrounded.
 
-## F4: Chat Window Application
-*Read the description of the chat application.*
-The chat application should exists as a window application in the PWD. The chat application shall be connected to other students chat clients via the web socket-server.
+### 2.1 Project Content
 
-* The user should be able to have several chat applications running at the same time.
-* When the user opens the application for the first time the user should be asked to write his/her username.
-* The username should remain the same the next time the user starts a chat application or the PWD is restarted.
-* The user should be able to send chat messages using a textarea.
-* The user should be able to see at least the 20 latest messages since the chat applications was opened.
-* One, by you decided, extended feature.
+The desktop includes four main applications:
 
-## F5: An Additional Window Application
-* You should add one additional window application to your PWD.
-* It should be developed by yourself and it can for example be the Quiz application or another application you choose to develop.
+1.  **Memory Game:** A tile-matching puzzle with single-player (timer) and two-player (local PvP) modes. Features 3 difficulty levels and 3D card flip animations.
+2.  **Chat Channel:** A real-time messaging tool using WebSockets to connect to the university server. Includes custom channel selection, history caching, and user persistence.
+3.  **Al-Andalus Quiz:** A time-sensitive trivia game engaging users with history and random code questions. Supports both Online (LNU Server) and Offline (Local JSON) data sources.
+4.  **The Caliph's Scroll (Word Game):** An educational "Hangman-style" game. Users decipher terms related to Coding or History while managing hearts and streaks.
 
-## F6: An Enhanced Chat Application (OPTIONAL)
-*This is an optional feature that might help you to a higher grade.*
 
-Fulfill some (at least four) requirements to enhance your chat application. Here are suggestions and feel free to add your own enhancements.
-* Ability to choose which channel to listen to.
-* Caching message history.
-* Added support for emojis.
-* Added support for writing code.
-* Ability to change username.
-* Encrypted messages on a special channel to allow secret communication.
-* Added functionality to the "chat protocol". Discuss with others in the course and agree upon added functionality to add to the sent messages.
-* Use the messages to play memory against an opponent. Preferably using a separate channel.
-* Define your own enhancement.
+## 3. Getting Started
 
-## F7: Additional Enhancements (OPTIONAL)
-*This is an optional feature that might help you to a higher grade. You need to have implemented F6 to be able to solve this requirement.*
+Follow these instructions to get a copy of the project up and running on your local machine.
 
-You may implement and document additional enhancements to your PDW and the applications to make it more personal, flexible and usable. You may define these requirements on your own, document them and explain how they work.
+### Prerequisites
+* **Node.js:** (v14 or higher recommended)
+* **npm:** (Node Package Manager)
 
-Write and explain how you improved the following parts:
-* The PWD itself.
-* The Memory application.
-* The extra application.
+### Installation
 
-Examples of enhancements:
-* Maximize and normalize window size.
-* Resize windows.
-* Keep track on open windows, minimize them.
-* You may also add an extra extra application, developed by yourself.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://gitlab.lnu.se/1dv528/student/sa225sd/a3-spa.git
+    cd a3-spa
+    ```
 
-## F8: Documentation on Code Structure (OPTIONAL)
-*This is an optional feature that might help you to a higher grade. You need to have implemented F7 to be able to solve this requirement.*
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-* Write a documentation of your code, explaining in your own words how the code is structured, what classes/modules you have and how they relate to each other.
-* Write 15-30 sentences.
-* Add at least one picture showing the code modules and how they relate to each other.
-* Write this in the `README.md` file or direct in the issue.
+### 3.1 Setting up the Environment
+For detailed instructions on configuring your development environment, please refer to: [**LNU Course Content: HTML, CSS, & JS Dev Tools**](https://gitlab.lnu.se/1dv528/course-content/html-css-javascript-dev-tools)
+
+
+## 4. How to Run
+
+### Development Mode
+Starts a local development server with hot-reload enabled. Perfect for testing changes.
+```bash
+npm run dev
+
+```
+
+### Production Build
+
+Compiles and minifies the code into the `dist/` folder for deployment.
+
+```bash
+npm run build
+
+```
+
+### Preview Production
+
+Serves the built `dist/` folder locally to verify the production build.
+
+```bash
+npm run http-server dist
+
+```
+
+*Open your browser and navigate to the address shown in the terminal (usually `http://127.0.0.1:9001`).*
+
+
+## 5. Documentation
+
+Detailed documentation for the architecture and individual modules can be found here:
+
+* **[Functional Requirements (Summary)](https://www.google.com/search?q=./doc/F-REQUIREMENTS.md)** - *Full list of implemented features.*
+* 🖥️ **[PWD Core System](https://www.google.com/search?q=./doc/PWD.md)** - *Window manager and desktop logic.*
+* **[Memory Game](https://www.google.com/search?q=./doc/MEMORY_GAME.md)**
+* **[Chat Application](https://www.google.com/search?q=./doc/CHAT_APPLICATION.md)**
+* **[Quiz Application](https://www.google.com/search?q=./doc/QUIZ_APPLICATION.md)**
+* **[The Scroll (Word Game)](https://www.google.com/search?q=./doc/SCROLL_GAME.md)**
+
+### Dependency Overview
+![Dependency Diagram](src/img/dependency-diagram.png)
+
+## 6. Features & Highlights
+
+* **Glassmorphism Widgets:** A central clock and wallpaper widget featuring semi-transparent frosted glass effects.
+* **Hybrid Focus System:**
+    * **Focus-Following:** Windows focus automatically on hover.
+    * **Aggressive Restoration:** Prevents focus loss when clicking "dead zones" inside a window.
+* **Keyboard Accessibility:** All apps (Quiz, Word Game, Chat) are fully navigable via keyboard (Arrow keys, Enter, Tab).
+* **Shared Architecture:** Uses a centralized `StorageManager` and `SoundPlayer` to handle data persistence and audio across all apps efficiently.
+
+
+## 7. Credits
+
+**Developer:** Sadek Alashkar
+**Icons & Assets:**
+
+* Icons provided by [Flaticon](https://www.google.com/search?q=https://www.flaticon.com/) (Authors: Freepik, Pixel perfect).
+* Sound effects from [Mixkit](https://www.google.com/search?q=https://mixkit.co/).
+* Images decribed by me and generated by [Gemini](https://gemini.google.com/app) with Banana Nano feature. 
+
+
+## 8. License
+
+This project is licensed under the MIT License, see [LICENSE](LICENSE.md) for details.
