@@ -81,3 +81,6 @@ The following advanced features were implemented to meet Optional Requirements:
 ### D. Advanced Persistence
 * **Username:** Remembers the user between sessions via `StorageManager.getUsername()`.
 * **History:** Caches the last 50 messages per channel. When switching back to a previously visited channel, history is instantly restored from disk before the connection is even established.
+
+### E. Message UI
+* **Multi-line Support:** Implemented multi-line text capability, enabling users to compose and send messages containing line breaks and paragraphs within a single transmission.
