@@ -10,20 +10,14 @@
 * **Dual Data Realms:** Users can toggle between two distinct word categories:
     * **The Architect:** Historical terms (e.g., *ALHAMBRA*, *MINARET*).
     * **The Scholar:** JavaScript terminology (e.g., *VARIABLE*, *PROMISE*).
-
-
 * **Gameplay Mechanics:** Users guess letters via an on-screen QWERTY keyboard or physical keyboard input.
 * **Input Guarding:** Logic prevents users from guessing the same letter twice by disabling the on-screen button and ignoring the physical keystroke, protecting the player from accidental penalties.
 * **Win/Loss Logic:**
     * **Victory:** All letters revealed before lives/time run out.
     * **Defeat:** Lives reach zero or the timer expires.
-
-
 * **Educational Value:**
     * **Hints:** A subtle clue is displayed during gameplay (e.g., *"The Red Fortress"*).
     * **Definitions:** Upon game completion (Win or Lose), the full definition of the word is revealed to reinforce learning.
-
-
 * **Persistent Stats:** Tracks "Current Streak" and "Best Streak" (High Score) using `localStorage`.
 
 ### Non-Functional Requirements

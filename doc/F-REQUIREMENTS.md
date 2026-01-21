@@ -11,7 +11,6 @@
 * **Focus Management:**
     * *Click/Drag Focus:* Implemented in `#focusWindow` (Z-Index handling).
     * *Top Layer:* The active window properly increments `zIndexCounter`.
-
 * **Included Apps:**
     1. Memory Game
     2. Chat (WebSockets)
