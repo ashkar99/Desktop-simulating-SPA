@@ -130,6 +130,7 @@ Detailed documentation for the architecture and individual modules can be found 
 ## 8. Credits
 
 **Developer:** Sadek Alashkar
+
 **Icons & Assets:**
 
 * Icons provided by [Flaticon](https://www.google.com/search?q=https://www.flaticon.com/) (Authors: Freepik, Pixel perfect).
